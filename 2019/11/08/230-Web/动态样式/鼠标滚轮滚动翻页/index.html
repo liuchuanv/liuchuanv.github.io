@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+    <title>静言思之</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/lib/github-markdown-css/github-markdown.css">
+</head>
+<body>
+<div class="container">
+<header class="header">
+    <div class="blog-title">
+        <a href="/" class="logo">静言思之</a>
+    </div>
+    <nav class="navbar">
+        <ul class="menu">
+            
+                <li class="menu-item">
+                    <a href="/" class="menu-item-link">首页</a>
+                </li>
+            
+                <li class="menu-item">
+                    <a href="/archives" class="menu-item-link">归档</a>
+                </li>
+            
+                <li class="menu-item">
+                    <a href="https://github.com/ahonn" target="_blank" rel="noopener" class="menu-item-link">交友</a>
+                </li>
+            
+        </ul>
+    </nav>
+</header>
+<main class="main">
+    <article class="post">
+    <div class="post-title">
+        <h2 class="title">鼠标滚轮滚动翻页</h2>
+    </div>
+    <div class="post-meta">
+        <span class="post-time">2019-11-08</span>
+    </div>
+    <div class="markdown-body">
+        <p>参考自 <a href="https://www.zhangxinxu.com/wordpress/2013/04/js-mousewheel-dommousescroll-event/" target="_blank" rel="noopener">JS滚轮事件(mousewheel/DOMMouseScroll)了解</a><br>页面代码改造自 <a href="https://blog.csdn.net/qq_40756247/article/details/86138474" target="_blank" rel="noopener">原生JS实现全屏滚动（无滚动条）</a></p>
+<pre><code class="html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta charset=&quot;utf-8&quot; /&gt;
+        &lt;title&gt;&lt;/title&gt;
+        &lt;style type=&quot;text/css&quot;&gt;
+            * {
+                margin: 0;
+                padding: 0;
+                font-size: 0;
+            }
+            .box {
+                position: relative;
+                width: 100%;
+                height: 100vh;
+                overflow: hidden;
+            }
+            ul {
+                position: relative;
+            }
+            li {
+                width: 100%;
+                height: 100vh;
+                font-size: 30px;
+                position: relative;
+                display: flex;
+                justify-content: center;
+                text-align: center;
+            }
+
+            .nav {
+                position: fixed;
+                right: 2%;
+                top: 35%;
+            }
+            .nav li {
+                width: 16px;
+                height: 16px;
+                border-radius: 50%;
+                border: 1.5px solid #000;
+                margin-bottom: 5px;
+            }
+        &lt;/style&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;div class=&quot;box&quot;&gt;
+            &lt;ul style=&quot;transition: 0.5s ease; top:0;&quot;&gt;
+                &lt;li&gt;一页面&lt;/li&gt;
+                &lt;li&gt;二页面&lt;/li&gt;
+                &lt;li&gt;三页面&lt;/li&gt;
+                &lt;li&gt;四页面&lt;/li&gt;
+            &lt;/ul&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;nav&quot;&gt;
+            &lt;ul&gt;
+                &lt;li&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;/li&gt;
+            &lt;/ul&gt;
+        &lt;/div&gt;
+        &lt;script type=&quot;text/javascript&quot;&gt;
+            /**
+             * 简易的事件添加方法封装
+             */
+            var addEvent = (function(window, undefined) {
+                var _eventCompat = function(event) {
+                    var type = event.type;
+                    if (type == &#39;DOMMouseScroll&#39; || type == &#39;mousewheel&#39;) {
+                        event.delta = (event.wheelDelta) ? event.wheelDelta / 120 : -(event.detail || 0) / 3;
+                    }
+                    //alert(event.delta);
+                    if (event.srcElement &amp;&amp; !event.target) {
+                        event.target = event.srcElement;
+                    }
+                    if (!event.preventDefault &amp;&amp; event.returnValue !== undefined) {
+                        event.preventDefault = function() {
+                            event.returnValue = false;
+                        };
+                    }
+                    /*
+                       ......其他一些兼容性处理 */
+                    return event;
+                };
+                if (window.addEventListener) {
+                    return function(el, type, fn, capture) {
+                        if (type === &quot;mousewheel&quot; &amp;&amp; document.mozFullScreen !== undefined) {
+                            type = &quot;DOMMouseScroll&quot;;
+                        }
+                        el.addEventListener(type, function(event) {
+                            fn.call(this, _eventCompat(event));
+                        }, capture || false);
+                    }
+                } else if (window.attachEvent) {
+                    return function(el, type, fn, capture) {
+                        el.attachEvent(&quot;on&quot; + type, function(event) {
+                            event = event || window.event;
+                            fn.call(el, _eventCompat(event));
+                        });
+                    }
+                }
+                return function() {};
+            })(window);
+
+            // 滚动锁
+            var mousewheelLock = false;
+            var pageIndex = 0,    // 页码
+                pageNum = 4;    // 页数
+            // 滚动动画时间    
+            var scrollAnimateTime = 1200;
+
+            var oUl = document.querySelector(&quot;ul&quot;);
+            var navLis = document.querySelectorAll(&quot;.nav li&quot;);
+            navLis[pageIndex].style.background = &#39;black&#39;;
+
+            /** 添加鼠标滚轮事件 **/
+            addEvent(oUl, &#39;mousewheel&#39;, function(event) {
+                if (mousewheelLock) return ;
+                mousewheelLock = true;
+                // 向下滚动
+                if (event.delta &lt; 0) {
+                    nextPage();
+                } else {    // 向上滚动
+                    prevPage();
+                }
+                setTimeout(function(){
+                    mousewheelLock = false;
+                }, scrollAnimateTime);
+            });
+            // 下一页
+            function nextPage() {
+                if (pageIndex &lt; pageNum-1 ) {
+                    changePage(pageIndex++);
+                }
+            }
+            // 上一页
+            function prevPage() {
+                if (pageIndex &gt; 0 ) {
+                    changePage(pageIndex--);
+                }
+            }
+            // 改变页面
+            function changePage(selectedPageIndex) { 
+                oUl.style.top = -selectedPageIndex * 100 + &#39;vh&#39;;
+                for (var i=0; i&lt;navLis.length; i++) {
+                    navLis[i].style.background = &#39;white&#39;;
+                }
+                navLis[pageIndex].style.background = &#39;black&#39;;
+            }
+
+        &lt;/script&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+    </div>
+</article>
+</main>
+</div>
+</body>
+</html>

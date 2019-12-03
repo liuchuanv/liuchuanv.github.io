@@ -40,12 +40,23 @@
         <span class="post-time">2019-10-11</span>
     </div>
     <div class="markdown-body">
-        <h3 id="Thread-变量-threadLocals"><a href="#Thread-变量-threadLocals" class="headerlink" title="Thread 变量 threadLocals"></a>Thread 变量 threadLocals</h3><p>线程类Thread内部有一个名为<code>threadLocals</code> 的 <code>ThreadLocal.ThreadLocalMap</code> 变量，它定义如下：</p>
-<pre><code class="java">/* ThreadLocal values pertaining to this thread. This map is maintained
+        <h2 id="线程成员-threadLocals"><a href="#线程成员-threadLocals" class="headerlink" title="线程成员 threadLocals"></a>线程成员 threadLocals</h2><p>线程类Thread内部有一个变量：<code>threadLocals</code></p>
+<p>它是 <code>ThreadLocal.ThreadLocalMap</code> 对象</p>
+<pre><code class="java">...
+public
+class Thread implements Runnable {
+    ...
+    // line 179
+    /* ThreadLocal values pertaining to this thread. This map is maintained
      * by the ThreadLocal class. */
-    ThreadLocal.ThreadLocalMap threadLocals = null;</code></pre>
-<h3 id="ThreadLocal-ThreadLocalMap"><a href="#ThreadLocal-ThreadLocalMap" class="headerlink" title="ThreadLocal.ThreadLocalMap"></a>ThreadLocal.ThreadLocalMap</h3><p><code>ThreadLocal.ThreadLocalMap</code> 是 <code>ThreadLocal</code> 的内部类</p>
-<pre><code class="java">    /**
+    ThreadLocal.ThreadLocalMap threadLocals = null;
+    ...
+}</code></pre>
+<h2 id="类ThreadLocalMap"><a href="#类ThreadLocalMap" class="headerlink" title="类ThreadLocalMap"></a>类ThreadLocalMap</h2><p><code>ThreadLocalMap</code> 是 <code>ThreadLocal</code> 的内部类</p>
+<pre><code class="java">public class ThreadLocal&lt;T&gt; {
+    ...
+    // line 287
+    /**
      * ThreadLocalMap is a customized hash map suitable only for
      * maintaining thread local values. No operations are exported
      * outside of the ThreadLocal class. The class is package private to
@@ -57,9 +68,15 @@
      */
     static class ThreadLocalMap {
         // ...
-    }</code></pre>
-<p>看注释的第一句话 <code>ThreadLocalMap is a customized hash map suitable only for maintaining thread local values.</code> 意思是 ThreadLocalMap 是一个自定义 HashMap，只适用于线程局部变量。完全可以把它看做是一个 HashMap。</p>
-<h3 id="ThreadLocal"><a href="#ThreadLocal" class="headerlink" title="ThreadLocal"></a>ThreadLocal</h3><pre><code class="java">/**
+    }
+    ...
+}    </code></pre>
+<blockquote>
+<p>ThreadLocalMap is a customized hash map suitable only for maintaining thread local values.</p>
+<p>大意：ThreadLocalMap 是一个自定义 HashMap，只适用于线程局部变量。</p>
+<p>完全可以把它看做是一个 HashMap。</p>
+</blockquote>
+<h2 id="类ThreadLocal"><a href="#类ThreadLocal" class="headerlink" title="类ThreadLocal"></a>类ThreadLocal</h2><pre><code class="java">/**
  * This class provides thread-local variables.  These variables differ from
  * their normal counterparts in that each thread that accesses one (via its
  * {@code get} or {@code set} method) has its own, independently initialized
@@ -81,13 +98,11 @@ public class ThreadLocal&lt;T&gt; {
     //...
 }</code></pre>
 <blockquote>
-<p>大致意思就是，ThreadLocal 提供线程局部的变量，这些变量在每个线程中都有不同的副本，通过get和set方法就可以得到或设置它们。</p>
+<p>注释大意：ThreadLocal 提供线程局部的变量，这些变量在每个线程中都有不同的副本，通过get和set方法就可以获取和设置它们。</p>
 </blockquote>
-<p>类<code>ThreadLocal</code>的结构如下：</p>
-<img src="/2019/10/11/210-Java/JavaSE/ThreadLocal%20%E7%90%86%E8%A7%A3/ThreadLocal%E7%90%86%E8%A7%A31.png" class="类&#96;ThreadLocal&#96;的结构">
-
+<p>类<code>ThreadLocal</code>的结构如下：<br><img src="./images/ThreadLocal%E7%90%86%E8%A7%A31.png" alt="类ThreadLocal结构"></p>
 <p>重要的方法只有两个：<strong>set 和 get</strong></p>
-<h3 id="ThreadLocal-set-value"><a href="#ThreadLocal-set-value" class="headerlink" title="ThreadLocal.set(value)"></a>ThreadLocal.set(value)</h3><p><code>ThreadLocal.set(value)</code> 向 <code>Thread</code> 内部的 <code>threadLocals</code> 变量添加值，它的实现如下：</p>
+<h3 id="ThreadLocal-set-value"><a href="#ThreadLocal-set-value" class="headerlink" title="ThreadLocal.set(value)"></a>ThreadLocal.set(value)</h3><p><code>ThreadLocal.set(value)</code> 向 <code>Thread</code> 内部的 <code>threadLocals</code> 变量添加一个元素，它的实现如下：</p>
 <pre><code class="java">    // line 189
     /**
      * Sets the current thread&#39;s copy of this thread-local variable
@@ -143,14 +158,16 @@ public class ThreadLocal&lt;T&gt; {
         }
         return setInitialValue();
     }</code></pre>
-<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><blockquote>
-<p><code>ThreadLocal</code>和<code>Synchronized</code>都是为了解决多线程中相同变量的访问冲突问题，不同的是：</p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><blockquote>
+<p>ThreadLocal 和 Synchronized 都是为了解决多线程中相同变量的访问冲突问题，不同的是：</p>
 <ul>
-<li><code>Synchronized</code> 是通过线程等待，牺牲时间来解决访问冲突</li>
-<li><code>ThreadLocal</code> 是通过每个线程单独一份存储空间，牺牲空间来解决冲突，并且相比于<code>Synchronized</code>，<code>ThreadLocal</code> 具有线程隔离的效果，只有在线程内才能获取到对应的值，线程外则不能访问到想要的值。</li>
+<li>Synchronized 是通过线程等待，牺牲时间来解决访问冲突</li>
+<li>ThreadLocal 是通过每个线程单独一份存储空间，牺牲空间来解决冲突，并且相比于<code>Synchronized</code>，ThreadLocal 具有线程隔离的效果，只有在线程内才能获取到对应的值，线程外则不能访问到想要的值。</li>
 </ul>
 </blockquote>
-<p>  正因为<code>ThreadLocal</code>的线程隔离特性，使他的应用场景相对来说更为特殊一些。在android中Looper、ActivityThread以及AMS中都用到了ThreadLocal。当某些数据是以线程为作用域并且不同线程具有不同的数据副本的时候，就可以考虑采用ThreadLocal。</p>
+<p>正因为 ThreadLocal 的线程隔离特性，使他的应用场景相对来说更为特殊一些。</p>
+<p>当某些数据是 <strong>以线程为作用域并且不同线程具有不同的数据副本</strong> 的时候，就可以考虑采用ThreadLocal。</p>
+<p>比如：在多数据源切换时，就使用了 ThreadLocal 来设置当前使用的数据源</p>
 
     </div>
 </article>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+    <title>静言思之</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/lib/github-markdown-css/github-markdown.css">
+</head>
+<body>
+<div class="container">
+<header class="header">
+    <div class="blog-title">
+        <a href="/" class="logo">静言思之</a>
+    </div>
+    <nav class="navbar">
+        <ul class="menu">
+            
+                <li class="menu-item">
+                    <a href="/" class="menu-item-link">首页</a>
+                </li>
+            
+                <li class="menu-item">
+                    <a href="/archives" class="menu-item-link">归档</a>
+                </li>
+            
+                <li class="menu-item">
+                    <a href="https://github.com/ahonn" target="_blank" rel="noopener" class="menu-item-link">交友</a>
+                </li>
+            
+        </ul>
+    </nav>
+</header>
+<main class="main">
+    <article class="post">
+    <div class="post-title">
+        <h2 class="title">chrome78浏览器网页保存为mhtml格式</h2>
+    </div>
+    <div class="post-meta">
+        <span class="post-time">2019-11-12</span>
+    </div>
+    <div class="markdown-body">
+        <p>自从chrome浏览器升级75版本之后，在 <code>chrome://flags</code> 中就无法找到 <code>save as mhtml</code>选项了，无法将网页保存为 mhtml 格式了。</p>
+<blockquote>
+<p>原来chrome搞了个”Chrome Flag Ownership”的项目，目的是清理未使用的和过时的flags，现在save-page-as-mhtml仅作为开发者测试使用</p>
+</blockquote>
+<p>解决操作步骤：</p>
+<ol>
+<li><p>右键chrome浏览器快捷方式，点击 “属性”，在 “快捷方式” 栏中追加参数 <code>-- save as mhtml</code></p>
+<p> <img src="/blog/images/201911/image-20191112135931970.png" alt="image-20191112135931970"></p>
+<p> <img src="/blog/images/201911/image-20191112140122749.png" alt="image-20191112140122749"></p>
+</li>
+<li><p>然后关闭所有的chrome浏览器网页，重新打开chrome。</p>
+</li>
+<li><p>直接按 <kbd>Ctrl</kbd>+<code>S</code> 就可保存为mhtml</p>
+</li>
+</ol>
+
+    </div>
+</article>
+</main>
+</div>
+</body>
+</html>

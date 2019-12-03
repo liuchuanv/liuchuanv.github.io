@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+    <title>静言思之</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/lib/github-markdown-css/github-markdown.css">
+</head>
+<body>
+<div class="container">
+<header class="header">
+    <div class="blog-title">
+        <a href="/" class="logo">静言思之</a>
+    </div>
+    <nav class="navbar">
+        <ul class="menu">
+            
+                <li class="menu-item">
+                    <a href="/" class="menu-item-link">首页</a>
+                </li>
+            
+                <li class="menu-item">
+                    <a href="/archives" class="menu-item-link">归档</a>
+                </li>
+            
+                <li class="menu-item">
+                    <a href="https://github.com/ahonn" target="_blank" rel="noopener" class="menu-item-link">交友</a>
+                </li>
+            
+        </ul>
+    </nav>
+</header>
+<main class="main">
+    <article class="post">
+    <div class="post-title">
+        <h2 class="title">Shiro源码解析之SessionManager01-Session和SessionFactory</h2>
+    </div>
+    <div class="post-meta">
+        <span class="post-time">2019-10-18</span>
+    </div>
+    <div class="markdown-body">
+        <h2 id="Session"><a href="#Session" class="headerlink" title="Session"></a>Session</h2><h3 id="类继承图"><a href="#类继承图" class="headerlink" title="类继承图"></a>类继承图</h3><p><img src="/blog/images/201910/1571641163441.png" alt="1571641163441"></p>
+<h3 id="Session-1"><a href="#Session-1" class="headerlink" title="Session"></a>Session</h3><p><img src="/blog/images/201910/1571641545728.png" alt="1571641545728"></p>
+<h3 id="ValidatingSession"><a href="#ValidatingSession" class="headerlink" title="ValidatingSession"></a>ValidatingSession</h3><p><img src="/blog/images/201910/1571641575122.png" alt="1571641575122"></p>
+<h3 id="SimpleSession"><a href="#SimpleSession" class="headerlink" title="SimpleSession"></a>SimpleSession</h3><p>SimpleSession 将Attribute 保存在 map对象中</p>
+<pre><code class="java">/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * &quot;License&quot;); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+package org.apache.shiro.session.mgt;
+
+import org.apache.shiro.session.ExpiredSessionException;
+import org.apache.shiro.session.InvalidSessionException;
+import org.apache.shiro.session.StoppedSessionException;
+import org.apache.shiro.util.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.text.DateFormat;
+import java.util.*;
+
+
+/**
+ * Simple {@link org.apache.shiro.session.Session} JavaBeans-compatible POJO implementation, intended to be used on the
+ * business/server tier.
+ *
+ * @since 0.1
+ */
+public class SimpleSession implements ValidatingSession, Serializable {
+
+    // Serialization reminder:
+    // You _MUST_ change this number if you introduce a change to this class
+    // that is NOT serialization backwards compatible.  Serialization-compatible
+    // changes do not require a change to this number.  If you need to generate
+    // a new number in this case, use the JDK&#39;s &#39;serialver&#39; program to generate it.
+    private static final long serialVersionUID = -7125642695178165650L;
+
+    //TODO - complete JavaDoc
+    private transient static final Logger log = LoggerFactory.getLogger(SimpleSession.class);
+
+    protected static final long MILLIS_PER_SECOND = 1000;
+    protected static final long MILLIS_PER_MINUTE = 60 * MILLIS_PER_SECOND;
+    protected static final long MILLIS_PER_HOUR = 60 * MILLIS_PER_MINUTE;
+
+    //serialization bitmask fields. DO NOT CHANGE THE ORDER THEY ARE DECLARED!
+    static int bitIndexCounter = 0;
+    private static final int ID_BIT_MASK = 1 &lt;&lt; bitIndexCounter++;
+    private static final int START_TIMESTAMP_BIT_MASK = 1 &lt;&lt; bitIndexCounter++;
+    private static final int STOP_TIMESTAMP_BIT_MASK = 1 &lt;&lt; bitIndexCounter++;
+    private static final int LAST_ACCESS_TIME_BIT_MASK = 1 &lt;&lt; bitIndexCounter++;
+    private static final int TIMEOUT_BIT_MASK = 1 &lt;&lt; bitIndexCounter++;
+    private static final int EXPIRED_BIT_MASK = 1 &lt;&lt; bitIndexCounter++;
+    private static final int HOST_BIT_MASK = 1 &lt;&lt; bitIndexCounter++;
+    private static final int ATTRIBUTES_BIT_MASK = 1 &lt;&lt; bitIndexCounter++;
+
+    // ==============================================================
+    // NOTICE:
+    //
+    // The following fields are marked as transient to avoid double-serialization.
+    // They are in fact serialized (even though &#39;transient&#39; usually indicates otherwise),
+    // but they are serialized explicitly via the writeObject and readObject implementations
+    // in this class.
+    //
+    // If we didn&#39;t declare them as transient, the out.defaultWriteObject(); call in writeObject would
+    // serialize all non-transient fields as well, effectively doubly serializing the fields (also
+    // doubling the serialization size).
+    //
+    // This finding, with discussion, was covered here:
+    //
+    // http://mail-archives.apache.org/mod_mbox/shiro-user/201109.mbox/%3C4E81BCBD.8060909@metaphysis.net%3E
+    //
+    // ==============================================================
+    private transient Serializable id;
+    private transient Date startTimestamp;
+    private transient Date stopTimestamp;
+    private transient Date lastAccessTime;
+    private transient long timeout;
+    private transient boolean expired;
+    private transient String host;
+    private transient Map&lt;Object, Object&gt; attributes;
+
+    public SimpleSession() {
+        this.timeout = DefaultSessionManager.DEFAULT_GLOBAL_SESSION_TIMEOUT; //TODO - remove concrete reference to DefaultSessionManager
+        this.startTimestamp = new Date();
+        this.lastAccessTime = this.startTimestamp;
+    }
+
+    public SimpleSession(String host) {
+        this();
+        this.host = host;
+    }
+
+    ......
+    // getter setter
+
+    public void touch() {
+        this.lastAccessTime = new Date();
+    }
+
+    public void stop() {
+        if (this.stopTimestamp == null) {
+            this.stopTimestamp = new Date();
+        }
+    }
+
+    protected boolean isStopped() {
+        return getStopTimestamp() != null;
+    }
+
+    protected void expire() {
+        stop();
+        this.expired = true;
+    }
+
+    /**
+     * @since 0.9
+     */
+    public boolean isValid() {
+        return !isStopped() &amp;&amp; !isExpired();
+    }
+
+    /**
+     * Determines if this session is expired.
+     *
+     * @return true if the specified session has expired, false otherwise.
+     */
+    protected boolean isTimedOut() {
+
+        if (isExpired()) {
+            return true;
+        }
+
+        long timeout = getTimeout();
+
+        if (timeout &gt;= 0l) {
+
+            Date lastAccessTime = getLastAccessTime();
+
+            if (lastAccessTime == null) {
+                String msg = &quot;session.lastAccessTime for session with id [&quot; +
+                        getId() + &quot;] is null.  This value must be set at &quot; +
+                        &quot;least once, preferably at least upon instantiation.  Please check the &quot; +
+                        getClass().getName() + &quot; implementation and ensure &quot; +
+                        &quot;this value will be set (perhaps in the constructor?)&quot;;
+                throw new IllegalStateException(msg);
+            }
+
+            // Calculate at what time a session would have been last accessed
+            // for it to be expired at this point.  In other words, subtract
+            // from the current time the amount of time that a session can
+            // be inactive before expiring.  If the session was last accessed
+            // before this time, it is expired.
+            long expireTimeMillis = System.currentTimeMillis() - timeout;
+            Date expireTime = new Date(expireTimeMillis);
+            return lastAccessTime.before(expireTime);
+        } else {
+            if (log.isTraceEnabled()) {
+                log.trace(&quot;No timeout for session with id [&quot; + getId() +
+                        &quot;].  Session is not considered expired.&quot;);
+            }
+        }
+
+        return false;
+    }
+
+    public void validate() throws InvalidSessionException {
+        //check for stopped:
+        if (isStopped()) {
+            //timestamp is set, so the session is considered stopped:
+            String msg = &quot;Session with id [&quot; + getId() + &quot;] has been &quot; +
+                    &quot;explicitly stopped.  No further interaction under this session is &quot; +
+                    &quot;allowed.&quot;;
+            throw new StoppedSessionException(msg);
+        }
+
+        //check for expiration
+        if (isTimedOut()) {
+            expire();
+
+            //throw an exception explaining details of why it expired:
+            Date lastAccessTime = getLastAccessTime();
+            long timeout = getTimeout();
+
+            Serializable sessionId = getId();
+
+            DateFormat df = DateFormat.getInstance();
+            String msg = &quot;Session with id [&quot; + sessionId + &quot;] has expired. &quot; +
+                    &quot;Last access time: &quot; + df.format(lastAccessTime) +
+                    &quot;.  Current time: &quot; + df.format(new Date()) +
+                    &quot;.  Session timeout is set to &quot; + timeout / MILLIS_PER_SECOND + &quot; seconds (&quot; +
+                    timeout / MILLIS_PER_MINUTE + &quot; minutes)&quot;;
+            if (log.isTraceEnabled()) {
+                log.trace(msg);
+            }
+            throw new ExpiredSessionException(msg);
+        }
+    }
+
+    private Map&lt;Object, Object&gt; getAttributesLazy() {
+        Map&lt;Object, Object&gt; attributes = getAttributes();
+        if (attributes == null) {
+            attributes = new HashMap&lt;Object, Object&gt;();
+            setAttributes(attributes);
+        }
+        return attributes;
+    }
+
+    public Collection&lt;Object&gt; getAttributeKeys() throws InvalidSessionException {
+        Map&lt;Object, Object&gt; attributes = getAttributes();
+        if (attributes == null) {
+            return Collections.emptySet();
+        }
+        return attributes.keySet();
+    }
+
+    public Object getAttribute(Object key) {
+        Map&lt;Object, Object&gt; attributes = getAttributes();
+        if (attributes == null) {
+            return null;
+        }
+        return attributes.get(key);
+    }
+
+    public void setAttribute(Object key, Object value) {
+        if (value == null) {
+            removeAttribute(key);
+        } else {
+            getAttributesLazy().put(key, value);
+        }
+    }
+
+    public Object removeAttribute(Object key) {
+        Map&lt;Object, Object&gt; attributes = getAttributes();
+        if (attributes == null) {
+            return null;
+        } else {
+            return attributes.remove(key);
+        }
+    }
+
+    /**
+     * Returns {@code true} if the specified argument is an {@code instanceof} {@code SimpleSession} and both
+     * {@link #getId() id}s are equal.  If the argument is a {@code SimpleSession} and either &#39;this&#39; or the argument
+     * does not yet have an ID assigned, the value of {@link #onEquals(SimpleSession) onEquals} is returned, which
+     * does a necessary attribute-based comparison when IDs are not available.
+     * &lt;p/&gt;
+     * Do your best to ensure {@code SimpleSession} instances receive an ID very early in their lifecycle to
+     * avoid the more expensive attributes-based comparison.
+     *
+     * @param obj the object to compare with this one for equality.
+     * @return {@code true} if this object is equivalent to the specified argument, {@code false} otherwise.
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj instanceof SimpleSession) {
+            SimpleSession other = (SimpleSession) obj;
+            Serializable thisId = getId();
+            Serializable otherId = other.getId();
+            if (thisId != null &amp;&amp; otherId != null) {
+                return thisId.equals(otherId);
+            } else {
+                //fall back to an attribute based comparison:
+                return onEquals(other);
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Provides an attribute-based comparison (no ID comparison) - incurred &lt;em&gt;only&lt;/em&gt; when &#39;this&#39; or the
+     * session object being compared for equality do not have a session id.
+     *
+     * @param ss the SimpleSession instance to compare for equality.
+     * @return true if all the attributes, except the id, are equal to this object&#39;s attributes.
+     * @since 1.0
+     */
+    protected boolean onEquals(SimpleSession ss) {
+        return (getStartTimestamp() != null ? getStartTimestamp().equals(ss.getStartTimestamp()) : ss.getStartTimestamp() == null) &amp;&amp;
+                (getStopTimestamp() != null ? getStopTimestamp().equals(ss.getStopTimestamp()) : ss.getStopTimestamp() == null) &amp;&amp;
+                (getLastAccessTime() != null ? getLastAccessTime().equals(ss.getLastAccessTime()) : ss.getLastAccessTime() == null) &amp;&amp;
+                (getTimeout() == ss.getTimeout()) &amp;&amp;
+                (isExpired() == ss.isExpired()) &amp;&amp;
+                (getHost() != null ? getHost().equals(ss.getHost()) : ss.getHost() == null) &amp;&amp;
+                (getAttributes() != null ? getAttributes().equals(ss.getAttributes()) : ss.getAttributes() == null);
+    }
+
+    /**
+     * Returns the hashCode.  If the {@link #getId() id} is not {@code null}, its hashcode is returned immediately.
+     * If it is {@code null}, an attributes-based hashCode will be calculated and returned.
+     * &lt;p/&gt;
+     * Do your best to ensure {@code SimpleSession} instances receive an ID very early in their lifecycle to
+     * avoid the more expensive attributes-based calculation.
+     *
+     * @return this object&#39;s hashCode
+     * @since 1.0
+     */
+    @Override
+    public int hashCode() {
+        Serializable id = getId();
+        if (id != null) {
+            return id.hashCode();
+        }
+        int hashCode = getStartTimestamp() != null ? getStartTimestamp().hashCode() : 0;
+        hashCode = 31 * hashCode + (getStopTimestamp() != null ? getStopTimestamp().hashCode() : 0);
+        hashCode = 31 * hashCode + (getLastAccessTime() != null ? getLastAccessTime().hashCode() : 0);
+        hashCode = 31 * hashCode + Long.valueOf(Math.max(getTimeout(), 0)).hashCode();
+        hashCode = 31 * hashCode + Boolean.valueOf(isExpired()).hashCode();
+        hashCode = 31 * hashCode + (getHost() != null ? getHost().hashCode() : 0);
+        hashCode = 31 * hashCode + (getAttributes() != null ? getAttributes().hashCode() : 0);
+        return hashCode;
+    }
+
+    /**
+     * Returns the string representation of this SimpleSession, equal to
+     * &lt;code&gt;getClass().getName() + &amp;quot;,id=&amp;quot; + getId()&lt;/code&gt;.
+     *
+     * @return the string representation of this SimpleSession, equal to
+     *         &lt;code&gt;getClass().getName() + &amp;quot;,id=&amp;quot; + getId()&lt;/code&gt;.
+     * @since 1.0
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getClass().getName()).append(&quot;,id=&quot;).append(getId());
+        return sb.toString();
+    }
+
+    /**
+     * Serializes this object to the specified output stream for JDK Serialization.
+     *
+     * @param out output stream used for Object serialization.
+     * @throws IOException if any of this object&#39;s fields cannot be written to the stream.
+     * @since 1.0
+     */
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.defaultWriteObject();
+        short alteredFieldsBitMask = getAlteredFieldsBitMask();
+        out.writeShort(alteredFieldsBitMask);
+        if (id != null) {
+            out.writeObject(id);
+        }
+        if (startTimestamp != null) {
+            out.writeObject(startTimestamp);
+        }
+        if (stopTimestamp != null) {
+            out.writeObject(stopTimestamp);
+        }
+        if (lastAccessTime != null) {
+            out.writeObject(lastAccessTime);
+        }
+        if (timeout != 0l) {
+            out.writeLong(timeout);
+        }
+        if (expired) {
+            out.writeBoolean(expired);
+        }
+        if (host != null) {
+            out.writeUTF(host);
+        }
+        if (!CollectionUtils.isEmpty(attributes)) {
+            out.writeObject(attributes);
+        }
+    }
+
+    /**
+     * Reconstitutes this object based on the specified InputStream for JDK Serialization.
+     *
+     * @param in the input stream to use for reading data to populate this object.
+     * @throws IOException            if the input stream cannot be used.
+     * @throws ClassNotFoundException if a required class needed for instantiation is not available in the present JVM
+     * @since 1.0
+     */
+    @SuppressWarnings({&quot;unchecked&quot;})
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        short bitMask = in.readShort();
+
+        if (isFieldPresent(bitMask, ID_BIT_MASK)) {
+            this.id = (Serializable) in.readObject();
+        }
+        if (isFieldPresent(bitMask, START_TIMESTAMP_BIT_MASK)) {
+            this.startTimestamp = (Date) in.readObject();
+        }
+        if (isFieldPresent(bitMask, STOP_TIMESTAMP_BIT_MASK)) {
+            this.stopTimestamp = (Date) in.readObject();
+        }
+        if (isFieldPresent(bitMask, LAST_ACCESS_TIME_BIT_MASK)) {
+            this.lastAccessTime = (Date) in.readObject();
+        }
+        if (isFieldPresent(bitMask, TIMEOUT_BIT_MASK)) {
+            this.timeout = in.readLong();
+        }
+        if (isFieldPresent(bitMask, EXPIRED_BIT_MASK)) {
+            this.expired = in.readBoolean();
+        }
+        if (isFieldPresent(bitMask, HOST_BIT_MASK)) {
+            this.host = in.readUTF();
+        }
+        if (isFieldPresent(bitMask, ATTRIBUTES_BIT_MASK)) {
+            this.attributes = (Map&lt;Object, Object&gt;) in.readObject();
+        }
+    }
+
+    /**
+     * Returns a bit mask used during serialization indicating which fields have been serialized. Fields that have been
+     * altered (not null and/or not retaining the class defaults) will be serialized and have 1 in their respective
+     * index, fields that are null and/or retain class default values have 0.
+     *
+     * @return a bit mask used during serialization indicating which fields have been serialized.
+     * @since 1.0
+     */
+    private short getAlteredFieldsBitMask() {
+        int bitMask = 0;
+        bitMask = id != null ? bitMask | ID_BIT_MASK : bitMask;
+        bitMask = startTimestamp != null ? bitMask | START_TIMESTAMP_BIT_MASK : bitMask;
+        bitMask = stopTimestamp != null ? bitMask | STOP_TIMESTAMP_BIT_MASK : bitMask;
+        bitMask = lastAccessTime != null ? bitMask | LAST_ACCESS_TIME_BIT_MASK : bitMask;
+        bitMask = timeout != 0l ? bitMask | TIMEOUT_BIT_MASK : bitMask;
+        bitMask = expired ? bitMask | EXPIRED_BIT_MASK : bitMask;
+        bitMask = host != null ? bitMask | HOST_BIT_MASK : bitMask;
+        bitMask = !CollectionUtils.isEmpty(attributes) ? bitMask | ATTRIBUTES_BIT_MASK : bitMask;
+        return (short) bitMask;
+    }
+
+    /**
+     * Returns {@code true} if the given {@code bitMask} argument indicates that the specified field has been
+     * serialized and therefore should be read during deserialization, {@code false} otherwise.
+     *
+     * @param bitMask      the aggregate bitmask for all fields that have been serialized.  Individual bits represent
+     *                     the fields that have been serialized.  A bit set to 1 means that corresponding field has
+     *                     been serialized, 0 means it hasn&#39;t been serialized.
+     * @param fieldBitMask the field bit mask constant identifying which bit to inspect (corresponds to a class attribute).
+     * @return {@code true} if the given {@code bitMask} argument indicates that the specified field has been
+     *         serialized and therefore should be read during deserialization, {@code false} otherwise.
+     * @since 1.0
+     */
+    private static boolean isFieldPresent(short bitMask, int fieldBitMask) {
+        return (bitMask &amp; fieldBitMask) != 0;
+    }
+
+}
+</code></pre>
+<h3 id="DelegatingSession"><a href="#DelegatingSession" class="headerlink" title="DelegatingSession"></a>DelegatingSession</h3><pre><code class="java">/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * &quot;License&quot;); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+package org.apache.shiro.session.mgt;
+
+import org.apache.shiro.session.InvalidSessionException;
+import org.apache.shiro.session.Session;
+
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Date;
+
+/**
+ * A DelegatingSession is a client-tier representation of a server side
+ * {@link org.apache.shiro.session.Session Session}.
+ * This implementation is basically a proxy to a server-side {@link NativeSessionManager NativeSessionManager},
+ * which will return the proper results for each method call.
+ * &lt;p/&gt;
+ * &lt;p&gt;A &lt;tt&gt;DelegatingSession&lt;/tt&gt; will cache data when appropriate to avoid a remote method invocation,
+ * only communicating with the server when necessary.
+ * &lt;p/&gt;
+ * &lt;p&gt;Of course, if used in-process with a NativeSessionManager business POJO, as might be the case in a
+ * web-based application where the web classes and server-side business pojos exist in the same
+ * JVM, a remote method call will not be incurred.
+ *
+ * @since 0.1
+ */
+public class DelegatingSession implements Session, Serializable {
+
+    //TODO - complete JavaDoc
+
+    private final SessionKey key;
+
+    //cached fields to avoid a server-side method call if out-of-process:
+    private Date startTimestamp = null;
+    private String host = null;
+
+    /**
+     * Handle to the target NativeSessionManager that will support the delegate calls.
+     */
+    private final transient NativeSessionManager sessionManager;
+
+
+    public DelegatingSession(NativeSessionManager sessionManager, SessionKey key) {
+        if (sessionManager == null) {
+            throw new IllegalArgumentException(&quot;sessionManager argument cannot be null.&quot;);
+        }
+        if (key == null) {
+            throw new IllegalArgumentException(&quot;sessionKey argument cannot be null.&quot;);
+        }
+        if (key.getSessionId() == null) {
+            String msg = &quot;The &quot; + DelegatingSession.class.getName() + &quot; implementation requires that the &quot; +
+                    &quot;SessionKey argument returns a non-null sessionId to support the &quot; +
+                    &quot;Session.getId() invocations.&quot;;
+            throw new IllegalArgumentException(msg);
+        }
+        this.sessionManager = sessionManager;
+        this.key = key;
+    }
+
+    /**
+     * @see org.apache.shiro.session.Session#getId()
+     */
+    public Serializable getId() {
+        return key.getSessionId();
+    }
+
+    /**
+     * @see org.apache.shiro.session.Session#getStartTimestamp()
+     */
+    public Date getStartTimestamp() {
+        if (startTimestamp == null) {
+            startTimestamp = sessionManager.getStartTimestamp(key);
+        }
+        return startTimestamp;
+    }
+
+    /**
+     * @see org.apache.shiro.session.Session#getLastAccessTime()
+     */
+    public Date getLastAccessTime() {
+        //can&#39;t cache - only business pojo knows the accurate time:
+        return sessionManager.getLastAccessTime(key);
+    }
+
+    public long getTimeout() throws InvalidSessionException {
+        return sessionManager.getTimeout(key);
+    }
+
+    public void setTimeout(long maxIdleTimeInMillis) throws InvalidSessionException {
+        sessionManager.setTimeout(key, maxIdleTimeInMillis);
+    }
+
+    public String getHost() {
+        if (host == null) {
+            host = sessionManager.getHost(key);
+        }
+        return host;
+    }
+
+    /**
+     * @see org.apache.shiro.session.Session#touch()
+     */
+    public void touch() throws InvalidSessionException {
+        sessionManager.touch(key);
+    }
+
+    /**
+     * @see org.apache.shiro.session.Session#stop()
+     */
+    public void stop() throws InvalidSessionException {
+        sessionManager.stop(key);
+    }
+
+    /**
+     * @see org.apache.shiro.session.Session#getAttributeKeys
+     */
+    public Collection&lt;Object&gt; getAttributeKeys() throws InvalidSessionException {
+        return sessionManager.getAttributeKeys(key);
+    }
+
+    /**
+     * @see org.apache.shiro.session.Session#getAttribute(Object key)
+     */
+    public Object getAttribute(Object attributeKey) throws InvalidSessionException {
+        return sessionManager.getAttribute(this.key, attributeKey);
+    }
+
+    /**
+     * @see Session#setAttribute(Object key, Object value)
+     */
+    public void setAttribute(Object attributeKey, Object value) throws InvalidSessionException {
+        if (value == null) {
+            removeAttribute(attributeKey);
+        } else {
+            sessionManager.setAttribute(this.key, attributeKey, value);
+        }
+    }
+
+    /**
+     * @see Session#removeAttribute(Object key)
+     */
+    public Object removeAttribute(Object attributeKey) throws InvalidSessionException {
+        return sessionManager.removeAttribute(this.key, attributeKey);
+    }
+}
+</code></pre>
+<p>这是个门面类，它所有的方法实现都是调用 sessionManager 的相应方法</p>
+<h2 id="SessionFactory"><a href="#SessionFactory" class="headerlink" title="SessionFactory"></a>SessionFactory</h2><p><img src="/blog/images/201910/image-20191028104000531.png" alt="image-20191028104000531"></p>
+<p>只有一个方法： createSession() </p>
+<pre><code class="java">/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * &quot;License&quot;); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+package org.apache.shiro.session.mgt;
+
+import org.apache.shiro.session.Session;
+
+/**
+ * {@code SessionFactory} implementation that generates {@link SimpleSession} instances.
+ *
+ * @since 1.0
+ */
+public class SimpleSessionFactory implements SessionFactory {
+
+    /**
+     * Creates a new {@link SimpleSession SimpleSession} instance retaining the context&#39;s
+     * {@link SessionContext#getHost() host} if one can be found.
+     *
+     * @param initData the initialization data to be used during {@link Session} creation.
+     * @return a new {@link SimpleSession SimpleSession} instance
+     */
+    public Session createSession(SessionContext initData) {
+        if (initData != null) {
+            String host = initData.getHost();
+            if (host != null) {
+                return new SimpleSession(host);
+            }
+        }
+        return new SimpleSession();
+    }
+}
+</code></pre>
+
+    </div>
+</article>
+</main>
+</div>
+</body>
+</html>

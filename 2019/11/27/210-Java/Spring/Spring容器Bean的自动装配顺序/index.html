@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+    <title>静言思之</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/lib/github-markdown-css/github-markdown.css">
+</head>
+<body>
+<div class="container">
+<header class="header">
+    <div class="blog-title">
+        <a href="/" class="logo">静言思之</a>
+    </div>
+    <nav class="navbar">
+        <ul class="menu">
+            
+                <li class="menu-item">
+                    <a href="/" class="menu-item-link">首页</a>
+                </li>
+            
+                <li class="menu-item">
+                    <a href="/archives" class="menu-item-link">归档</a>
+                </li>
+            
+                <li class="menu-item">
+                    <a href="https://github.com/ahonn" target="_blank" rel="noopener" class="menu-item-link">交友</a>
+                </li>
+            
+        </ul>
+    </nav>
+</header>
+<main class="main">
+    <article class="post">
+    <div class="post-title">
+        <h2 class="title">Spring容器Bean的自动装配顺序</h2>
+    </div>
+    <div class="post-meta">
+        <span class="post-time">2019-11-27</span>
+    </div>
+    <div class="markdown-body">
+        <pre><code class="java">@Configuration
+public class DruidConfig
+{
+    @Bean
+    @ConfigurationProperties(&quot;spring.datasource.druid.master&quot;)
+    public DataSource masterDataSource()
+    {
+        return DruidDataSourceBuilder.create().build();
+    }
+
+    @Bean
+    @ConfigurationProperties(&quot;spring.datasource.druid.slave1&quot;)
+    @ConditionalOnProperty(prefix = &quot;spring.datasource.druid.slave1&quot;, name = &quot;enabled&quot;, havingValue = &quot;true&quot;)
+    public DataSource slave1DataSource()
+    {
+        return DruidDataSourceBuilder.create().build();
+    }
+
+    @Bean
+    @ConfigurationProperties(&quot;spring.datasource.druid.slave2&quot;)
+    @ConditionalOnProperty(prefix = &quot;spring.datasource.druid.slave2&quot;, name = &quot;enabled&quot;, havingValue = &quot;true&quot;)
+    public DataSource slave2DataSource()
+    {
+        return DruidDataSourceBuilder.create().build();
+    }
+
+    @Bean
+    @ConfigurationProperties(&quot;spring.datasource.druid.slave3&quot;)
+    @ConditionalOnProperty(prefix = &quot;spring.datasource.druid.slave3&quot;, name = &quot;enabled&quot;, havingValue = &quot;true&quot;)
+    public DataSource slave3DataSource()
+    {
+        return DruidDataSourceBuilder.create().build();
+    }
+
+    @Bean(name = &quot;dynamicDataSource&quot;)
+    @Primary
+    public DynamicDataSource dataSource(DataSource masterDataSource, DataSource slave1DataSource, DataSource slave2DataSource, DataSource slave3DataSource)
+    {
+        Map&lt;Object, Object&gt; targetDataSources = new HashMap&lt;&gt;();
+        targetDataSources.put(DataSourceType.MASTER.name(), masterDataSource);
+        targetDataSources.put(DataSourceType.SLAVE1.name(), slave1DataSource);
+        targetDataSources.put(DataSourceType.SLAVE2.name(), slave2DataSource);
+        targetDataSources.put(DataSourceType.SLAVE3.name(), slave3DataSource);
+        return new DynamicDataSource(masterDataSource, targetDataSources);
+    }
+}</code></pre>
+<p>在这样一个类中，我迷茫了！</p>
+<p>这么多的DataSource，系统运行的时候到底加载了哪一个啊？</p>
+<h3 id="干净利落的总结"><a href="#干净利落的总结" class="headerlink" title="干净利落的总结"></a>干净利落的总结</h3><ul>
+<li><p>默认<strong>按照类型byType</strong>来查找<code>applicationContext.getBean(bean.class)</code></p>
+</li>
+<li><p>如果使用了注解 <code>@Qualifier</code>，则用*<em>value值匹配bean名称 *</em><code>applicationContext.getBean(&quot;Qualifier的value值&quot;)</code></p>
+</li>
+<li><p>如果使用了注解 <code>@Primary</code>，则会优先加载该组件</p>
+</li>
+<li><p>如果同时使用了<code>@Qualifier</code> 和 <code>@Primary</code>，则按照注解 <code>@Qualifier</code> 的策略查找</p>
+</li>
+<li><p>如果Spring容器存在多个同类型组件，并且没有使用<code>@Qualifier</code>和<code>@Primary</code>，此时会<strong>按属性名和bean名称匹配</strong>查找 <code>applicationContext.getBean(&quot;属性名&quot;)</code></p>
+</li>
+</ul>
+<p>综上所述，当Spring容器中存在多个同类型的bean时，加载优先级：*<em>@Qulifier &gt; @Primary &gt; 属性名 *</em></p>
+
+    </div>
+</article>
+</main>
+</div>
+</body>
+</html>

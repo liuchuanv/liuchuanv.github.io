@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+    <title>静言思之</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/lib/github-markdown-css/github-markdown.css">
+</head>
+<body>
+<div class="container">
+<header class="header">
+    <div class="blog-title">
+        <a href="/" class="logo">静言思之</a>
+    </div>
+    <nav class="navbar">
+        <ul class="menu">
+            
+                <li class="menu-item">
+                    <a href="/" class="menu-item-link">首页</a>
+                </li>
+            
+                <li class="menu-item">
+                    <a href="/archives" class="menu-item-link">归档</a>
+                </li>
+            
+                <li class="menu-item">
+                    <a href="https://github.com/ahonn" target="_blank" rel="noopener" class="menu-item-link">交友</a>
+                </li>
+            
+        </ul>
+    </nav>
+</header>
+<main class="main">
+    <article class="post">
+    <div class="post-title">
+        <h2 class="title">JS中的位置和宽度：clientWidth、offsetWidth、scrollWidth 等的区别</h2>
+    </div>
+    <div class="post-meta">
+        <span class="post-time">2019-11-02</span>
+    </div>
+    <div class="markdown-body">
+        <h3 id="1-clientWidth和clientHeigh-、-clientTop和clientLeft"><a href="#1-clientWidth和clientHeigh-、-clientTop和clientLeft" class="headerlink" title="1. clientWidth和clientHeigh 、 clientTop和clientLeft"></a>1. clientWidth和clientHeigh 、 clientTop和clientLeft</h3><ul>
+<li><p>clientWidth 表示可视区宽度，clientWidth = width + 左右padding</p>
+</li>
+<li><p>clientHeigh 表示可视区高度，clientHeigh = height + 上下padding </p>
+</li>
+<li><p>clientTop 表示实际宽度，clientTop = boder.top(上边框的宽度)</p>
+<pre><code>  4，clientLeft的实际宽度
+
+      clientLeft = boder.left(左边框的宽度)</code></pre><p>  二、offsetWidth和offsetHight 、 offsetTop和offsetLeft</p>
+<pre><code>   1,offsetWidth的实际宽度
+
+      offsetWidth = width + 左右padding + 左右boder
+
+   2,offsetHeith的实际高度
+
+                offsetHeith = height + 上下padding + 上下boder
+
+   3，offsetTop实际宽度
+
+                 offsetTop：当前元素 上边框 外边缘 到 最近的已定位父级（offsetParent） 上边框 内边缘的 距离。如果父
+
+           级都没有定位，则分别是到body 顶部 和左边的距离
+
+           4，offsetLeft实际宽度
+
+        offsetLeft：当前元素 左边框 外边缘 到 最近的已定位父级（offsetParent） 左边框 内边缘的            距离。如果父级都没有定位，则分别是到body 顶部 和左边的距离</code></pre><p>  三、scrollWidth和scrollHeight 、 scrollTop和scrollLeft</p>
+<pre><code>  1，scrollWidth实际宽度
+
+         scrollWidth：获取指定标签内容层的真实宽度（可视区域宽度+被隐藏区域宽度）。</code></pre></li>
+</ul>
+<pre><code>           2，scrollHeight的实际高度
+
+
+
+     scrollHeight：获取指定标签内容层的真实高度（可视区域高度+被隐藏区域高度）
+
+     3，scrollTop
+
+            scrollTop :内容层顶部 到 可视区域顶部的距离。
+
+      实例：var scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
+
+      持续获取高度的方式：</code></pre><p>window.addEventListener(‘scroll’, ()=&gt;{</p>
+<p>var scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;</p>
+<p>});</p>
+<pre><code>            4，scrollLeft
+
+            scrollLeft:内容层左端 到 可视区域左端的距离.</code></pre><pre><code class="html">
+</code></pre>
+
+    </div>
+</article>
+</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+    <title>静言思之</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/lib/github-markdown-css/github-markdown.css">
+</head>
+<body>
+<div class="container">
+<header class="header">
+    <div class="blog-title">
+        <a href="/" class="logo">静言思之</a>
+    </div>
+    <nav class="navbar">
+        <ul class="menu">
+            
+                <li class="menu-item">
+                    <a href="/" class="menu-item-link">首页</a>
+                </li>
+            
+                <li class="menu-item">
+                    <a href="/archives" class="menu-item-link">归档</a>
+                </li>
+            
+                <li class="menu-item">
+                    <a href="https://github.com/ahonn" target="_blank" rel="noopener" class="menu-item-link">交友</a>
+                </li>
+            
+        </ul>
+    </nav>
+</header>
+<main class="main">
+    <article class="post">
+    <div class="post-title">
+        <h2 class="title">Shiro源码解析之Realm</h2>
+    </div>
+    <div class="post-meta">
+        <span class="post-time">2019-10-22</span>
+    </div>
+    <div class="markdown-body">
+        <h2 id="了解-Realm"><a href="#了解-Realm" class="headerlink" title="了解 Realm"></a>了解 Realm</h2><h3 id="继承图"><a href="#继承图" class="headerlink" title="继承图"></a>继承图</h3><p><img src="/blog/images/201910/UserRealm.png" alt="UserRealm"></p>
+<h3 id="Realm"><a href="#Realm" class="headerlink" title="Realm"></a>Realm</h3><p><img src="/blog/images/201910/1571724441972.png" alt="1571724441972"></p>
+<h3 id="CachingRealm"><a href="#CachingRealm" class="headerlink" title="CachingRealm"></a>CachingRealm</h3><p><img src="/blog/images/201910/1571724474817.png" alt="1571724474817"></p>
+<h3 id="AuthenticatingRealm"><a href="#AuthenticatingRealm" class="headerlink" title="AuthenticatingRealm"></a>AuthenticatingRealm</h3><p><img src="/blog/images/201910/AuthenticatingRealm.png" alt="AuthenticatingRealm"></p>
+<h3 id="AuthorizingRealm"><a href="#AuthorizingRealm" class="headerlink" title="AuthorizingRealm"></a>AuthorizingRealm</h3><p><img src="/blog/images/201910/AuthorizingRealm.png" alt="AuthorizingRealm"></p>
+<h3 id="UserRealm"><a href="#UserRealm" class="headerlink" title="UserRealm"></a>UserRealm</h3><p><em>通常我们自定义的 realm——<code>UserRealm</code></em></p>
+<p><img src="/blog/images/201910/1571734551679.png" alt="1571734551679"></p>
+<h2 id="理解Realm"><a href="#理解Realm" class="headerlink" title="理解Realm"></a>理解Realm</h2><h3 id="getAuthenticationInfo-AuthenticationToken-AuthenticationInfo"><a href="#getAuthenticationInfo-AuthenticationToken-AuthenticationInfo" class="headerlink" title="getAuthenticationInfo(AuthenticationToken): AuthenticationInfo"></a>getAuthenticationInfo(AuthenticationToken): AuthenticationInfo</h3><h4 id="1-AuthenticationRealm-getAuthenticationInfo"><a href="#1-AuthenticationRealm-getAuthenticationInfo" class="headerlink" title="1. AuthenticationRealm | getAuthenticationInfo"></a>1. AuthenticationRealm | <code>getAuthenticationInfo</code></h4><pre><code class="java">    // line 541
+    /**
+     * This implementation functions as follows:
+     * &lt;ol&gt;
+     * &lt;li&gt;It attempts to acquire any cached {@link AuthenticationInfo} corresponding to the specified
+     * {@link AuthenticationToken} argument.  If a cached value is found, it will be used for credentials matching,
+     * alleviating the need to perform any lookups with a data source.&lt;/li&gt;
+     * &lt;li&gt;If there is no cached {@link AuthenticationInfo} found, delegate to the
+     * {@link #doGetAuthenticationInfo(org.apache.shiro.authc.AuthenticationToken)} method to perform the actual
+     * lookup.  If authentication caching is enabled and possible, any returned info object will be
+     * {@link #cacheAuthenticationInfoIfPossible(org.apache.shiro.authc.AuthenticationToken, org.apache.shiro.authc.AuthenticationInfo) cached}
+     * to be used in future authentication attempts.&lt;/li&gt;
+     * &lt;li&gt;If an AuthenticationInfo instance is not found in the cache or by lookup, {@code null} is returned to
+     * indicate an account cannot be found.&lt;/li&gt;
+     * &lt;li&gt;If an AuthenticationInfo instance is found (either cached or via lookup), ensure the submitted
+     * AuthenticationToken&#39;s credentials match the expected {@code AuthenticationInfo}&#39;s credentials using the
+     * {@link #getCredentialsMatcher() credentialsMatcher}.  This means that credentials are always verified
+     * for an authentication attempt.&lt;/li&gt;
+     * &lt;/ol&gt;
+     *
+     * @param token the submitted account principal and credentials.
+     * @return the AuthenticationInfo corresponding to the given {@code token}, or {@code null} if no
+     *         AuthenticationInfo could be found.
+     * @throws AuthenticationException if authentication failed.
+     */
+    public final AuthenticationInfo getAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
+
+        AuthenticationInfo info = getCachedAuthenticationInfo(token);
+        if (info == null) {
+            //otherwise not cached, perform the lookup:
+            info = doGetAuthenticationInfo(token);
+            log.debug(&quot;Looked up AuthenticationInfo [{}] from doGetAuthenticationInfo&quot;, info);
+            if (token != null &amp;&amp; info != null) {
+                cacheAuthenticationInfoIfPossible(token, info);
+            }
+        } else {
+            log.debug(&quot;Using cached authentication info [{}] to perform credentials matching.&quot;, info);
+        }
+
+        if (info != null) {
+            assertCredentialsMatch(token, info);
+        } else {
+            log.debug(&quot;No AuthenticationInfo found for submitted AuthenticationToken [{}].  Returning null.&quot;, token);
+        }
+
+        return info;
+    }
+    ......
+    // line 696
+    /**
+     * Retrieves authentication data from an implementation-specific datasource (RDBMS, LDAP, etc) for the given
+     * authentication token.
+     * &lt;p/&gt;
+     * For most datasources, this means just &#39;pulling&#39; authentication data for an associated subject/user and nothing
+     * more and letting Shiro do the rest.  But in some systems, this method could actually perform EIS specific
+     * log-in logic in addition to just retrieving data - it is up to the Realm implementation.
+     * &lt;p/&gt;
+     * A {@code null} return value means that no account could be associated with the specified token.
+     *
+     * @param token the authentication token containing the user&#39;s principal and credentials.
+     * @return an {@link AuthenticationInfo} object containing account data resulting from the
+     *         authentication ONLY if the lookup is successful (i.e. account exists and is valid, etc.)
+     * @throws AuthenticationException if there is an error acquiring data or performing
+     *                                 realm-specific authentication logic for the specified &lt;tt&gt;token&lt;/tt&gt;
+     */
+    protected abstract AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException;</code></pre>
+<h4 id="2-AuthenticationRealm-getCachedAuthenticationInfo-token"><a href="#2-AuthenticationRealm-getCachedAuthenticationInfo-token" class="headerlink" title="2. AuthenticationRealm | getCachedAuthenticationInfo(token)"></a>2. AuthenticationRealm | <code>getCachedAuthenticationInfo(token)</code></h4><pre><code class="java">    // line 471
+
+    /**
+     * Returns any cached AuthenticationInfo corresponding to the specified token or {@code null} if there currently
+     * isn&#39;t any cached data.
+     *
+     * @param token the token submitted during the authentication attempt.
+     * @return any cached AuthenticationInfo corresponding to the specified token or {@code null} if there currently
+     *         isn&#39;t any cached data.
+     * @since 1.2
+     */
+    private AuthenticationInfo getCachedAuthenticationInfo(AuthenticationToken token) {
+        AuthenticationInfo info = null;
+
+        Cache&lt;Object, AuthenticationInfo&gt; cache = getAvailableAuthenticationCache();
+        if (cache != null &amp;&amp; token != null) {
+            log.trace(&quot;Attempting to retrieve the AuthenticationInfo from cache.&quot;);
+            Object key = getAuthenticationCacheKey(token);
+            info = cache.get(key);
+            if (info == null) {
+                log.trace(&quot;No AuthorizationInfo found in cache for key [{}]&quot;, key);
+            } else {
+                log.trace(&quot;Found cached AuthorizationInfo for key [{}]&quot;, key);
+            }
+        }
+
+        return info;
+    }
+    ...... 
+    // line 419
+    /**
+     * Returns any available {@link Cache} instance to use for authentication caching.  This functions as follows:
+     * &lt;ol&gt;
+     * &lt;li&gt;If an {@link #setAuthenticationCache(org.apache.shiro.cache.Cache) authenticationCache} has been explicitly
+     * configured (it is not null), it is returned.&lt;/li&gt;
+     * &lt;li&gt;If there is no {@link #getAuthenticationCache() authenticationCache} configured:
+     * &lt;ol&gt;
+     * &lt;li&gt;If authentication caching is {@link #isAuthenticationCachingEnabled() enabled}, any available
+     * {@link #getCacheManager() cacheManager} will be consulted to obtain an available authentication cache.
+     * &lt;/li&gt;
+     * &lt;li&gt;If authentication caching is disabled, this implementation does nothing.&lt;/li&gt;
+     * &lt;/ol&gt;
+     * &lt;/li&gt;
+     * &lt;/ol&gt;
+     *
+     * @return any available {@link Cache} instance to use for authentication caching.
+     */
+    private Cache&lt;Object, AuthenticationInfo&gt; getAvailableAuthenticationCache() {
+        Cache&lt;Object, AuthenticationInfo&gt; cache = getAuthenticationCache();
+        boolean authcCachingEnabled = isAuthenticationCachingEnabled();
+        if (cache == null &amp;&amp; authcCachingEnabled) {
+            cache = getAuthenticationCacheLazy();
+        }
+        return cache;
+    }
+
+    /**
+     * Checks to see if the authenticationCache class attribute is null, and if so, attempts to acquire one from
+     * any configured {@link #getCacheManager() cacheManager}.  If one is acquired, it is set as the class attribute.
+     * The class attribute is then returned.
+     *
+     * @return an available cache instance to be used for authentication caching or {@code null} if one is not available.
+     * @since 1.2
+     */
+    private Cache&lt;Object, AuthenticationInfo&gt; getAuthenticationCacheLazy() {
+
+        if (this.authenticationCache == null) {
+
+            log.trace(&quot;No authenticationCache instance set.  Checking for a cacheManager...&quot;);
+
+            CacheManager cacheManager = getCacheManager();
+
+            if (cacheManager != null) {
+                String cacheName = getAuthenticationCacheName();
+                log.debug(&quot;CacheManager [{}] configured.  Building authentication cache &#39;{}&#39;&quot;, cacheManager, cacheName);
+                this.authenticationCache = cacheManager.getCache(cacheName);
+            }
+        }
+
+        return this.authenticationCache;
+    }
+    ......
+    // line 611
+    /**
+     * Returns the key under which {@link AuthenticationInfo} instances are cached if authentication caching is enabled.
+     * This implementation defaults to returning the token&#39;s
+     * {@link org.apache.shiro.authc.AuthenticationToken#getPrincipal() principal}, which is usually a username in
+     * most applications.
+     * &lt;h3&gt;Cache Invalidation on Logout&lt;/h3&gt;
+     * &lt;b&gt;NOTE:&lt;/b&gt; If you want to be able to invalidate an account&#39;s cached {@code AuthenticationInfo} on logout, you
+     * must ensure the {@link #getAuthenticationCacheKey(org.apache.shiro.subject.PrincipalCollection)} method returns
+     * the same value as this method.
+     *
+     * @param token the authentication token for which any successful authentication will be cached.
+     * @return the cache key to use to cache the associated {@link AuthenticationInfo} after a successful authentication.
+     * @since 1.2
+     */
+    protected Object getAuthenticationCacheKey(AuthenticationToken token) {
+        return token != null ? token.getPrincipal() : null;
+    }
+</code></pre>
+<p>从缓存 authenticationCache 中获取 authenticationInfo，从 cacheManager 中获取缓存。</p>
+<blockquote>
+<p><strong>问题：</strong></p>
+<ol>
+<li>是什么时候将 authenticationInfo 存入缓存的？</li>
+</ol>
+</blockquote>
+<h4 id="3-UserRealm-doGetAuthenticationInfo-token"><a href="#3-UserRealm-doGetAuthenticationInfo-token" class="headerlink" title="3. UserRealm | doGetAuthenticationInfo(token)"></a>3. UserRealm | <code>doGetAuthenticationInfo(token)</code></h4><p>自定义Realm实现 doGetAuthenticationInfo(token) 方法</p>
+<pre><code class="java">    /**
+     * 登录认证
+     */
+    @Override
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException
+    {
+        UsernamePasswordToken upToken = (UsernamePasswordToken) token;
+        String username = upToken.getUsername();
+        String password = &quot;&quot;;
+        if (upToken.getPassword() != null)
+        {
+            password = new String(upToken.getPassword());
+        }
+
+        SysUser user = null;
+        try
+        {
+            user = loginService.login(username, password);
+        }
+        catch (CaptchaException e)
+        {
+            throw new AuthenticationException(e.getMessage(), e);
+        }
+        catch (UserNotExistsException e)
+        {
+            throw new UnknownAccountException(e.getMessage(), e);
+        }
+        catch (UserPasswordNotMatchException e)
+        {
+            throw new IncorrectCredentialsException(e.getMessage(), e);
+        }
+        catch (UserPasswordRetryLimitExceedException e)
+        {
+            throw new ExcessiveAttemptsException(e.getMessage(), e);
+        }
+        catch (UserBlockedException e)
+        {
+            throw new LockedAccountException(e.getMessage(), e);
+        }
+        catch (RoleBlockedException e)
+        {
+            throw new LockedAccountException(e.getMessage(), e);
+        }
+        catch (Exception e)
+        {
+            log.info(&quot;对用户[&quot; + username + &quot;]进行登录验证..验证未通过{}&quot;, e.getMessage());
+            throw new AuthenticationException(e.getMessage(), e);
+        }
+        SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(user, password, getName());
+        return info;
+    }
+</code></pre>
+<p><code>SimpleAuthenticationInfo</code> 是一个比较有意思的类，在下面会有具体的分析</p>
+<h4 id="4-AuthenticationRealm-cacheAuthenticationInfoIfPossible-token-info"><a href="#4-AuthenticationRealm-cacheAuthenticationInfoIfPossible-token-info" class="headerlink" title="4. AuthenticationRealm | cacheAuthenticationInfoIfPossible(token, info)"></a>4. AuthenticationRealm | <code>cacheAuthenticationInfoIfPossible(token, info)</code></h4><pre><code class="java">    // line 498
+    /**
+     * Caches the specified info if authentication caching
+     * {@link #isAuthenticationCachingEnabled(org.apache.shiro.authc.AuthenticationToken, org.apache.shiro.authc.AuthenticationInfo) isEnabled}
+     * for the specific token/info pair and a cache instance is available to be used.
+     *
+     * @param token the authentication token submitted which resulted in a successful authentication attempt.
+     * @param info  the AuthenticationInfo to cache as a result of the successful authentication attempt.
+     * @since 1.2
+     */
+    private void cacheAuthenticationInfoIfPossible(AuthenticationToken token, AuthenticationInfo info) {
+        if (!isAuthenticationCachingEnabled(token, info)) {
+            log.debug(&quot;AuthenticationInfo caching is disabled for info [{}].  Submitted token: [{}].&quot;, info, token);
+            //return quietly, caching is disabled for this token/info pair:
+            return;
+        }
+
+        Cache&lt;Object, AuthenticationInfo&gt; cache = getAvailableAuthenticationCache();
+        if (cache != null) {
+            Object key = getAuthenticationCacheKey(token);
+            cache.put(key, info);
+            log.trace(&quot;Cached AuthenticationInfo for continued authentication.  key=[{}], value=[{}].&quot;, key, info);
+        }
+    }</code></pre>
+<p>将 authenticationInfo 存入缓存中，不过 <code>isAuthenticationCachingEnabled(token, info)</code> 默认是 false。</p>
+<h4 id="5-AuthenticationRealm-assertCredentialsMatch"><a href="#5-AuthenticationRealm-assertCredentialsMatch" class="headerlink" title="5. AuthenticationRealm | assertCredentialsMatch"></a>5. AuthenticationRealm | <code>assertCredentialsMatch</code></h4><pre><code class="java">    /**
+     * Asserts that the submitted {@code AuthenticationToken}&#39;s credentials match the stored account
+     * {@code AuthenticationInfo}&#39;s credentials, and if not, throws an {@link AuthenticationException}.
+     *
+     * @param token the submitted authentication token
+     * @param info  the AuthenticationInfo corresponding to the given {@code token}
+     * @throws AuthenticationException if the token&#39;s credentials do not match the stored account credentials.
+     */
+    protected void assertCredentialsMatch(AuthenticationToken token, AuthenticationInfo info) throws AuthenticationException {
+        CredentialsMatcher cm = getCredentialsMatcher();
+        if (cm != null) {
+            if (!cm.doCredentialsMatch(token, info)) {
+                //not successful - throw an exception to indicate this:
+                String msg = &quot;Submitted credentials for token [&quot; + token + &quot;] did not match the expected credentials.&quot;;
+                throw new IncorrectCredentialsException(msg);
+            }
+        } else {
+            throw new AuthenticationException(&quot;A CredentialsMatcher must be configured in order to verify &quot; +
+                    &quot;credentials during authentication.  If you do not wish for credentials to be examined, you &quot; +
+                    &quot;can configure an &quot; + AllowAllCredentialsMatcher.class.getName() + &quot; instance.&quot;);
+        }
+    }</code></pre>
+<h4 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h4><ol>
+<li>从缓存中获取 AuthenticationInfo，如果开启了 AuthenticationInfo 缓存的话（AuthenticationRealm）</li>
+<li>调用 doGetAuthenticationInfo(token) 获取 AuthentionInfo （AuthenticationRealm）</li>
+<li>如果开启了 AuthenticationInfo 缓存的话，那么缓存它</li>
+<li>调用 assertCredentialsMatch 判断 token 和 info 是否匹配</li>
+<li>返回 AuthenticationInfo </li>
+</ol>
+<h3 id="SimpleAuthenticationInfo"><a href="#SimpleAuthenticationInfo" class="headerlink" title="SimpleAuthenticationInfo"></a>SimpleAuthenticationInfo</h3><h4 id="1"><a href="#1" class="headerlink" title="1."></a>1.</h4>
+    </div>
+</article>
+</main>
+</div>
+</body>
+</html>

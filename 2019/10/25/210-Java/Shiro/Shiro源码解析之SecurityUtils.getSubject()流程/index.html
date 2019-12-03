@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+    <title>静言思之</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/lib/github-markdown-css/github-markdown.css">
+</head>
+<body>
+<div class="container">
+<header class="header">
+    <div class="blog-title">
+        <a href="/" class="logo">静言思之</a>
+    </div>
+    <nav class="navbar">
+        <ul class="menu">
+            
+                <li class="menu-item">
+                    <a href="/" class="menu-item-link">首页</a>
+                </li>
+            
+                <li class="menu-item">
+                    <a href="/archives" class="menu-item-link">归档</a>
+                </li>
+            
+                <li class="menu-item">
+                    <a href="https://github.com/ahonn" target="_blank" rel="noopener" class="menu-item-link">交友</a>
+                </li>
+            
+        </ul>
+    </nav>
+</header>
+<main class="main">
+    <article class="post">
+    <div class="post-title">
+        <h2 class="title">shiro源码解析之SecurityUtils.getSubject()</h2>
+    </div>
+    <div class="post-meta">
+        <span class="post-time">2019-10-25</span>
+    </div>
+    <div class="markdown-body">
+        <h2 id="SecurityUtils-getSubject"><a href="#SecurityUtils-getSubject" class="headerlink" title="SecurityUtils.getSubject()"></a>SecurityUtils.getSubject()</h2><pre><code class="java">    // line 38
+    /**
+     * Returns the currently accessible {@code Subject} available to the calling code depending on
+     * runtime environment.
+     * &lt;p/&gt;
+     * This method is provided as a way of obtaining a {@code Subject} without having to resort to
+     * implementation-specific methods.  It also allows the Shiro team to change the underlying implementation of
+     * this method in the future depending on requirements/updates without affecting your code that uses it.
+     *
+     * @return the currently accessible {@code Subject} accessible to the calling code.
+     * @throws IllegalStateException if no {@link Subject Subject} instance or
+     *                               {@link SecurityManager SecurityManager} instance is available with which to obtain
+     *                               a {@code Subject}, which which is considered an invalid application configuration
+     *                               - a Subject should &lt;em&gt;always&lt;/em&gt; be available to the caller.
+     */
+    public static Subject getSubject() {
+        Subject subject = ThreadContext.getSubject();
+        if (subject == null) {
+            subject = (new Subject.Builder()).buildSubject();
+            ThreadContext.bind(subject);
+        }
+        return subject;
+    }</code></pre>
+<h3 id="ThreadContext-getSubject"><a href="#ThreadContext-getSubject" class="headerlink" title="ThreadContext.getSubject()"></a>ThreadContext.getSubject()</h3><blockquote>
+<p>从线程局部变量 ThreadLocal&lt;Map&lt;String, Object&gt;&gt; resource 里，获取 key 为 <code>ThreadContext.class.getName() + &quot;_SUBJECT_KEY&quot;</code> 的 Subject 对象</p>
+</blockquote>
+<pre><code class="java">    /**
+     * Convenience method that simplifies retrieval of a thread-bound Subject.  If there is no
+     * Subject bound to the thread, this method returns &lt;tt&gt;null&lt;/tt&gt;.  It is merely a convenient wrapper
+     * for the following:
+     * &lt;p/&gt;
+     * &lt;code&gt;return (Subject)get( SUBJECT_KEY );&lt;/code&gt;
+     * &lt;p/&gt;
+     * This method only returns the bound value if it exists - it does not remove it
+     * from the thread.  To remove it, one must call {@link #unbindSubject() unbindSubject()} instead.
+     *
+     * @return the Subject object bound to the thread, or &lt;tt&gt;null&lt;/tt&gt; if there isn&#39;t one bound.
+     * @since 0.2
+     */
+    public static Subject getSubject() {
+        // public static final String SUBJECT_KEY = ThreadContext.class.getName() + &quot;_SUBJECT_KEY&quot;;
+        return (Subject) get(SUBJECT_KEY);
+    }
+
+
+     /**
+     * Returns the object for the specified &lt;code&gt;key&lt;/code&gt; that is bound to
+     * the current thread.
+     *
+     * @param key the key that identifies the value to return
+     * @return the object keyed by &lt;code&gt;key&lt;/code&gt; or &lt;code&gt;null&lt;/code&gt; if
+     *         no value exists for the specified &lt;code&gt;key&lt;/code&gt;
+     */
+    public static Object get(Object key) {
+        if (log.isTraceEnabled()) {
+            String msg = &quot;get() - in thread [&quot; + Thread.currentThread().getName() + &quot;]&quot;;
+            log.trace(msg);
+        }
+
+        Object value = getValue(key);
+        if ((value != null) &amp;&amp; log.isTraceEnabled()) {
+            String msg = &quot;Retrieved value of type [&quot; + value.getClass().getName() + &quot;] for key [&quot; +
+                    key + &quot;] &quot; + &quot;bound to thread [&quot; + Thread.currentThread().getName() + &quot;]&quot;;
+            log.trace(msg);
+        }
+        return value;
+    }
+
+
+    /**
+     * Returns the value bound in the {@code ThreadContext} under the specified {@code key}, or {@code null} if there
+     * is no value for that {@code key}.
+     *
+     * @param key the map key to use to lookup the value
+     * @return the value bound in the {@code ThreadContext} under the specified {@code key}, or {@code null} if there
+     *         is no value for that {@code key}.
+     * @since 1.0
+     */
+    private static Object getValue(Object key) {
+        // private static final ThreadLocal&lt;Map&lt;Object, Object&gt;&gt; resources = new InheritableThreadLocalMap&lt;Map&lt;Object, Object&gt;&gt;();
+        Map&lt;Object, Object&gt; perThreadResources = resources.get();
+        return perThreadResources != null ? perThreadResources.get(key) : null;
+    }</code></pre>
+<h3 id="new-Subject-Builder-buildSubject"><a href="#new-Subject-Builder-buildSubject" class="headerlink" title="(new Subject.Builder()).buildSubject()"></a>(new Subject.Builder()).buildSubject()</h3><h4 id="new-Subject-Builder"><a href="#new-Subject-Builder" class="headerlink" title="(new Subject.Builder())"></a>(new Subject.Builder())</h4><p>这里暂时不去穷究 <code>SecurityUtils.getSecurityManager()</code></p>
+<pre><code class="java">        /**
+         * Constructs a new {@link Subject.Builder} instance, using the {@code SecurityManager} instance available
+         * to the calling code as determined by a call to {@link org.apache.shiro.SecurityUtils#getSecurityManager()}
+         * to build the {@code Subject} instance.
+         */
+        public Builder() {
+            this(SecurityUtils.getSecurityManager());
+        }
+
+        /**
+         * Constructs a new {@link Subject.Builder} instance which will use the specified {@code SecurityManager} when
+         * building the {@code Subject} instance.
+         *
+         * @param securityManager the {@code SecurityManager} to use when building the {@code Subject} instance.
+         */
+        public Builder(SecurityManager securityManager) {
+            if (securityManager == null) {
+                throw new NullPointerException(&quot;SecurityManager method argument cannot be null.&quot;);
+            }
+            this.securityManager = securityManager;
+            this.subjectContext = newSubjectContextInstance();
+            if (this.subjectContext == null) {
+                throw new IllegalStateException(&quot;Subject instance returned from &#39;newSubjectContextInstance&#39; &quot; +
+                        &quot;cannot be null.&quot;);
+            }
+            this.subjectContext.setSecurityManager(securityManager);
+        }</code></pre>
+<h4 id="new-Subject-Builder-buildSubject-1"><a href="#new-Subject-Builder-buildSubject-1" class="headerlink" title="(new Subject.Builder()).buildSubject()"></a>(new Subject.Builder()).buildSubject()</h4><pre><code class="java">        /**
+         * Creates and returns a new {@code Subject} instance reflecting the cumulative state acquired by the
+         * other methods in this class.
+         * &lt;p/&gt;
+         * This {@code Builder} instance will still retain the underlying state after this method is called - it
+         * will not clear it; repeated calls to this method will return multiple {@link Subject} instances, all
+         * reflecting the exact same state.  If a new (different) {@code Subject} is to be constructed, a new
+         * {@code Builder} instance must be created.
+         * &lt;p/&gt;
+         * &lt;b&gt;Note&lt;/b&gt; that the returned {@code Subject} instance is &lt;b&gt;not&lt;/b&gt; automatically bound to the application
+         * (thread) for further use.  That is,
+         * {@link org.apache.shiro.SecurityUtils SecurityUtils}.{@link org.apache.shiro.SecurityUtils#getSubject() getSubject()}
+         * will not automatically return the same instance as what is returned by the builder.  It is up to the
+         * framework developer to bind the returned {@code Subject} for continued use if desired.
+         *
+         * @return a new {@code Subject} instance reflecting the cumulative state acquired by the
+         *         other methods in this class.
+         */
+        public Subject buildSubject() {
+            return this.securityManager.createSubject(this.subjectContext);
+        }
+
+        // 在构造函数中 `this.subjectContext = newSubjectContextInstance();`
+        /**
+         * Creates a new {@code SubjectContext} instance to be used to populate with subject contextual data that
+         * will then be sent to the {@code SecurityManager} to create a new {@code Subject} instance.
+         *
+         * @return a new {@code SubjectContext} instance
+         */
+        protected SubjectContext newSubjectContextInstance() {
+            return new DefaultSubjectContext();
+        }</code></pre>
+<h3 id="ThreadContext-bind-subject"><a href="#ThreadContext-bind-subject" class="headerlink" title="ThreadContext.bind(subject);"></a>ThreadContext.bind(subject);</h3><p>把 subject 绑定到线程内部</p>
+<pre><code class="java">    /**
+     * Convenience method that simplifies binding a Subject to the ThreadContext.
+     * &lt;p/&gt;
+     * &lt;p&gt;The method&#39;s existence is to help reduce casting in your own code and to simplify remembering of
+     * ThreadContext key names.  The implementation is simple in that, if the Subject is not &lt;tt&gt;null&lt;/tt&gt;,
+     * it binds it to the thread, i.e.:
+     * &lt;p/&gt;
+     * &lt;pre&gt;
+     * if (subject != null) {
+     *     put( SUBJECT_KEY, subject );
+     * }&lt;/pre&gt;
+     *
+     * @param subject the Subject object to bind to the thread.  If the argument is null, nothing will be done.
+     * @since 0.2
+     */
+    public static void bind(Subject subject) {
+        if (subject != null) {
+            put(SUBJECT_KEY, subject);
+        }
+    }</code></pre>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p><code>SecurityUtils.getSubject()</code> 先<code>ThreadContext.getSubject()</code> 来获取subject；如果为null，则调用 <code>(new Subject.Builder()).buildSubject()</code> 来创建subject，在该方法内部最终调用 <code>SecurityManager.createSubject(subjectContext)</code></p>
+
+    </div>
+</article>
+</main>
+</div>
+</body>
+</html>

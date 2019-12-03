@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+    <title>静言思之</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/lib/github-markdown-css/github-markdown.css">
+</head>
+<body>
+<div class="container">
+<header class="header">
+    <div class="blog-title">
+        <a href="/" class="logo">静言思之</a>
+    </div>
+    <nav class="navbar">
+        <ul class="menu">
+            
+                <li class="menu-item">
+                    <a href="/" class="menu-item-link">首页</a>
+                </li>
+            
+                <li class="menu-item">
+                    <a href="/archives" class="menu-item-link">归档</a>
+                </li>
+            
+                <li class="menu-item">
+                    <a href="https://github.com/ahonn" target="_blank" rel="noopener" class="menu-item-link">交友</a>
+                </li>
+            
+        </ul>
+    </nav>
+</header>
+<main class="main">
+    <article class="post">
+    <div class="post-title">
+        <h2 class="title">使用Hexo博客前的配置</h2>
+    </div>
+    <div class="post-meta">
+        <span class="post-time">2019-12-03</span>
+    </div>
+    <div class="markdown-body">
+        <blockquote>
+<p>Hexo 博客框架的安装、建站等一般性的操作，强烈建议参考<a href="https://hexo.io/zh-cn/docs/" target="_blank" rel="noopener">Hexo官方文档</a>，不要信百度到的那些博客文章。<br>==<strong>以下文字只是我在使用hexo的过程中，记录下的问题总结和使用心得。</strong>==</p>
+</blockquote>
+<h3 id="配置好看的主题"><a href="#配置好看的主题" class="headerlink" title="配置好看的主题"></a>配置好看的主题</h3><ol>
+<li><p>在 <a href="https://hexo.io/themes/" target="_blank" rel="noopener">Hexo 主题</a> 挑选一个满意的主题，并拉取到本地博客的 <code>/themes/</code> 目录下</p>
+<pre><code class="bash"> git clone https://github.com/KevinOfNeu/hexo-theme-xoxo.git xoxo</code></pre>
+</li>
+<li><p>修改<code>_config.yml</code> 配置文件</p>
+<pre><code class="yaml"> # Extensions
+ ## Plugins: https://hexo.io/plugins/
+ ## Themes: https://hexo.io/themes/
+ theme:
+   xoxo ## 修改成你选中主题的名字</code></pre>
+</li>
+</ol>
+<p>对众多的Hexo主题挑挑拣拣一通之后，我还是决定使用Hexo官方默认的主题 <a href="https://github.com/hexojs/hexo-theme-landscape" target="_blank" rel="noopener"><strong>landscape</strong></a>（只不过我将其升级到了最新版本）。然后在其基础上修修改改。如下图：</p>
+<p><img src="/blog/images/201910/1570527161255.png" alt="1570527161255"></p>
+<h3 id="改为中文"><a href="#改为中文" class="headerlink" title="改为中文"></a>改为中文</h3><ol>
+<li><p>修改根目录下的 <code>_config.yml</code> </p>
+<pre><code class="yaml"> language: zh-CN</code></pre>
+</li>
+<li><p>修改 <code>themes\landscape</code>下的 <code>_config.yml</code>的菜单</p>
+<pre><code class="yaml"> # Header
+ menu:
+   首页: /
+   归档: /archives</code></pre>
+<p> <em>你还可以在这里配置更多的菜单，比如分类、标签等</em></p>
+</li>
+</ol>
+<h3 id="修改banner图尺寸"><a href="#修改banner图尺寸" class="headerlink" title="修改banner图尺寸"></a>修改banner图尺寸</h3><p>我的笔记本屏幕尺寸很小，显得banner图太大了。</p>
+<p>修改 <code>themes\landscape\source\css\_variables.styl</code> 里的参数</p>
+<pre><code class="stylus">banner-height = 60px</code></pre>
+<p><em>很多样式都可以在这里修改</em></p>
+<h3 id="发布新文章"><a href="#发布新文章" class="headerlink" title="发布新文章"></a>发布新文章</h3><p>直接将 md 文件丢到 <code>/source/_posts/</code> 目录下，刷新 <code>http://localhost:4000</code></p>
+<h3 id="修改引用样式"><a href="#修改引用样式" class="headerlink" title="修改引用样式"></a>修改引用样式</h3><p><img src="/blog/images/201910/1570592136703.png" alt="landscape默认的引用样式"></p>
+<p>主题 landscape 下的引用样式是这样子的</p>
+<p>修改 <code>/themes/landscape/source/css/_partial/article.styl</code></p>
+<pre><code class="stylus">  blockquote
+    padding: 5px 15px;
+    margin: 1em 0;
+    background-color: #f7f7f7;
+    border-left: 0.25em solid #b4b4b4;
+    word-break: break-word;
+    font-weight: 400;
+    line-height: 30px;</code></pre>
+<p><img src="/blog/images/201910/1570607390531.png" alt="修改后的引用样式"></p>
+<h3 id="配置图片目录"><a href="#配置图片目录" class="headerlink" title="配置图片目录"></a>配置图片目录</h3><p>我本地是使用 Typora 来编辑markdown文档，处理图片及其方便。</p>
+<ol>
+<li><p>设置“当插入本地图片时，复制图片到文件夹”（该处的本地图片包括截图、图片复制、本地图片文件）。</p>
+<p>   <img src="/blog/images/201910/1570591025764.png" alt="1570591025764"></p>
+</li>
+<li><p>“全局图像设置”。</p>
+</li>
+</ol>
+<p><img src="/blog/images/201910/1570630903814.png" alt="1570630903814"></p>
+<p>经过1、2步之后，在typora编辑器中插入本地图片时，会自动将图片复制到全局图像设置的指定路径中去。而在Markdown文../../../blog会以正常图片格式<code>![1570630903814](../../../blog/images/201910/1570630903814.png)</code>显示。</p>
+<p>下面是文件目录结构：</p>
+<blockquote>
+<ul>
+<li>source<ul>
+<li>_posts<ul>
+<li>blog<ul>
+<li>hexo<ul>
+<li>初次使用hexo博客前的配置.md</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>blog<ul>
+<li>images<ul>
+<li>201910<ul>
+<li>1570630903814.png</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>images<ul>
+<li>201910<ul>
+<li>1570630903814.png</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<p><strong>虽然在本地和网站首页都能正常显示，但是文章详情中，图片却无法显示。</strong></p>
+<p><strong>原因：图片地址是相对路径。这就导致了在网站首页和在文章详情中图片显示不一致。</strong></p>
+<p><strong>要解这个问题，图片地址必须使用绝对路径，至少在网站中图片地址必须是绝对路径</strong></p>
+<ol start="3">
+<li><p>”设置图片根目录“。根目录设置为 <code>source</code>，这样一来，图片会 <code>![1570632618154](/blog/images/201910/1570632618154.png)</code>的显示在markdown中。</p>
+<blockquote>
+<p>博客网站地址是  <a href="http://localhost:4040/blog" target="_blank" rel="noopener">http://localhost:4040/blog</a> 形式的，它的子路径名称（这里是 blog）就是目录source下的子目录名称。</p>
+<p>注意：此时图片地址放在网站应用中，就是相对于网站根目录，无论该图片在什么URL地址下。</p>
+</blockquote>
+<p> <img src="/blog/images/201910/1570632618154.png" alt="1570632618154"></p>
+</li>
+<li><p>在发布网站时，要将目录 <code>source\blog\images</code> 复制到 <code>source</code>下。为此专门写一个2个简单的批处理。 </p>
+<pre><code class="bash"> # quick_deploy.bat
+ xcopy .\source\blog\images .\source\images /EY
+ hexo clean &amp; hexo g &amp; hexo d
+
+ # quick_server.bat
+ xcopy .\source\blog\images .\source\images /EY
+ hexo clean &amp; hexo s</code></pre>
+</li>
+</ol>
+
+    </div>
+</article>
+</main>
+</div>
+</body>
+</html>

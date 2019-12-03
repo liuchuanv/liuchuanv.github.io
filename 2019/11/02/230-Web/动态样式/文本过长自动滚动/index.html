@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+    <title>静言思之</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/lib/github-markdown-css/github-markdown.css">
+</head>
+<body>
+<div class="container">
+<header class="header">
+    <div class="blog-title">
+        <a href="/" class="logo">静言思之</a>
+    </div>
+    <nav class="navbar">
+        <ul class="menu">
+            
+                <li class="menu-item">
+                    <a href="/" class="menu-item-link">首页</a>
+                </li>
+            
+                <li class="menu-item">
+                    <a href="/archives" class="menu-item-link">归档</a>
+                </li>
+            
+                <li class="menu-item">
+                    <a href="https://github.com/ahonn" target="_blank" rel="noopener" class="menu-item-link">交友</a>
+                </li>
+            
+        </ul>
+    </nav>
+</header>
+<main class="main">
+    <article class="post">
+    <div class="post-title">
+        <h2 class="title">文本过长自动滚动</h2>
+    </div>
+    <div class="post-meta">
+        <span class="post-time">2019-11-02</span>
+    </div>
+    <div class="markdown-body">
+        <p>当文本内容长度超过容器元素宽度时，要求文本自动滚动，如下图</p>
+<p><img src="/blog/images/201911/%E6%96%87%E6%9C%AC%E8%BF%87%E9%95%BF%E8%87%AA%E5%8A%A8%E6%BB%9A%E5%8A%A8.gif" alt="文本过长自动滚动">)<a href="http://www.baidu.com" target="_blank" rel="noopener">百度</a></p>
+<p>有以下两点限制：</p>
+<ul>
+<li>文本不能全部显示出来，不能超出容器宽度</li>
+<li>文本不能自动换行</li>
+</ul>
+<blockquote>
+<p>原理：<strong>当子元素的实际内容长度 <code>scrollWith</code> 大于可视区宽度 <code>clientWith</code> 时，利用 <code>position:relative</code> 的属性来对子元素进行左右移动，使子元素的所有内容能够在父元素的可视区宽度内展示出来</strong></p>
+<p>就相当于我们透过一个小窗口看窗外经过的火车一样，小窗口是父元素，而经过的火车是子元素</p>
+</blockquote>
+<p><em>element.clientwidth 表示元素的可视区宽度， element.scrollWidth 表示元素内容宽度</em></p>
+<p>父元素要设置 <code>overflow: hidden</code> ，以便能够隐藏子元素超出内容。但是子元素不能够设置 <code>overflow: hidden</code> ，因为子元素设置了该属性，那么子元素的 <code>clientWidth</code> 就和 <code>scrollWidth</code> 相等了。<br><a href="http://www.baidu.com" target="_blank" rel="noopener">百度</a><br>下面是源码，复制即可运行。</p>
+<pre><code class="html">&lt;!doctype html&gt;
+&lt;html lang=&quot;zh&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;title&gt;文本过长自动滚动&lt;/title&gt;
+    &lt;script src=&quot;http://libs.baidu.com/jquery/2.0.0/jquery.min.js&quot;&gt;&lt;/script&gt;
+    &lt;style type=&quot;text/css&quot;&gt;
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        #parentEle {
+            margin: 0 auto;
+            border: 1px solid blue;
+            /* 固定宽度 */
+            width: 100px;
+            /* 超过宽度自动隐藏 */
+            overflow: hidden;
+        }
+        #sonEle {
+            /* 相对位置 */
+            position: relative;
+            /* 不能自动换行 */
+            white-space: nowrap;
+        }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div id=&quot;parentEle&quot;&gt;
+        &lt;div id=&quot;sonEle&quot;&gt;
+            春草带雨晚来急，野渡无人舟自横
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;script&gt;
+        $(function(){
+            var sonEle = document.querySelector(&quot;#sonEle&quot;);
+            // 子元素实际内容长度超过可视区宽度
+            if (sonEle.scrollWidth &gt; sonEle.clientWidth) {
+                var d = sonEle.scrollWidth - sonEle.clientWidth;
+                $(sonEle).animate({left: -d +&#39;px&#39;}, 3000);
+                $(sonEle).animate({left:&#39;0px&#39;}, 3000);
+                setInterval(function(){
+                    $(sonEle).animate({left: -d +&#39;px&#39;}, 3000);
+                    $(sonEle).animate({left:&#39;0px&#39;}, 3000);
+                }, 6000);
+            }
+        })
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+    </div>
+</article>
+</main>
+</div>
+</body>
+</html>

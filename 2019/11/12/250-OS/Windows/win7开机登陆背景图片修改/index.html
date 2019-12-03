@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+    <title>静言思之</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/lib/github-markdown-css/github-markdown.css">
+</head>
+<body>
+<div class="container">
+<header class="header">
+    <div class="blog-title">
+        <a href="/" class="logo">静言思之</a>
+    </div>
+    <nav class="navbar">
+        <ul class="menu">
+            
+                <li class="menu-item">
+                    <a href="/" class="menu-item-link">首页</a>
+                </li>
+            
+                <li class="menu-item">
+                    <a href="/archives" class="menu-item-link">归档</a>
+                </li>
+            
+                <li class="menu-item">
+                    <a href="https://github.com/ahonn" target="_blank" rel="noopener" class="menu-item-link">交友</a>
+                </li>
+            
+        </ul>
+    </nav>
+</header>
+<main class="main">
+    <article class="post">
+    <div class="post-title">
+        <h2 class="title">win7开机登录背景图片修改</h2>
+    </div>
+    <div class="post-meta">
+        <span class="post-time">2019-11-12</span>
+    </div>
+    <div class="markdown-body">
+        <ol>
+<li><p>修改注册表</p>
+<ul>
+<li><p>按下 <kbd>Win</kbd>+<kbd>R</kbd>，输入 <code>regedit</code></p>
+</li>
+<li><p>依次打开 <code>HKEY_LOCAL_MACHINE</code> -&gt; <code>SOFTWARE</code> -&gt; <code>Microsoft - Windows</code> -&gt; <code>CurrentVersion</code> -&gt; <code>Authentication</code> -&gt; <code>LogonUI</code> -&gt; <code>Background</code></p>
+</li>
+<li><p>右键<code>OEMBackground</code>键值<code>修改</code>（如果没有这个键值就新建一个）</p>
+<p><img src="/blog/images/201911/1569385149336.png" alt="1569385149336"></p>
+<ul>
+<li>将值设置为1</li>
+</ul>
+<p><img src="/blog/images/201911/1569385173001.png" alt="1569385173001"></p>
+</li>
+</ul>
+</li>
+<li><p>将背景图片复制到指定目录</p>
+<ul>
+<li>将图片文件重命名为 <code>backgroundDefault.jpg</code></li>
+<li>将图片文件复制到 <code>C:\Windows\System32\oobe\info\Backgrounds</code> 目录（没有该目录的话，则创建）</li>
+</ul>
+</li>
+</ol>
+
+    </div>
+</article>
+</main>
+</div>
+</body>
+</html>

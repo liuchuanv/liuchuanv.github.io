@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+    <title>静言思之</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/lib/github-markdown-css/github-markdown.css">
+</head>
+<body>
+<div class="container">
+<header class="header">
+    <div class="blog-title">
+        <a href="/" class="logo">静言思之</a>
+    </div>
+    <nav class="navbar">
+        <ul class="menu">
+            
+                <li class="menu-item">
+                    <a href="/" class="menu-item-link">首页</a>
+                </li>
+            
+                <li class="menu-item">
+                    <a href="/archives" class="menu-item-link">归档</a>
+                </li>
+            
+                <li class="menu-item">
+                    <a href="https://github.com/ahonn" target="_blank" rel="noopener" class="menu-item-link">交友</a>
+                </li>
+            
+        </ul>
+    </nav>
+</header>
+<main class="main">
+    <article class="post">
+    <div class="post-title">
+        <h2 class="title">Spring多数据源动态切换</h2>
+    </div>
+    <div class="post-meta">
+        <span class="post-time">2019-11-27</span>
+    </div>
+    <div class="markdown-body">
+        <h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p><img src="/blog/images/201911/DynamicDataSource.png" alt="DynamicDataSource"></p>
+<p><img src="/blog/images/201911/DynamicDataSource.png" alt="DynamicDataSource"></p>
+<p><img src="/blog/images/201911/image-20191128204335091.png" alt="image-20191128204335091"></p>
+<p><strong>DataSource向外提供一个 <code>etConnection()</code> 方法，得getConnection者得数据库</strong></p>
+<p>“一代雄主” <code>AbstractRoutingDataSource</code> 实现了 <code>getConnection()</code> 方法</p>
+<pre><code class="java">    // line 166
+    @Override
+    public Connection getConnection() throws SQLException {
+        return determineTargetDataSource().getConnection();
+    }
+
+    ... 省略若干代码 
+
+    // line 190
+    /**
+     * Retrieve the current target DataSource. Determines the
+     * {@link #determineCurrentLookupKey() current lookup key}, performs
+     * a lookup in the {@link #setTargetDataSources targetDataSources} map,
+     * falls back to the specified
+     * {@link #setDefaultTargetDataSource default target DataSource} if necessary.
+     * @see #determineCurrentLookupKey()
+     */
+    protected DataSource determineTargetDataSource() {
+        Assert.notNull(this.resolvedDataSources, &quot;DataSource router not initialized&quot;);
+        Object lookupKey = determineCurrentLookupKey();
+        DataSource dataSource = this.resolvedDataSources.get(lookupKey);
+        if (dataSource == null &amp;&amp; (this.lenientFallback || lookupKey == null)) {
+            dataSource = this.resolvedDefaultDataSource;
+        }
+        if (dataSource == null) {
+            throw new IllegalStateException(&quot;Cannot determine target DataSource for lookup key [&quot; + lookupKey + &quot;]&quot;);
+        }
+        return dataSource;
+    }
+
+    /**
+     * Determine the current lookup key. This will typically be
+     * implemented to check a thread-bound transaction context.
+     * &lt;p&gt;Allows for arbitrary keys. The returned key needs
+     * to match the stored lookup key type, as resolved by the
+     * {@link #resolveSpecifiedLookupKey} method.
+     */
+    @Nullable
+    protected abstract Object determineCurrentLookupKey();</code></pre>
+<p>然而 ….</p>
+<p>AbstractRoutingDataSource 的<code>getConnection()</code> 方法只是调用了 <code>determinTargetDataSource().getConnection()</code> 来获取真正DataSource的getConnection()。</p>
+<p><img src="/blog/images/201911/image-20191128203413052.png" alt="image-20191128203413052"></p>
+<p><strong>这是典型的装饰模式！！自己没有的功能通过引入其他类来增强。</strong></p>
+<p>我们先来看看 AbstractRoutingDataSource  的类结构</p>
+<p><img src="/blog/images/201911/image-20191128204258331.png" alt="image-20191128204258331"></p>
+<p>被框框套住的都是重要的。</p>
+<p>方法<code>determineCurrentLookupKey()</code> 是留给我们开发者的（就像你家的网线口），我们通过实现该方法在不同数据源之间切换。</p>
+<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><h3 id="1-配置多数据源"><a href="#1-配置多数据源" class="headerlink" title="1. 配置多数据源"></a>1. 配置多数据源</h3><p>在 application.yml 如下配置</p>
+<pre><code class="yaml">spring:
+  datasource:
+    # 数据源类型
+    type: com.alibaba.druid.pool.DruidDataSource
+    # 默认数据源
+    default-datasource:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://localhost:3306/db0?useUnicode=true&amp;characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull&amp;useSSL=true&amp;allowMultiQueries=true&amp;serverTimezone=GMT%2B8
+      username: root
+      password: 123456
+
+    # 多数据源
+    target-datasources:
+      datasource1:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/db1?useUnicode=true&amp;characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull&amp;useSSL=true&amp;allowMultiQueries=true&amp;serverTimezone=GMT%2B8
+        username: root
+        password: 123456
+
+      datasource2:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/db2?useUnicode=true&amp;characterEncoding=utf8&amp;zeroDateTimeBehavior=convertToNull&amp;useSSL=true&amp;allowMultiQueries=true&amp;serverTimezone=GMT%2B8
+        username: root
+        password: 123456
+
+    # druid 默认配置
+    druid:
+      # 初始连接数
+      initial-size: 10
+      # 最大连接池数量
+      max-active: 100
+      # 最小连接池数量
+      min-idle: 10
+      # 配置获取连接等待超时的时间
+      max-wait: 60000
+      # 打开PSCache，并且指定每个连接上PSCache的大小
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      timeBetweenEvictionRunsMillis: 60000
+      # 配置一个连接在池中最小生存的时间，单位是毫秒
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 1 FROM DUAL
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /monitor/druid/*
+      filter:
+        stat:
+          log-slow-sql: true
+          slow-sql-millis: 1000
+          merge-sql: false
+        wall:
+          config:
+            multi-statement-allow: true
+
+# MyBatis
+mybatis:
+  # 搜索指定包别名
+  typeAliasesPackage: com.liuchuanv
+  # 配置mapper的扫描，找到所有的mapper.xml映射文件
+  mapperLocations: classpath*:mapper/**/*Mapper.xml
+  # 加载全局的配置文件
+  configLocation: classpath:mybatis-config.xml</code></pre>
+<blockquote>
+<p>此处配置的名称（如 defaultDataSource、targetDataSources）的命名并无特殊要求，只要和下面第n步的 DataSourceConfig 中对应起来就可以</p>
+</blockquote>
+<p>使用 Druid 数据源的话，要在 pom.xml 中引入依赖</p>
+<pre><code class="xml">    &lt;!--阿里数据库连接池 --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.alibaba&lt;/groupId&gt;
+        &lt;artifactId&gt;druid-spring-boot-starter&lt;/artifactId&gt;
+        &lt;version&gt;1.1.10&lt;/version&gt;
+    &lt;/dependency&gt;</code></pre>
+<h3 id="2-实现动态数据源"><a href="#2-实现动态数据源" class="headerlink" title="2. 实现动态数据源"></a>2. 实现动态数据源</h3><p>DynamicDataSource 动态数据源，在多个数据源之间切换</p>
+<pre><code class="java">public class DynamicDataSource extends AbstractRoutingDataSource {
+
+    public DynamicDataSource(DataSource defaultTargetDataSource, Map&lt;Object, Object&gt; targetDataSources) {
+        super.setDefaultTargetDataSource(defaultTargetDataSource);
+        super.setTargetDataSources(targetDataSources);
+        super.afterPropertiesSet();
+    }
+
+    @Override
+    protected Object determineCurrentLookupKey() {
+        return DataSourceContextHolder.getDataSourceType();
+    }
+}</code></pre>
+<p>DataSourceContextHolder 数据源上下文，使用线程变量来存储代表当前使用的数据源的key值（每个key值都对应一个数据源，用以区分多数据源）</p>
+<pre><code class="java">public class DataSourceContextHolder {
+
+    public static final ThreadLocal&lt;String&gt; CONTEXT_HOLDER = new ThreadLocal&lt;String&gt;();
+
+    public static void setDataSourceType(String dsType) {
+        CONTEXT_HOLDER.set(dsType);
+    }
+
+    public static String getDataSourceType() {
+        return CONTEXT_HOLDER.get();
+    }
+
+    public static void removeDataSourceType() {
+        CONTEXT_HOLDER.remove();
+    }
+
+}
+</code></pre>
+<p>DataSourceType 数据源对应的key（其实单纯的用字符串来表示数据源，替换枚举类DataSourceType也是可以的，但是写代码时要注意字符串统一）</p>
+<pre><code class="java">public enum  DataSourceType {
+    /** 默认数据源key */
+    DEFAULT_DATASOURCE,
+
+    /** 数据源1key*/
+    DATASOURCE1,
+
+    /** 数据源2key*/
+    DATASOURCE2;
+}
+</code></pre>
+<h3 id="3-将数据源添加到-Spring-容器中"><a href="#3-将数据源添加到-Spring-容器中" class="headerlink" title="3. 将数据源添加到 Spring 容器中"></a>3. 将数据源添加到 Spring 容器中</h3><pre><code class="java">@Configuration
+public class DataSourceConfig {
+
+    @Bean
+    @ConfigurationProperties(prefix = &quot;spring.datasource.default-datasource&quot;)
+    public DataSource defaultDataSource() {
+        return DruidDataSourceBuilder.create().build();
+    }
+
+    @Bean
+    @ConfigurationProperties(prefix = &quot;spring.datasource.target-datasources.datasource1&quot;)
+    public DataSource dataSource1() {
+        return DruidDataSourceBuilder.create().build();
+    }
+
+    @Bean
+    @ConfigurationProperties(prefix = &quot;spring.datasource.target-datasources.datasource2&quot;)
+    public DataSource dataSource2() {
+        return DruidDataSourceBuilder.create().build();
+    }
+
+    @Bean
+    @Primary
+    public DataSource dynamicDataSource(DataSource defaultDataSource, DataSource dataSource1, DataSource dataSource2) {
+        // 注意：该方法的参数名称要和前面前面三个datasource对象在Spring容器中的bean名称一样
+        // 或者使用 @Qualifier 指定具体的bean
+        Map&lt;Object, Object&gt; targetDataSources = new HashMap&lt;&gt;();
+        targetDataSources.put(DataSourceType.DEFAULT_DATASOURCE.name(), defaultDataSource);
+        targetDataSources.put(DataSourceType.DATASOURCE1.name(), dataSource1);
+        targetDataSources.put(DataSourceType.DATASOURCE2.name(), dataSource2);
+        return new DynamicDataSource(defaultDataSource, targetDataSources);
+    }
+}
+</code></pre>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>为了方便，省略了 Service 层</p>
+<p>TestController</p>
+<pre><code class="java">@RestController
+@RequestMapping(&quot;/test&quot;)
+public class TestController {
+
+    @Autowired
+    private TestMapper testMapper;
+
+    @GetMapping
+    public List&lt;Map&lt;String, Object&gt;&gt; test(String dataSourceIndex) {
+        // 根据参数值的不同，切换数据源
+        if (&quot;1&quot;.equals(dataSourceIndex)) {
+            DataSourceContextHolder.setDataSourceType(DataSourceType.DATASOURCE1.name());
+        } else if (&quot;2&quot;.equals(dataSourceIndex)) {
+            DataSourceContextHolder.setDataSourceType(DataSourceType.DATASOURCE2.name());
+        }
+        List&lt;Map&lt;String, Object&gt;&gt; mapList = testMapper.selectList();
+        // 清除线程内部变量数据源key
+        DataSourceContextHolder.removeDataSourceType();
+        return mapList;
+    }
+}
+</code></pre>
+<p>TestMapper</p>
+<pre><code class="java">@Repository
+public interface TestMapper {
+    /**
+     * 查询列表
+     * @return
+     */
+    List&lt;Map&lt;String, Object&gt;&gt; selectList();
+}
+</code></pre>
+<p>TestMapper.xml</p>
+<pre><code class="xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
+&lt;!DOCTYPE mapper PUBLIC &quot;-//mybatis.org//DTD Mapper 3.0//EN&quot; &quot;http://mybatis.org/dtd/mybatis-3-mapper.dtd&quot; &gt;
+&lt;mapper namespace=&quot;com.liuchuanv.dynamicdatasource.mapper.TestMapper&quot;&gt;
+    &lt;select id=&quot;selectList&quot; resultType=&quot;java.util.Map&quot;&gt;
+        SELECT * FROM test
+    &lt;/select&gt;
+&lt;/mapper&gt;</code></pre>
+<p>别忘了要准备数据哦！</p>
+<p>下面SQL语句，创建3个数据库，然后在3个数据库中都创建一张test表，并各自插入不同的数据。</p>
+<pre><code class="sql">
+-- 创建数据库
+create database db0 character set utf8 collate utf8_general_ci;
+create database db1 character set utf8 collate utf8_general_ci;
+create database db2 character set utf8 collate utf8_general_ci;
+
+-- 在数据库db1下执行以下SQL
+use db0;
+create table test(
+    id int(11) primary key auto_increment,
+    name varchar(20)
+) ;
+insert into test(name) values(&#39;张三&#39;);
+
+
+-- 在数据库db1下执行以下SQL
+use db1;
+create table test(
+    id int(11) primary key auto_increment,
+    name varchar(20)
+) ;
+insert into test(name) values(&#39;李四&#39;);
+
+-- 在数据库db2下执行以下SQL
+use db2;
+create table test(
+    id int(11) primary key auto_increment,
+    name varchar(20)
+) ;
+insert into test(name) values(&#39;王五&#39;);</code></pre>
+<p>OK，一切准备就绪，启动应用吧！！！</p>
+<p>一启动就出现了各种各样的，似乎无穷无尽的报错！一头黑线。</p>
+<h4 id="1-找不到TestMapper"><a href="#1-找不到TestMapper" class="headerlink" title="1. 找不到TestMapper"></a>1. 找不到TestMapper</h4><pre><code>Field testMapper in com.liuchuanv.dynamicdatasource.controller.TestController required a bean of type &#39;com.liuchuanv.dynamicdatasource.mapper.TestMapper&#39; that could not be found.</code></pre><p>解决方法：在 <code>DynamicdatasourceApplication</code> 头上添加注解 <code>@MapperScan(&quot;com.liuchuanv.*.mapper&quot;)</code></p>
+<h4 id="2-dynamicDataSource-依赖循环"><a href="#2-dynamicDataSource-依赖循环" class="headerlink" title="2. dynamicDataSource 依赖循环"></a>2. dynamicDataSource 依赖循环</h4><pre><code>┌─────┐
+|  dynamicDataSource defined in class path resource [com/liuchuanv/dynamicdatasource/common/DataSourceConfig.class]
+↑     ↓
+|  defaultDataSource defined in class path resource [com/liuchuanv/dynamicdatasource/common/DataSourceConfig.class]
+↑     ↓
+|  org.springframework.boot.autoconfigure.jdbc.DataSourceInitializerInvoker
+└─────┘</code></pre><p>解决方法：在 <code>DynamicdatasourceApplication</code> 头上修改注解 <code>@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})</code></p>
+<p>终于处理好所有的问题，终于能痛痛快快的访问  <a href="http://localhost:8080/test" target="_blank" rel="noopener">http://localhost:8080/test</a> </p>
+<p><img src="/blog/images/201911/image-20191128232747322.png" alt="image-20191128232747322"></p>
+<p>使用的是默认数据源 defaultDataSource</p>
+<p><img src="/blog/images/201911/image-20191128232835697.png" alt="image-20191128232835697"></p>
+<p>使用的是数据源 dataSource1</p>
+<p><img src="/blog/images/201911/image-20191128232913327.png" alt="image-20191128232913327"></p>
+<p>使用的是数据源 dataSource2</p>
+<blockquote>
+<p>建议大家在心里总结一下整个的过程，其实很简单</p>
+</blockquote>
+
+    </div>
+</article>
+</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+    <title>静言思之</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/lib/github-markdown-css/github-markdown.css">
+</head>
+<body>
+<div class="container">
+<header class="header">
+    <div class="blog-title">
+        <a href="/" class="logo">静言思之</a>
+    </div>
+    <nav class="navbar">
+        <ul class="menu">
+            
+                <li class="menu-item">
+                    <a href="/" class="menu-item-link">首页</a>
+                </li>
+            
+                <li class="menu-item">
+                    <a href="/archives" class="menu-item-link">归档</a>
+                </li>
+            
+                <li class="menu-item">
+                    <a href="https://github.com/ahonn" target="_blank" rel="noopener" class="menu-item-link">交友</a>
+                </li>
+            
+        </ul>
+    </nav>
+</header>
+<main class="main">
+    <article class="post">
+    <div class="post-title">
+        <h2 class="title">Shiro源码解析之SessionManager03-SessionValidationScheduler</h2>
+    </div>
+    <div class="post-meta">
+        <span class="post-time">2019-10-18</span>
+    </div>
+    <div class="markdown-body">
+        <h2 id="了解-SessionValidationScheduler"><a href="#了解-SessionValidationScheduler" class="headerlink" title="了解 SessionValidationScheduler"></a>了解 <code>SessionValidationScheduler</code></h2><p><code>SessionValidationScheduler</code> 会话验证调度器，定时调用方法 <code>validateSessions()</code> 验证<code>session</code>是否过期。其实例n在 <code>AbstractValidatingSessionManager</code> 中被声明。</p>
+<p><img src="/blog/images/201910/1571299072379.png" alt="1571299072379"></p>
+<p> <code>sessionManager</code> 默认使 用<code>ExecutorServiceSessionValidationSchedule</code>，类继承图如下：</p>
+<p><img src="/blog/images/201910/1571299161013.png" alt="1571299161013"></p>
+<p>类结构如下：</p>
+<p><img src="/blog/images/201910/1571298835647.png" alt="1571298835647"></p>
+<h2 id="理解-SessionValidationScheduler"><a href="#理解-SessionValidationScheduler" class="headerlink" title="理解 SessionValidationScheduler"></a>理解 <code>SessionValidationScheduler</code></h2><h3 id="enableSessionValidation-void"><a href="#enableSessionValidation-void" class="headerlink" title="enableSessionValidation(): void"></a><code>enableSessionValidation(): void</code></h3><p><code>ExecutorServiceSessionValidationScheduler</code> 中的实现：</p>
+<pre><code class="java">/**
+     * Creates a single thread {@link ScheduledExecutorService} to validate sessions at fixed intervals 
+     * and enables this scheduler. The executor is created as a daemon thread to allow JVM to shut down
+     */
+    //TODO Implement an integration test to test for jvm exit as part of the standalone example
+    // (so we don&#39;t have to change the unit test execution model for the core module)
+    public void enableSessionValidation() {
+        if (this.interval &gt; 0l) {
+            // 真正的定时器
+            this.service = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {  
+                private final AtomicInteger count = new AtomicInteger(1);
+
+                public Thread newThread(Runnable r) {  
+                    Thread thread = new Thread(r);  
+                    thread.setDaemon(true);  
+                    thread.setName(threadNamePrefix + count.getAndIncrement());
+                    return thread;  
+                }  
+            });        
+            // 启动定时器，看 `scheduleAtFixedRate` 源码注释理解该方法
+            this.service.scheduleAtFixedRate(this, interval, interval, TimeUnit.MILLISECONDS);
+        }
+        this.enabled = true;
+    }
+
+    public void run() {
+        if (log.isDebugEnabled()) {
+            log.debug(&quot;Executing session validation...&quot;);
+        }
+        long startTime = System.currentTimeMillis();
+        this.sessionManager.validateSessions();
+        long stopTime = System.currentTimeMillis();
+        if (log.isDebugEnabled()) {
+            log.debug(&quot;Session validation completed successfully in &quot; + (stopTime - startTime) + &quot; milliseconds.&quot;);
+        }
+    }</code></pre>
+<p>简译：以固定的时间间隔创建一个单线程来验证会话，并且开启这个调度。<br><code>scheduleAtFixedRate()</code> 方法第一个参数以 Runnable 实现对象，里面一定是调用了 Runnable 对象的 <code>run()</code></p>
+<blockquote>
+<p>那么，是在什么时候开启的定时器呢？</p>
+<p>这时我使用 <kbd>Alt</kbd>+<kbd>F7</kbd>来查找<strong>谁</strong>调用了 <code>ExecutorServiceSessionValidationSchedule</code>的<code>enableSessionValidation()</code> 方法。</p>
+</blockquote>
+<h3 id="AbstractVailidatingSessionManager-中-enableSessionValidation"><a href="#AbstractVailidatingSessionManager-中-enableSessionValidation" class="headerlink" title="AbstractVailidatingSessionManager 中 enableSessionValidation()"></a><code>AbstractVailidatingSessionManager</code> 中 <code>enableSessionValidation()</code></h3><p>该方法调用了 <code>SessionValidationScheduler</code>的 <code>enableSessionValidation</code>；<br>而它自己又被本类中的 <code>enableSessionValidationIfNecessary()</code> 方法调用 ；<br>而 <code>enableSessionValidationIfNecessary()</code> 又被本类中的<code>doGetSession()</code>和<code>createSession()</code>方法调用。</p>
+<pre><code class="java">    ......
+    // line 83    
+    private void enableSessionValidationIfNecessary() {
+        SessionValidationScheduler scheduler = getSessionValidationScheduler();
+        if (isSessionValidationSchedulerEnabled() &amp;&amp; (scheduler == null || !scheduler.isEnabled())) {
+            enableSessionValidation();
+        }
+    }
+
+    ......
+    // line 112
+    @Override
+    protected final Session doGetSession(final SessionKey key) throws InvalidSessionException {
+        enableSessionValidationIfNecessary();
+
+        log.trace(&quot;Attempting to retrieve session with key {}&quot;, key);
+
+        Session s = retrieveSession(key);
+        if (s != null) {
+            validate(s, key);
+        }
+        return s;
+    }
+    ......
+    // line 134
+    protected Session createSession(SessionContext context) throws AuthorizationException {
+        enableSessionValidationIfNecessary();
+        return doCreateSession(context);
+    }
+    ......
+    // line 223    
+    protected synchronized void enableSessionValidation() {
+        SessionValidationScheduler scheduler = getSessionValidationScheduler();
+        if (scheduler == null) {
+            scheduler = createSessionValidationScheduler();
+            setSessionValidationScheduler(scheduler);
+        }
+        // it is possible that that a scheduler was already created and set via &#39;setSessionValidationScheduler()&#39;
+        // but would not have been enabled/started yet
+        if (!scheduler.isEnabled()) {
+            if (log.isInfoEnabled()) {
+                log.info(&quot;Enabling session validation scheduler...&quot;);
+            }
+            scheduler.enableSessionValidation();
+            afterSessionValidationEnabled();
+        }
+    }</code></pre>
+
+    </div>
+</article>
+</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+    <title>静言思之</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/lib/github-markdown-css/github-markdown.css">
+</head>
+<body>
+<div class="container">
+<header class="header">
+    <div class="blog-title">
+        <a href="/" class="logo">静言思之</a>
+    </div>
+    <nav class="navbar">
+        <ul class="menu">
+            
+                <li class="menu-item">
+                    <a href="/" class="menu-item-link">首页</a>
+                </li>
+            
+                <li class="menu-item">
+                    <a href="/archives" class="menu-item-link">归档</a>
+                </li>
+            
+                <li class="menu-item">
+                    <a href="https://github.com/ahonn" target="_blank" rel="noopener" class="menu-item-link">交友</a>
+                </li>
+            
+        </ul>
+    </nav>
+</header>
+<main class="main">
+    <article class="post">
+    <div class="post-title">
+        <h2 class="title">JavaScript和Jquery插件开发指南</h2>
+    </div>
+    <div class="post-meta">
+        <span class="post-time">2019-11-11</span>
+    </div>
+    <div class="markdown-body">
+        <p>参考博客 <a href="https://www.cnblogs.com/Wayou/p/jquery_plugin_tutorial.html" target="_blank" rel="noopener">jQuery插件开发精品教程，让你的jQuery提升一个台阶</a></p>
+<pre><code class="javascript">// 自调用匿名空间（避免代码命名冲突）
+;(function(window, document, undefined) {
+    //定义Beautifier的构造函数
+    var Beautifier = function(ele, opt) {
+        this.$element = ele,
+        this.defaults = {
+            &#39;color&#39;: &#39;red&#39;,
+            &#39;fontSize&#39;: &#39;12px&#39;,
+            &#39;textDecoration&#39;: &#39;none&#39;
+        },
+        this.options = $.extend({}, this.defaults, opt)
+    }
+    //定义Beautifier的方法
+    Beautifier.prototype = {
+        beautify: function() {
+            return this.$element.css({
+                &#39;color&#39;: this.options.color,
+                &#39;fontSize&#39;: this.options.fontSize,
+                &#39;textDecoration&#39;: this.options.textDecoration
+            });
+        }
+    }
+    //在插件中使用Beautifier对象
+    window.myPlugin = function(options) {
+        //创建Beautifier的实体
+        var beautifier = new Beautifier(this, options);
+        //调用其方法
+        return beautifier.beautify();
+    }
+})(jQuery, window, document);</code></pre>
+
+    </div>
+</article>
+</main>
+</div>
+</body>
+</html>

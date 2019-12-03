@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+    <title>静言思之</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/lib/github-markdown-css/github-markdown.css">
+</head>
+<body>
+<div class="container">
+<header class="header">
+    <div class="blog-title">
+        <a href="/" class="logo">静言思之</a>
+    </div>
+    <nav class="navbar">
+        <ul class="menu">
+            
+                <li class="menu-item">
+                    <a href="/" class="menu-item-link">首页</a>
+                </li>
+            
+                <li class="menu-item">
+                    <a href="/archives" class="menu-item-link">归档</a>
+                </li>
+            
+                <li class="menu-item">
+                    <a href="https://github.com/ahonn" target="_blank" rel="noopener" class="menu-item-link">交友</a>
+                </li>
+            
+        </ul>
+    </nav>
+</header>
+<main class="main">
+    <article class="post">
+    <div class="post-title">
+        <h2 class="title">Shiro源码解析之SessionManager</h2>
+    </div>
+    <div class="post-meta">
+        <span class="post-time">2019-10-17</span>
+    </div>
+    <div class="markdown-body">
+        <h2 id="了解-SessionManager"><a href="#了解-SessionManager" class="headerlink" title="了解 SessionManager"></a>了解 SessionManager</h2><h3 id="类继承图"><a href="#类继承图" class="headerlink" title="类继承图"></a>类继承图</h3><p><img src="/blog/images/201910/DefaultWebSessionManager.png" alt="DefaultWebSessionManager继承图"></p>
+<blockquote>
+<ul>
+<li><em>在IDEA中选择某个类，按 <kbd>Shift</kbd>+<kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>U</kbd>生成类继承图；选择某个类，按 <kbd>F4</kbd>进入类</em></li>
+<li><em>按<kbd>Alt</kbd>+<kbd>7</kbd>查看类的结构</em></li>
+<li><em>按<kbd>Alt</kbd>+<kbd>F7</kbd>查看方法在哪里被调用了</em></li>
+</ul>
+<p>使用上面三个快捷键快捷查看框架源码</p>
+</blockquote>
+<p><strong>！！！记住上面的结构</strong></p>
+<h3 id="SessionManager"><a href="#SessionManager" class="headerlink" title="SessionManager"></a>SessionManager</h3><p><img src="/blog/images/201910/1571280469834.png" alt="1571280469834"></p>
+<h3 id="AbstractSessionManager"><a href="#AbstractSessionManager" class="headerlink" title="AbstractSessionManager"></a>AbstractSessionManager</h3><p>在源码注释中已经说明该类过时了，为了全局过期时间这个属性，而单独创建一个类是不必要的。</p>
+<p><img src="/blog/images/201910/1571280571702.png" alt="1571280571702"></p>
+<h3 id="AbstractNativeSessionManager"><a href="#AbstractNativeSessionManager" class="headerlink" title="AbstractNativeSessionManager"></a>AbstractNativeSessionManager</h3><p><img src="/blog/images/201910/1571281149103.png" alt="1571281149103"></p>
+<h3 id="NativeSessionManger"><a href="#NativeSessionManger" class="headerlink" title="NativeSessionManger"></a>NativeSessionManger</h3><p><img src="/blog/images/201910/1571281440243.png" alt="NativeSessionManager"></p>
+<h3 id="AbstractValidatingSessionManager"><a href="#AbstractValidatingSessionManager" class="headerlink" title="AbstractValidatingSessionManager"></a>AbstractValidatingSessionManager</h3><p><img src="/blog/images/201910/1571281647315.png" alt="1571281647315"></p>
+<blockquote>
+<p>注意：成员变量 <code>SessionValidationScheduler sessionValidationScheduler</code> 会话验证调度器，定时调用 <code>validateSessions()</code> 验证会话是否过期。</p>
+</blockquote>
+<p><a href="http://localhost:4000/blog/2019/10/18/210-Java/Shiro/Shiro源码解析之SessionManager03-SessionValidationScheduler" target="_blank" rel="noopener">理解 SessionValidationScheduler</a></p>
+<h3 id="DefaultSessionManager"><a href="#DefaultSessionManager" class="headerlink" title="DefaultSessionManager"></a>DefaultSessionManager</h3><p>（省略私有变量的getter和setter）</p>
+<p><img src="/blog/images/201910/1571281832489.png" alt="1571281832489"></p>
+<ul>
+<li><code>SessionFactory sessionFactory</code> 用来生成 Session对象</li>
+<li><code>SessionDAO sessionDAO</code> 用来实现session的持久化</li>
+<li><code>CacheManager cacheManager</code> 缓存管理器</li>
+</ul>
+<h3 id="DefaultWebSessionManager"><a href="#DefaultWebSessionManager" class="headerlink" title="DefaultWebSessionManager"></a>DefaultWebSessionManager</h3><p>（省略私有变量的getter和setter）</p>
+<p><img src="/blog/images/201910/1571282013982.png" alt="1571282013982"></p>
+<ul>
+<li><code>Cookie sessionIdCookie</code> ，携带名为JSESSIONID的cookie</li>
+<li><code>boolean sessionIdCookieEnable</code> 是否使用 sessionIdCookie 的方式</li>
+<li><code>boolean sessionIdUrlRewritingEnable</code> 是否在URL中添加 JESSIONID 参数</li>
+</ul>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>在web应用中，shiro默认使用 <code>DefaultWebSessionManager</code>，它有4个重要对象</p>
+<ul>
+<li>SessionFactory</li>
+<li>SessionDAO</li>
+<li>CacheManager</li>
+<li>SessionValidationScheduler</li>
+</ul>
+<p>前三者在 <code>DefaultSessionManager</code> 中定义， <code>SessionValidationScheduler</code> 在 <code>AbstractValidatingSessionManager</code> 中被定义。所以有关 <code>SessionFactory、SessionFactory、CacheManager</code> 的相关操作都会在 <code>DefaultSessionManager</code> 中调用它们的相应方法</p>
+<p><code>SessionFactory</code> 只是简单的 <code>createSession()</code> ，具体详情参考 <a href="http://localhost:4000/blog/2019/10/18/210-Java/Shiro/Shiro源码解析之SessionManager01-Session" target="_blank" rel="noopener">Shiro源码解析之SessionManager01-Session</a> 中。<br><code>CacheManager</code> 在多个组件都有用到，会单独解析</p>
+<h2 id="理解-SessionManager"><a href="#理解-SessionManager" class="headerlink" title="理解 SessionManager"></a>理解 SessionManager</h2><p><code>SessionManager</code>接口对外只有两个方法 <code>start()</code> 和 <code>getSession()</code>。我们一步步的来寻找它们的最终实现</p>
+<h3 id="start-SessionContext-Session"><a href="#start-SessionContext-Session" class="headerlink" title="start(SessionContext): Session"></a>start(SessionContext): Session</h3><h4 id="1-AbstractNativeSessionManager-start"><a href="#1-AbstractNativeSessionManager-start" class="headerlink" title="1. AbstractNativeSessionManager | start()"></a>1. AbstractNativeSessionManager | <code>start()</code></h4><pre><code class="java">    // line 98
+    public Session start(SessionContext context) {
+        Session session = createSession(context);
+        // 设置session的过期时间
+        applyGlobalSessionTimeout(session);
+        onStart(session, context);
+        notifyStart(session);
+        //Don&#39;t expose the EIS-tier Session object to the client-tier:
+        return createExposedSession(session, context);
+    }
+    ......
+    // line 161
+    protected Session createExposedSession(Session session, SessionContext context) {
+        return new DelegatingSession(this, new DefaultSessionKey(session.getId()));
+    }
+
+    protected Session createExposedSession(Session session, SessionKey key) {
+        return new DelegatingSession(this, new DefaultSessionKey(session.getId()));
+    }
+    ......
+    // line 184
+    /**
+     * Notifies any interested {@link SessionListener}s that a Session has started.  This method is invoked
+     * &lt;em&gt;after&lt;/em&gt; the {@link #onStart onStart} method is called.
+     *
+     * @param session the session that has just started that will be delivered to any
+     *                {@link #setSessionListeners(java.util.Collection) registered} session listeners.
+     * @see SessionListener#onStart(org.apache.shiro.session.Session)
+     */
+    protected void notifyStart(Session session) {
+        for (SessionListener listener : this.listeners) {
+            listener.onStart(session);
+        }
+    }</code></pre>
+<h4 id="2-AbstractValidatingSessionManager-createSession"><a href="#2-AbstractValidatingSessionManager-createSession" class="headerlink" title="2. AbstractValidatingSessionManager | createSession()"></a>2. AbstractValidatingSessionManager | <code>createSession()</code></h4><pre><code class="java">    // line 82
+    private void enableSessionValidationIfNecessary() {
+        SessionValidationScheduler scheduler = getSessionValidationScheduler();
+        if (isSessionValidationSchedulerEnabled() &amp;&amp; (scheduler == null || !scheduler.isEnabled())) {
+            enableSessionValidation();
+        }
+    }
+    // line 133
+    protected Session createSession(SessionContext context) throws AuthorizationException {
+        enableSessionValidationIfNecessary();
+        return doCreateSession(context);
+    }
+
+    protected abstract Session doCreateSession(SessionContext initData) throws AuthorizationException;</code></pre>
+<h4 id="3-DefaultSessionManager-doCreateSession"><a href="#3-DefaultSessionManager-doCreateSession" class="headerlink" title="3. DefaultSessionManager | doCreateSession()"></a>3. DefaultSessionManager | <code>doCreateSession()</code></h4><pre><code class="java">    // line 153
+    protected Session doCreateSession(SessionContext context) {
+        // 调用 sessionFactory 创建 session 对象
+        Session s = newSessionInstance(context);
+        if (log.isTraceEnabled()) {
+            log.trace(&quot;Creating session for host {}&quot;, s.getHost());
+        }
+        // 调用 sessionDAO 存储 session 对象，并生成 sessionId
+        create(s);
+        return s;
+    }
+
+    protected Session newSessionInstance(SessionContext context) {
+        return getSessionFactory().createSession(context);
+    }
+
+    /**
+     * Persists the given session instance to an underlying EIS (Enterprise Information System).  This implementation
+     * delegates and calls
+     * &lt;code&gt;this.{@link SessionDAO sessionDAO}.{@link SessionDAO#create(org.apache.shiro.session.Session) create}(session);&lt;code&gt;
+     *
+     * @param session the Session instance to persist to the underlying EIS.
+     */
+    protected void create(Session session) {
+        if (log.isDebugEnabled()) {
+            log.debug(&quot;Creating new EIS record for new session instance [&quot; + session + &quot;]&quot;);
+        }
+        sessionDAO.create(session);
+    }</code></pre>
+<h4 id="4-DefaultWebSessionManager-onStart"><a href="#4-DefaultWebSessionManager-onStart" class="headerlink" title="4. DefaultWebSessionManager | onStart()"></a>4. DefaultWebSessionManager | <code>onStart()</code></h4><pre><code class="java">    // line 91
+    private void storeSessionId(Serializable currentId, HttpServletRequest request, HttpServletResponse response) {
+        if (currentId == null) {
+            String msg = &quot;sessionId cannot be null when persisting for subsequent requests.&quot;;
+            throw new IllegalArgumentException(msg);
+        }
+        Cookie template = getSessionIdCookie();
+        Cookie cookie = new SimpleCookie(template);
+        String idString = currentId.toString();
+        cookie.setValue(idString);
+        cookie.saveTo(request, response);
+        log.trace(&quot;Set session ID cookie for session with id {}&quot;, idString);
+    }
+    ......
+    // line 238
+    /**
+     * Stores the Session&#39;s ID, usually as a Cookie, to associate with future requests.
+     *
+     * @param session the session that was just {@link #createSession created}.
+     */
+    @Override
+    protected void onStart(Session session, SessionContext context) {
+        // 父类的 onStart 方法什么也没做
+        super.onStart(session, context);
+
+        if (!WebUtils.isHttp(context)) {
+            log.debug(&quot;SessionContext argument is not HTTP compatible or does not have an HTTP request/response &quot; +
+                    &quot;pair. No session ID cookie will be set.&quot;);
+            return;
+
+        }
+        HttpServletRequest request = WebUtils.getHttpRequest(context);
+        HttpServletResponse response = WebUtils.getHttpResponse(context);
+
+        if (isSessionIdCookieEnabled()) {
+            Serializable sessionId = session.getId();
+            // 将sessionId设置到cookie中
+            storeSessionId(sessionId, request, response);
+        } else {
+            log.debug(&quot;Session ID cookie is disabled.  No cookie has been set for new session with id {}&quot;, session.getId());
+        }
+
+        request.removeAttribute(ShiroHttpServletRequest.REFERENCED_SESSION_ID_SOURCE);
+        request.setAttribute(ShiroHttpServletRequest.REFERENCED_SESSION_IS_NEW, Boolean.TRUE);
+    }</code></pre>
+<h4 id="5-createExposedSession-Session-SessionKey-Session"><a href="#5-createExposedSession-Session-SessionKey-Session" class="headerlink" title="5. createExposedSession(Session, SessionKey): Session"></a>5. <code>createExposedSession(Session, SessionKey): Session</code></h4><p>看这个方法的名字：创建暴露的session</p>
+<pre><code class="java">    protected Session createExposedSession(Session session, SessionKey key) {
+        return new DelegatingSession(this, new DefaultSessionKey(session.getId()));
+    }</code></pre>
+<p>这个返回的 <code>DelegatingSession</code> 对象只保存 sessionId。它的 <code>getAttribute()</code> 方法如下</p>
+<pre><code class="java">    // line 137
+    /**
+     * @see org.apache.shiro.session.Session#getAttribute(Object key)
+     */
+    public Object getAttribute(Object attributeKey) throws InvalidSessionException {
+        return sessionManager.getAttribute(this.key, attributeKey);
+    }</code></pre>
+<h4 id="小结-1"><a href="#小结-1" class="headerlink" title="小结"></a>小结</h4><ol>
+<li>如果开启了定时检查session是否有效，则开启定时任务（AbstractValidatingSessionManager）</li>
+<li>使用 sessionFactory 创建 session（DefaultSessionManager）</li>
+<li>使用 sessionDAO 存储 session，并生成sessionId（DefaultSessionManager）</li>
+<li>设置session的全局过期时间（AbstractNativeSessionManager）</li>
+<li>调用 onStart，web应用将 sessionId 存储到 cookie中（DefaultWebSessionManager）</li>
+<li>调用 notifyStart()（AbstractNativeSessionManager）</li>
+<li>创建一个向外暴露的 session —— DegegatingSession（AbstractNativeSessionManager）</li>
+</ol>
+<h3 id="getSession-SessionKey-Session"><a href="#getSession-SessionKey-Session" class="headerlink" title="getSession(SessionKey): Session"></a>getSession(SessionKey): Session</h3><h4 id="1-AbstractNativeSessionManager-getSession"><a href="#1-AbstractNativeSessionManager-getSession" class="headerlink" title="1. AbstractNativeSessionManager | getSession()"></a>1. AbstractNativeSessionManager | <code>getSession()</code></h4><pre><code class="java">    ......
+    // line 139
+    public Session getSession(SessionKey key) throws SessionException {
+        Session session = lookupSession(key);
+        return session != null ? createExposedSession(session, key) : null;
+    }
+
+    private Session lookupSession(SessionKey key) throws SessionException {
+        if (key == null) {
+            throw new NullPointerException(&quot;SessionKey argument cannot be null.&quot;);
+        }
+        return doGetSession(key);
+    }
+    ......
+    // line 160    
+    protected abstract Session doGetSession(SessionKey key) throws InvalidSessionException;</code></pre>
+<blockquote>
+<p>先不理第5行中的 <code>createExposedSession(session, key)</code> ，我们先就着 <code>doGetSession</code> 这条线向下追。</p>
+</blockquote>
+<h4 id="2-AbstractValidatingSessionManager-doGetSession"><a href="#2-AbstractValidatingSessionManager-doGetSession" class="headerlink" title="2. AbstractValidatingSessionManager | doGetSession()"></a>2. AbstractValidatingSessionManager | <code>doGetSession()</code></h4><pre><code class="java">    ......
+    // line 113
+    @Override
+    protected final Session doGetSession(final SessionKey key) throws InvalidSessionException {
+        enableSessionValidationIfNecessary();
+
+        log.trace(&quot;Attempting to retrieve session with key {}&quot;, key);
+
+        Session s = retrieveSession(key);
+        if (s != null) {
+            validate(s, key);
+        }
+        return s;
+    }
+
+    /**
+     * Looks up a session from the underlying data store based on the specified session key.
+     *
+     * @param key the session key to use to look up the target session.
+     * @return the session identified by {@code sessionId}.
+     * @throws UnknownSessionException if there is no session identified by {@code sessionId}.
+     */
+    protected abstract Session retrieveSession(SessionKey key) throws UnknownSessionException;</code></pre>
+<p><code>doGetSession()</code> 又调用了 <code>retrieveSession()</code> 方法，而这个方法在 <code>AbstractValidatingSessionManager</code> 中是抽象的。先不急着去找谁实现了这个方法，看看它头上的注释。大意：通过指定的session key 在潜在的数据存储中查询session</p>
+<blockquote>
+<p><strong>之所以在AbstractValidatingSessionManager实现<code>doGetSession()</code>，就是为了调用一下<code>enableSessionValidationIfNecessary()</code>，这个方法用来开启验证session的定时任务</strong></p>
+</blockquote>
+<h4 id="3-DefaultSessionManager-retrieveSession"><a href="#3-DefaultSessionManager-retrieveSession" class="headerlink" title="3. DefaultSessionManager | retrieveSession()"></a>3. DefaultSessionManager | <code>retrieveSession()</code></h4><pre><code class="java">    ......
+    // line 215
+    protected Session retrieveSession(SessionKey sessionKey) throws UnknownSessionException {
+        Serializable sessionId = getSessionId(sessionKey);
+        if (sessionId == null) {
+            log.debug(&quot;Unable to resolve session ID from SessionKey [{}].  Returning null to indicate a &quot; +
+                    &quot;session could not be found.&quot;, sessionKey);
+            return null;
+        }
+        Session s = retrieveSessionFromDataSource(sessionId);
+        if (s == null) {
+            //session ID was provided, meaning one is expected to be found, but we couldn&#39;t find one:
+            String msg = &quot;Could not find session with ID [&quot; + sessionId + &quot;]&quot;;
+            throw new UnknownSessionException(msg);
+        }
+        return s;
+    }
+    ......
+    // line 235
+    protected Session retrieveSessionFromDataSource(Serializable sessionId) throws UnknownSessionException {
+        return sessionDAO.readSession(sessionId);
+    }</code></pre>
+<p>看来我们已经发现真相了，<code>getSession(SessionKey)</code> 实际上是调用 <code>sessionDAO.readSession(sessionId)</code> 获取session的，当其不为null时，则<code>AbstractNativeSessionManager</code> 调用 <code>createExposedSession()</code> 。</p>
+<blockquote>
+<p>因为 DefaultSessionManager 中有 SessionDAO 成员变量，所以在它内部获取 sessionDAO存储的session</p>
+</blockquote>
+<h4 id="4-createExposedSession-Session-SessionKey-Session"><a href="#4-createExposedSession-Session-SessionKey-Session" class="headerlink" title="4. createExposedSession(Session, SessionKey): Session"></a>4. <code>createExposedSession(Session, SessionKey): Session</code></h4><h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><ol>
+<li>如果开启了定时检查session是否有效，则开启定时任务（AbstractValidatingSessionManager）</li>
+<li>使用 sessionDAO 根据 sessionId 获取 session （DefaultSessionManager）</li>
+<li>创建一个向外暴露的 session —— DegegatingSession（AbstractNativeSessionManager）</li>
+</ol>
+
+    </div>
+</article>
+</main>
+</div>
+</body>
+</html>

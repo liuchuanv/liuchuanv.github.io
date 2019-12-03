@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+    <title>静言思之</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/lib/github-markdown-css/github-markdown.css">
+</head>
+<body>
+<div class="container">
+<header class="header">
+    <div class="blog-title">
+        <a href="/" class="logo">静言思之</a>
+    </div>
+    <nav class="navbar">
+        <ul class="menu">
+            
+                <li class="menu-item">
+                    <a href="/" class="menu-item-link">首页</a>
+                </li>
+            
+                <li class="menu-item">
+                    <a href="/archives" class="menu-item-link">归档</a>
+                </li>
+            
+                <li class="menu-item">
+                    <a href="https://github.com/ahonn" target="_blank" rel="noopener" class="menu-item-link">交友</a>
+                </li>
+            
+        </ul>
+    </nav>
+</header>
+<main class="main">
+    <article class="post">
+    <div class="post-title">
+        <h2 class="title">IDEA使用过程中遇到的问题总结</h2>
+    </div>
+    <div class="post-meta">
+        <span class="post-time">2019-11-22</span>
+    </div>
+    <div class="markdown-body">
+        <p>[TOC]</p>
+<h2 id="IDEA-设置-取消设置默认打开工程"><a href="#IDEA-设置-取消设置默认打开工程" class="headerlink" title="IDEA 设置/取消设置默认打开工程"></a>IDEA 设置/取消设置默认打开工程</h2><ol>
+<li>打开 Project -&gt; Setting -&gt; System Setting</li>
+<li>在 Strart/Shutdown 栏勾选/取消勾选 “Reopen last project on startup”</li>
+</ol>
+<p><img src="/blog/images/201911/1568601752966.png" alt="1568601752966"></p>
+<ol start="3">
+<li>重启IDEA</li>
+</ol>
+<h2 id="打开新项目后，所有的maven依赖都没有导入"><a href="#打开新项目后，所有的maven依赖都没有导入" class="headerlink" title="打开新项目后，所有的maven依赖都没有导入"></a>打开新项目后，所有的maven依赖都没有导入</h2><p><img src="/blog/images/201911/%E6%89%93%E5%BC%80%E6%96%B0%E9%A1%B9%E7%9B%AE%E5%90%8E%EF%BC%8C%E6%89%80%E6%9C%89%E7%9A%84maven%E4%BE%9D%E8%B5%96%E9%83%BD%E6%B2%A1%E6%9C%89%E5%AF%BC%E5%85%A5.png" alt="打开新项目后，所有的maven依赖都没有导入"></p>
+<p>解决方法：</p>
+<p>点击右侧“Maven Projects”，在 “Lifecycle” 中点击 “clean”，执行结束之后，再点击 “install”。最后点击最左上角的按钮“Reimport All Maven Projects”。</p>
+<h2 id="Java文件显示带J文件"><a href="#Java文件显示带J文件" class="headerlink" title="Java文件显示带J文件"></a>Java文件显示带J文件</h2><p>Java文件图标变成下面这样，而且包也没有分层。</p>
+<p><img src="/blog/images/201911/1564968569160.png" alt="1564968569160"></p>
+<p><strong>解决方法：</strong></p>
+<p>打开 “Project” 中的 “Project Structure” </p>
+<p><img src="/blog/images/201911/4bac30738bd4b31c1b18ebe289d6277f9e2ff800.png" alt="img"></p>
+<p>点击删除后，重新 “Add Content Root” 。</p>
+<h2 id="清除recent-project"><a href="#清除recent-project" class="headerlink" title="清除recent project"></a>清除recent project</h2><h3 id="第一种方法"><a href="#第一种方法" class="headerlink" title="第一种方法"></a>第一种方法</h3><p>打开 “Open Recent” 中的 “Manage Projects” </p>
+<p><img src="/blog/images/201911/1564968095507.png" alt="1564968095507"></p>
+<p>在 “Recent Projects“ 中一个一个的删除。</p>
+<p><img src="/blog/images/201911/1564968172891.png" alt="1564968172891"></p>
+<h3 id="第二种方法"><a href="#第二种方法" class="headerlink" title="第二种方法"></a>第二种方法</h3><p>找到IDEA的配置文件：<code>.IntelliJIdea2018.2\config\options\recentProjects.xml</code>，在其中进行清除。</p>
+<p>（我的是在 <code>C:\Users\xu</code>目录下）</p>
+<p><img src="/blog/images/201911/1564968327387.png" alt="1564968327387"></p>
+<h2 id="不自动导入java-util-Date"><a href="#不自动导入java-util-Date" class="headerlink" title="不自动导入java.util.Date"></a>不自动导入<code>java.util.Date</code></h2><p>之前有一段时间在使用IDEA的时候，发现通过快捷键Alt + Enter导入并没有提示有java.util.Date的包，仅仅只有java.sql.Date的包。于是每次使用都需要通过手写import java.util.Date;来进行导包。博主在好生不爽了一段时间后，终于在网上找到了解决办法，本文就是用来记录一下解决过程的。</p>
+<p>  找到设置（Alt + Shift + S），搜索“Auto Import”。如下图所示，只需要把java.util.Date导入提示的排除设置删除即可。</p>
+<p>​       <img src="/blog/images/201911/1560417646626.png" alt="1560417646626"></p>
+<p>  同理，因为一般项目中很少使用得到java.sql.Date，所以我们可以添加这么一条设置，用于排除java.sql.Date的导入提示。</p>
+<p><img src="/blog/images/201911/1560417646626.png" alt="1560417679601"></p>
+<h2 id="去掉Mybatis-中-No-DataSource-和-SQL-Dialect-的检查"><a href="#去掉Mybatis-中-No-DataSource-和-SQL-Dialect-的检查" class="headerlink" title="去掉Mybatis 中 No DataSource 和 SQL Dialect 的检查"></a>去掉Mybatis 中 No DataSource 和 SQL Dialect 的检查</h2><p>在Mybatis的Mapper.xml 编写SQL时，经常出现下面这种弹框干扰，有时甚至没法正常编辑</p>
+<p><img src="/blog/images/201911/image-20191122095348737.png" alt="image-20191122095348737"></p>
+<p><strong>解决方法：</strong></p>
+<p><img src="/blog/images/201911/image-20191122095626396.png" alt="image-20191122095626396"></p>
+
+    </div>
+</article>
+</main>
+</div>
+</body>
+</html>

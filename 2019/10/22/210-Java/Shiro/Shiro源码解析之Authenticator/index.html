@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+    <title>静言思之</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/lib/github-markdown-css/github-markdown.css">
+</head>
+<body>
+<div class="container">
+<header class="header">
+    <div class="blog-title">
+        <a href="/" class="logo">静言思之</a>
+    </div>
+    <nav class="navbar">
+        <ul class="menu">
+            
+                <li class="menu-item">
+                    <a href="/" class="menu-item-link">首页</a>
+                </li>
+            
+                <li class="menu-item">
+                    <a href="/archives" class="menu-item-link">归档</a>
+                </li>
+            
+                <li class="menu-item">
+                    <a href="https://github.com/ahonn" target="_blank" rel="noopener" class="menu-item-link">交友</a>
+                </li>
+            
+        </ul>
+    </nav>
+</header>
+<main class="main">
+    <article class="post">
+    <div class="post-title">
+        <h2 class="title">Shiro源码解析之Authenticator</h2>
+    </div>
+    <div class="post-meta">
+        <span class="post-time">2019-10-22</span>
+    </div>
+    <div class="markdown-body">
+        <h2 id="了解-Authenticator"><a href="#了解-Authenticator" class="headerlink" title="了解 Authenticator"></a>了解 Authenticator</h2><p>Authenticator 用来进行身份认证，它的继承图以及继承者的方法如下：</p>
+<p><img src="/blog/images/201910/ModularRealmAuthenticator.png" alt="ModularRealmAuthenticator"></p>
+<h2 id="理解-Authenticator"><a href="#理解-Authenticator" class="headerlink" title="理解 Authenticator"></a>理解 Authenticator</h2><h3 id="1-AbstractAuthenticator-authencate-token"><a href="#1-AbstractAuthenticator-authencate-token" class="headerlink" title="1. AbstractAuthenticator | authencate(token)"></a>1. <code>AbstractAuthenticator</code> | <code>authencate(token)</code></h3><pre><code class="java">    // line 167
+    /**
+     * Implementation of the {@link Authenticator} interface that functions in the following manner:
+     * &lt;ol&gt;
+     * &lt;li&gt;Calls template {@link #doAuthenticate doAuthenticate} method for subclass execution of the actual
+     * authentication behavior.&lt;/li&gt;
+     * &lt;li&gt;If an {@code AuthenticationException} is thrown during {@code doAuthenticate},
+     * {@link #notifyFailure(AuthenticationToken, AuthenticationException) notify} any registered
+     * {@link AuthenticationListener AuthenticationListener}s of the exception and then propagate the exception
+     * for the caller to handle.&lt;/li&gt;
+     * &lt;li&gt;If no exception is thrown (indicating a successful login),
+     * {@link #notifySuccess(AuthenticationToken, AuthenticationInfo) notify} any registered
+     * {@link AuthenticationListener AuthenticationListener}s of the successful attempt.&lt;/li&gt;
+     * &lt;li&gt;Return the {@code AuthenticationInfo}&lt;/li&gt;
+     * &lt;/ol&gt;
+     *
+     * @param token the submitted token representing the subject&#39;s (user&#39;s) login principals and credentials.
+     * @return the AuthenticationInfo referencing the authenticated user&#39;s account data.
+     * @throws AuthenticationException if there is any problem during the authentication process - see the
+     *                                 interface&#39;s JavaDoc for a more detailed explanation.
+     */
+    public final AuthenticationInfo authenticate(AuthenticationToken token) throws AuthenticationException {
+
+        if (token == null) {
+            throw new IllegalArgumentException(&quot;Method argument (authentication token) cannot be null.&quot;);
+        }
+
+        log.trace(&quot;Authentication attempt received for token [{}]&quot;, token);
+
+        AuthenticationInfo info;
+        try {
+            info = doAuthenticate(token);
+            if (info == null) {
+                String msg = &quot;No account information found for authentication token [&quot; + token + &quot;] by this &quot; +
+                        &quot;Authenticator instance.  Please check that it is configured correctly.&quot;;
+                throw new AuthenticationException(msg);
+            }
+        } catch (Throwable t) {
+            AuthenticationException ae = null;
+            if (t instanceof AuthenticationException) {
+                ae = (AuthenticationException) t;
+            }
+            if (ae == null) {
+                //Exception thrown was not an expected AuthenticationException.  Therefore it is probably a little more
+                //severe or unexpected.  So, wrap in an AuthenticationException, log to warn, and propagate:
+                String msg = &quot;Authentication failed for token submission [&quot; + token + &quot;].  Possible unexpected &quot; +
+                        &quot;error? (Typical or expected login exceptions should extend from AuthenticationException).&quot;;
+                ae = new AuthenticationException(msg, t);
+                if (log.isWarnEnabled())
+                    log.warn(msg, t);
+            }
+            try {
+                notifyFailure(token, ae);
+            } catch (Throwable t2) {
+                if (log.isWarnEnabled()) {
+                    String msg = &quot;Unable to send notification for failed authentication attempt - listener error?.  &quot; +
+                            &quot;Please check your AuthenticationListener implementation(s).  Logging sending exception &quot; +
+                            &quot;and propagating original AuthenticationException instead...&quot;;
+                    log.warn(msg, t2);
+                }
+            }
+
+
+            throw ae;
+        }
+
+        log.debug(&quot;Authentication successful for token [{}].  Returned account [{}]&quot;, token, info);
+
+        notifySuccess(token, info);
+
+        return info;
+    }</code></pre>
+<p>代码很多，有用的只有 <code>doAuthencate(token)</code> 这句。</p>
+<h3 id="2-ModularRealmAuthenticator-doAuthencate-token"><a href="#2-ModularRealmAuthenticator-doAuthencate-token" class="headerlink" title="2. ModularRealmAuthenticator |  doAuthencate(token)"></a>2. ModularRealmAuthenticator |  <code>doAuthencate(token)</code></h3><pre><code class="java">    // line 164
+    /**
+     * Performs the authentication attempt by interacting with the single configured realm, which is significantly
+     * simpler than performing multi-realm logic.
+     *
+     * @param realm the realm to consult for AuthenticationInfo.
+     * @param token the submitted AuthenticationToken representing the subject&#39;s (user&#39;s) log-in principals and credentials.
+     * @return the AuthenticationInfo associated with the user account corresponding to the specified {@code token}
+     */
+    protected AuthenticationInfo doSingleRealmAuthentication(Realm realm, AuthenticationToken token) {
+        if (!realm.supports(token)) {
+            String msg = &quot;Realm [&quot; + realm + &quot;] does not support authentication token [&quot; +
+                    token + &quot;].  Please ensure that the appropriate Realm implementation is &quot; +
+                    &quot;configured correctly or that the realm accepts AuthenticationTokens of this type.&quot;;
+            throw new UnsupportedTokenException(msg);
+        }
+        // 使用 realm.getAuthenticationInfo(token) 校验并获取 authenticationInfo 
+        AuthenticationInfo info = realm.getAuthenticationInfo(token);
+        if (info == null) {
+            String msg = &quot;Realm [&quot; + realm + &quot;] was unable to find account data for the &quot; +
+                    &quot;submitted AuthenticationToken [&quot; + token + &quot;].&quot;;
+            throw new UnknownAccountException(msg);
+        }
+        return info;
+    }
+
+    /**
+     * Performs the multi-realm authentication attempt by calling back to a {@link AuthenticationStrategy} object
+     * as each realm is consulted for {@code AuthenticationInfo} for the specified {@code token}.
+     *
+     * @param realms the multiple realms configured on this Authenticator instance.
+     * @param token  the submitted AuthenticationToken representing the subject&#39;s (user&#39;s) log-in principals and credentials.
+     * @return an aggregated AuthenticationInfo instance representing account data across all the successfully
+     *         consulted realms.
+     */
+    protected AuthenticationInfo doMultiRealmAuthentication(Collection&lt;Realm&gt; realms, AuthenticationToken token) {
+
+        AuthenticationStrategy strategy = getAuthenticationStrategy();
+
+        AuthenticationInfo aggregate = strategy.beforeAllAttempts(realms, token);
+
+        if (log.isTraceEnabled()) {
+            log.trace(&quot;Iterating through {} realms for PAM authentication&quot;, realms.size());
+        }
+
+        for (Realm realm : realms) {
+
+            aggregate = strategy.beforeAttempt(realm, token, aggregate);
+
+            if (realm.supports(token)) {
+
+                log.trace(&quot;Attempting to authenticate token [{}] using realm [{}]&quot;, token, realm);
+
+                AuthenticationInfo info = null;
+                Throwable t = null;
+                try {
+                    info = realm.getAuthenticationInfo(token);
+                } catch (Throwable throwable) {
+                    t = throwable;
+                    if (log.isDebugEnabled()) {
+                        String msg = &quot;Realm [&quot; + realm + &quot;] threw an exception during a multi-realm authentication attempt:&quot;;
+                        log.debug(msg, t);
+                    }
+                }
+
+                aggregate = strategy.afterAttempt(realm, token, info, aggregate, t);
+
+            } else {
+                log.debug(&quot;Realm [{}] does not support token {}.  Skipping realm.&quot;, realm, token);
+            }
+        }
+
+        aggregate = strategy.afterAllAttempts(token, aggregate);
+
+        return aggregate;
+    }
+
+
+    /**
+     * Attempts to authenticate the given token by iterating over the internal collection of
+     * {@link Realm}s.  For each realm, first the {@link Realm#supports(org.apache.shiro.authc.AuthenticationToken)}
+     * method will be called to determine if the realm supports the {@code authenticationToken} method argument.
+     * &lt;p/&gt;
+     * If a realm does support
+     * the token, its {@link Realm#getAuthenticationInfo(org.apache.shiro.authc.AuthenticationToken)}
+     * method will be called.  If the realm returns a non-null account, the token will be
+     * considered authenticated for that realm and the account data recorded.  If the realm returns {@code null},
+     * the next realm will be consulted.  If no realms support the token or all supporting realms return null,
+     * an {@link AuthenticationException} will be thrown to indicate that the user could not be authenticated.
+     * &lt;p/&gt;
+     * After all realms have been consulted, the information from each realm is aggregated into a single
+     * {@link AuthenticationInfo} object and returned.
+     *
+     * @param authenticationToken the token containing the authentication principal and credentials for the
+     *                            user being authenticated.
+     * @return account information attributed to the authenticated user.
+     * @throws IllegalStateException   if no realms have been configured at the time this method is invoked
+     * @throws AuthenticationException if the user could not be authenticated or the user is denied authentication
+     *                                 for the given principal and credentials.
+     */
+    protected AuthenticationInfo doAuthenticate(AuthenticationToken authenticationToken) throws AuthenticationException {
+        // 判断是否配置了realms，否的话抛出异常
+        assertRealmsConfigured();
+        Collection&lt;Realm&gt; realms = getRealms();
+        // 判断是单realm还是多realm，分别调用不同的方法处理
+        if (realms.size() == 1) {
+            return doSingleRealmAuthentication(realms.iterator().next(), authenticationToken);
+        } else {
+            return doMultiRealmAuthentication(realms, authenticationToken);
+        }
+    }</code></pre>
+<p>先来看 <code>doSingleRealmAuthentication(realm)</code>，它内部直接调用了 <code>realm.getAuthenticationInfo(token)</code> </p>
+<h3 id="3-AbstractAuthenticator-notifySuccess"><a href="#3-AbstractAuthenticator-notifySuccess" class="headerlink" title="3. AbstractAuthenticator | notifySuccess()"></a>3. AbstractAuthenticator | <code>notifySuccess()</code></h3><pre><code class="java">/**
+     * Notifies any registered {@link AuthenticationListener AuthenticationListener}s that
+     * authentication was successful for the specified {@code token} which resulted in the specified
+     * {@code info}.  This implementation merely iterates over the internal {@code listeners} collection and
+     * calls {@link AuthenticationListener#onSuccess(AuthenticationToken, AuthenticationInfo) onSuccess}
+     * for each.
+     *
+     * @param token the submitted {@code AuthenticationToken} that resulted in a successful authentication.
+     * @param info  the returned {@code AuthenticationInfo} resulting from the successful authentication.
+     */
+    protected void notifySuccess(AuthenticationToken token, AuthenticationInfo info) {
+        for (AuthenticationListener listener : this.listeners) {
+            listener.onSuccess(token, info);
+        }
+    }</code></pre>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><ol>
+<li>如果是单 realm ，则直接调用 realm 的 getAuthenticationInfo() </li>
+<li>如果是多 realm ，则使用 AuthenticationStrategy 对象来调用 realm 的 getAuthenticationInfo() 方法</li>
+</ol>
+
+    </div>
+</article>
+</main>
+</div>
+</body>
+</html>

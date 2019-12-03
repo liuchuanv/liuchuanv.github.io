@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+    <title>静言思之</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/lib/github-markdown-css/github-markdown.css">
+</head>
+<body>
+<div class="container">
+<header class="header">
+    <div class="blog-title">
+        <a href="/" class="logo">静言思之</a>
+    </div>
+    <nav class="navbar">
+        <ul class="menu">
+            
+                <li class="menu-item">
+                    <a href="/" class="menu-item-link">首页</a>
+                </li>
+            
+                <li class="menu-item">
+                    <a href="/archives" class="menu-item-link">归档</a>
+                </li>
+            
+                <li class="menu-item">
+                    <a href="https://github.com/ahonn" target="_blank" rel="noopener" class="menu-item-link">交友</a>
+                </li>
+            
+        </ul>
+    </nav>
+</header>
+<main class="main">
+    <article class="post">
+    <div class="post-title">
+        <h2 class="title">python 爬虫公众号历史消息</h2>
+    </div>
+    <div class="post-meta">
+        <span class="post-time">2019-11-12</span>
+    </div>
+    <div class="markdown-body">
+        <p><strong>准备：</strong></p>
+<ul>
+<li>公众号历史消息的请求地址</li>
+<li>cookie</li>
+</ul>
+<p><strong>2种方法获取地址和cookie</strong></p>
+<ol>
+<li>用浏览器打开公众号历史消息页面，使用开发工具获取请求地址和cookie</li>
+<li>用抓包工具获取请求地址和cookie，比如 Fidder、charles</li>
+</ol>
+<p>源码如下：</p>
+<pre><code class="python"># -*- coding: utf-8 -*-
+import requests
+import jsonpath
+import json
+
+headers = {
+    &quot;User-Agent&quot;: &quot;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36&quot;,
+    &quot;Host&quot;: &quot;mp.weixin.qq.com&quot;,
+    &quot;Referer&quot;: &quot;https://mp.weixin.qq.com&quot;,
+    # 设置好cookie
+    &quot;Cookie&quot;: &quot;RK=c+zMAuktP8; ptcz=005f33a36542502454b119382853de0d9ea6aa693367c6ae312a1c34c0dcfebe; pgv_pvi=4737076224; ptui_loginuin=1254428526; pgv_pvid=3106019708; wxuin=1411706915; devicetype=Windows7; version=62070152; lang=zh_CN; pass_ticket=FyE/xFBG3nyqQokgb6OoN9VFXaZVJPK53op9NWOsmqB2HZm8CUhy5Hz9+fgVo+PA; wap_sid2=CKPgk6EFElxuY2VlWndUVWJjT1d2YnVzcXMxTk4xcldfQ3hVQUYzUnB1LTVZTDlyQkVCb2ZPZHQ2S3hXbUdsMEJ0VkNVdDBZUmJXUC0wb0ZUb1N6U0JVSlYybHdGZ29FQUFBfjCJsKjuBTgNQJVO&quot;
+           }
+
+for i in range(10):
+    # 设置请求地址
+    url = &quot;https://mp.weixin.qq.com/mp/profile_ext?action=getmsg&amp;__biz=MjM5Mjg3MTIzMQ==&amp;f=json&amp;offset={}&amp;count=10&amp;is_ok=1&amp;scene=124&amp;uin=777&amp;key=777&amp;pass_ticket=&amp;wxtoken=&amp;appmsg_token=1034_N22Qb3TiIEjqcdGLa-1KO9dkAZgO1e2zBcGB5w~~&amp;x5=0&amp;f=json&quot;.format(str(i * 10))
+
+    response = requests.get(url, headers = headers)
+
+    res = response.json()
+
+    # 此处要根据具体的json结构进行解析
+    jsonRes = json.loads(res[&#39;general_msg_list&#39;])
+    titleList = jsonpath.jsonpath(jsonRes, &quot;$..title&quot;)
+    urlList = jsonpath.jsonpath(jsonRes, &quot;$..content_url&quot;)
+
+
+    # 遍历 构造可存储字符串·
+    for index in range(len(titleList)):
+        title = titleList[index]
+        url = urlList[index]
+
+        scvStr = &quot;%s,%s,\n&quot; % (title, url)
+        with open(&quot;info.csv&quot;, &quot;a+&quot;, encoding=&quot;gbk&quot;, newline=&#39;&#39;) as f:
+            f.write(scvStr)
+</code></pre>
+<p>代码会将历史消息标题和连接存储到 csv 文件中</p>
+
+    </div>
+</article>
+</main>
+</div>
+</body>
+</html>
