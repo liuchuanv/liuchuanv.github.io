@@ -1,45 +1,264 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
-    <title>静言思之</title>
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/lib/github-markdown-css/github-markdown.css">
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://liuchuanv.github.io').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.6.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="了解 SecurityManger继承图在SecurityManager接口名称上按 Ctrl+H，显示它的继承层次 在DefaultWebSecurityManager类名称上按 Shift+Ctrl+Alt+U，显示它的继承图 SecurityManager CachingSecurityManager RealmSecurityManager AuthenticatingSecurityMa">
+<meta name="keywords" content="源码解析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Shiro源码解析之SecurityManager">
+<meta property="og:url" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;2019&#x2F;10&#x2F;21&#x2F;210-Java&#x2F;Shiro&#x2F;Shiro%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BSecurityManager&#x2F;index.html">
+<meta property="og:site_name" content="静言思之">
+<meta property="og:description" content="了解 SecurityManger继承图在SecurityManager接口名称上按 Ctrl+H，显示它的继承层次 在DefaultWebSecurityManager类名称上按 Shift+Ctrl+Alt+U，显示它的继承图 SecurityManager CachingSecurityManager RealmSecurityManager AuthenticatingSecurityMa">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;blog&#x2F;images&#x2F;201910&#x2F;1571642320953.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;blog&#x2F;images&#x2F;201910&#x2F;1571642933389.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;blog&#x2F;images&#x2F;201910&#x2F;1571642162627.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;blog&#x2F;images&#x2F;201910&#x2F;1571707959571.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;blog&#x2F;images&#x2F;201910&#x2F;1571708033085.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;blog&#x2F;images&#x2F;201910&#x2F;1571708079963.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;blog&#x2F;images&#x2F;201910&#x2F;1571708160461.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;blog&#x2F;images&#x2F;201910&#x2F;1571708232562.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;blog&#x2F;images&#x2F;201910&#x2F;1571708376374.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;blog&#x2F;images&#x2F;201910&#x2F;1571708790577.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;blog&#x2F;images&#x2F;201910&#x2F;1571642162627.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;blog&#x2F;images&#x2F;201910&#x2F;image-20191025104928852.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;blog&#x2F;images&#x2F;201910&#x2F;image-20191025110723800.png">
+<meta property="og:updated_time" content="2019-10-30T01:50:21.481Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;blog&#x2F;images&#x2F;201910&#x2F;1571642320953.png">
+
+<link rel="canonical" href="https://liuchuanv.github.io/2019/10/21/210-Java/Shiro/Shiro%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BSecurityManager/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>Shiro源码解析之SecurityManager | 静言思之</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
 </head>
-<body>
-<div class="container">
-<header class="header">
-    <div class="blog-title">
-        <a href="/" class="logo">静言思之</a>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">静言思之</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
     </div>
-    <nav class="navbar">
-        <ul class="menu">
-            
-                <li class="menu-item">
-                    <a href="/" class="menu-item-link">首页</a>
-                </li>
-            
-                <li class="menu-item">
-                    <a href="/archives" class="menu-item-link">归档</a>
-                </li>
-            
-                <li class="menu-item">
-                    <a href="https://github.com/ahonn" target="_blank" rel="noopener" class="menu-item-link">交友</a>
-                </li>
-            
-        </ul>
-    </nav>
-</header>
-<main class="main">
-    <article class="post">
-    <div class="post-title">
-        <h2 class="title">Shiro源码解析之SecurityManager</h2>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
-    <div class="post-meta">
-        <span class="post-time">2019-10-21</span>
-    </div>
-    <div class="markdown-body">
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">21</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">17</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">37</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://liuchuanv.github.io/2019/10/21/210-Java/Shiro/Shiro%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BSecurityManager/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="LiuChuanWei">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="静言思之">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Shiro源码解析之SecurityManager
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-10-21 15:14:42" itemprop="dateCreated datePublished" datetime="2019-10-21T15:14:42+08:00">2019-10-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-10-30 09:50:21" itemprop="dateModified" datetime="2019-10-30T09:50:21+08:00">2019-10-30</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/Shiro/" itemprop="url" rel="index">
+                    <span itemprop="name">Shiro</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
         <h2 id="了解-SecurityManger"><a href="#了解-SecurityManger" class="headerlink" title="了解 SecurityManger"></a>了解 SecurityManger</h2><h3 id="继承图"><a href="#继承图" class="headerlink" title="继承图"></a>继承图</h3><p>在<code>SecurityManager</code>接口名称上按 <kbd>Ctrl</kbd>+<kbd>H</kbd>，显示它的继承层次<br><img src="/blog/images/201910/1571642320953.png" alt="1571642320953"></p>
 <p>在<code>DefaultWebSecurityManager</code>类名称上按 <kbd>Shift</kbd>+<kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>U</kbd>，显示它的继承图<br><img src="/blog/images/201910/1571642933389.png" alt="1571642933389"></p>
 <h3 id="SecurityManager"><a href="#SecurityManager" class="headerlink" title="SecurityManager"></a>SecurityManager</h3><p><img src="/blog/images/201910/1571642162627.png" alt="SecurityManger结构"></p>
@@ -54,382 +273,244 @@
 <h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>SecurityManager的继承结构大量使用了 <strong>装饰模式</strong></p>
 <h2 id="理解-SecurityManager"><a href="#理解-SecurityManager" class="headerlink" title="理解 SecurityManager"></a>理解 SecurityManager</h2><p>从顶层接口 SecurityManger 暴露出的三个方法来入手，分别解析它们的逻辑流程</p>
 <p><img src="/blog/images/201910/1571642162627.png" alt="SecurityManger结构"></p>
-<h3 id="login-Subject-AuthenticationToken-Subject"><a href="#login-Subject-AuthenticationToken-Subject" class="headerlink" title="login(Subject, AuthenticationToken): Subject"></a>login(Subject, AuthenticationToken): Subject</h3><h4 id="1-login-subject-token-DefaultSecurityManager"><a href="#1-login-subject-token-DefaultSecurityManager" class="headerlink" title="1. login(subject, token) | DefaultSecurityManager"></a>1. <code>login(subject, token)</code> | DefaultSecurityManager</h4><pre><code class="java">    // line 259
-    /**
-     * First authenticates the {@code AuthenticationToken} argument, and if successful, constructs a
-     * {@code Subject} instance representing the authenticated account&#39;s identity.
-     * &lt;p/&gt;
-     * Once constructed, the {@code Subject} instance is then {@link #bind bound} to the application for
-     * subsequent access before being returned to the caller.
-     *
-     * @param token the authenticationToken to process for the login attempt.
-     * @return a Subject representing the authenticated user.
-     * @throws AuthenticationException if there is a problem authenticating the specified {@code token}.
-     */
-    public Subject login(Subject subject, AuthenticationToken token) throws AuthenticationException {
-        AuthenticationInfo info;
-        try {
-            info = authenticate(token);
-        } catch (AuthenticationException ae) {
-            try {
-                onFailedLogin(token, ae, subject);
-            } catch (Exception e) {
-                if (log.isInfoEnabled()) {
-                    log.info(&quot;onFailedLogin method threw an &quot; +
-                            &quot;exception.  Logging and propagating original AuthenticationException.&quot;, e);
-                }
-            }
-            throw ae; //propagate
-        }
+<h3 id="login-Subject-AuthenticationToken-Subject"><a href="#login-Subject-AuthenticationToken-Subject" class="headerlink" title="login(Subject, AuthenticationToken): Subject"></a>login(Subject, AuthenticationToken): Subject</h3><h4 id="1-login-subject-token-DefaultSecurityManager"><a href="#1-login-subject-token-DefaultSecurityManager" class="headerlink" title="1. login(subject, token) | DefaultSecurityManager"></a>1. <code>login(subject, token)</code> | DefaultSecurityManager</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// line 259</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * First authenticates the &#123;<span class="doctag">@code</span> AuthenticationToken&#125; argument, and if successful, constructs a</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &#123;<span class="doctag">@code</span> Subject&#125; instance representing the authenticated account's identity.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &lt;p/&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * Once constructed, the &#123;<span class="doctag">@code</span> Subject&#125; instance is then &#123;<span class="doctag">@link</span> #bind bound&#125; to the application for</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * subsequent access before being returned to the caller.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@param</span> token the authenticationToken to process for the login attempt.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@return</span> a Subject representing the authenticated user.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@throws</span> AuthenticationException if there is a problem authenticating the specified &#123;<span class="doctag">@code</span> token&#125;.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Subject <span class="title">login</span><span class="params">(Subject subject, AuthenticationToken token)</span> <span class="keyword">throws</span> AuthenticationException </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">    AuthenticationInfo info;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">try</span> &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">        info = authenticate(token);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">    &#125; <span class="keyword">catch</span> (AuthenticationException ae) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">try</span> &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line">            onFailedLogin(token, ae, subject);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line">            <span class="keyword">if</span> (log.isInfoEnabled()) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line">                log.info(<span class="string">"onFailedLogin method threw an "</span> +</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line">                        <span class="string">"exception.  Logging and propagating original AuthenticationException."</span>, e);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">24</span></pre></td><td class="code"><pre><span class="line">            &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">25</span></pre></td><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">26</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">throw</span> ae; <span class="comment">//propagate</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">27</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">28</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">29</span></pre></td><td class="code"><pre><span class="line">    Subject loggedIn = createSubject(token, info, subject);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">30</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">31</span></pre></td><td class="code"><pre><span class="line">    onSuccessfulLogin(token, info, loggedIn);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">32</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">33</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> loggedIn;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">34</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
 
-        Subject loggedIn = createSubject(token, info, subject);
+<h4 id="2-authencate-token-AuthenticatingSecurityManager"><a href="#2-authencate-token-AuthenticatingSecurityManager" class="headerlink" title="2. authencate(token) | AuthenticatingSecurityManager"></a>2. <code>authencate(token)</code> | AuthenticatingSecurityManager</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// line 50</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * Default no-arg constructor that initializes its internal</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &lt;code&gt;authenticator&lt;/code&gt; instance to a</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> org.apache.shiro.authc.pam.ModularRealmAuthenticator ModularRealmAuthenticator&#125;.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">AuthenticatingSecurityManager</span><span class="params">()</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">super</span>();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">// 默认 Authenticator</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">this</span>.authenticator = <span class="keyword">new</span> ModularRealmAuthenticator();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">...... </span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// line 101</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * Delegates to the wrapped &#123;<span class="doctag">@link</span> org.apache.shiro.authc.Authenticator Authenticator&#125; for authentication.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> AuthenticationInfo <span class="title">authenticate</span><span class="params">(AuthenticationToken token)</span> <span class="keyword">throws</span> AuthenticationException </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.authenticator.authenticate(token);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
 
-        onSuccessfulLogin(token, info, loggedIn);
-
-        return loggedIn;
-    }
-</code></pre>
-<h4 id="2-authencate-token-AuthenticatingSecurityManager"><a href="#2-authencate-token-AuthenticatingSecurityManager" class="headerlink" title="2. authencate(token) | AuthenticatingSecurityManager"></a>2. <code>authencate(token)</code> | AuthenticatingSecurityManager</h4><pre><code class="java">    // line 50
-    /**
-     * Default no-arg constructor that initializes its internal
-     * &lt;code&gt;authenticator&lt;/code&gt; instance to a
-     * {@link org.apache.shiro.authc.pam.ModularRealmAuthenticator ModularRealmAuthenticator}.
-     */
-    public AuthenticatingSecurityManager() {
-        super();
-        // 默认 Authenticator
-        this.authenticator = new ModularRealmAuthenticator();
-    }
-    ...... 
-    // line 101
-    /**
-     * Delegates to the wrapped {@link org.apache.shiro.authc.Authenticator Authenticator} for authentication.
-     */
-    public AuthenticationInfo authenticate(AuthenticationToken token) throws AuthenticationException {
-        return this.authenticator.authenticate(token);
-    }</code></pre>
 <p><code>authenticator.authenticate(token)</code> 的解析请参考 <a href="Shiro源码解析之Authenticator">Shiro源码解析之Authenticator</a></p>
-<h4 id="3-createSubject-token-info-subject-DefaultSecurityManager"><a href="#3-createSubject-token-info-subject-DefaultSecurityManager" class="headerlink" title="3. createSubject(token, info, subject) | DefaultSecurityManager"></a>3. <code>createSubject(token, info, subject)</code> | DefaultSecurityManager</h4><pre><code class="java">    // line 166
-    protected SubjectContext createSubjectContext() {
-        return new DefaultSubjectContext();
-    }
-    /**
-     * Creates a {@code Subject} instance for the user represented by the given method arguments.
-     *
-     * @param token    the {@code AuthenticationToken} submitted for the successful authentication.
-     * @param info     the {@code AuthenticationInfo} of a newly authenticated user.
-     * @param existing the existing {@code Subject} instance that initiated the authentication attempt
-     * @return the {@code Subject} instance that represents the context and session data for the newly
-     *         authenticated subject.
-     */
-    protected Subject createSubject(AuthenticationToken token, AuthenticationInfo info, Subject existing) {
-        SubjectContext context = createSubjectContext();
-        context.setAuthenticated(true);
-        // 将 token、authenticationInfo、subject 存入 subjectContext 的 backingMap 中
-        context.setAuthenticationToken(token);
-        context.setAuthenticationInfo(info);
-        if (existing != null) {
-            context.setSubject(existing);
-        }
-        return createSubject(context);
-    }</code></pre>
+<h4 id="3-createSubject-token-info-subject-DefaultSecurityManager"><a href="#3-createSubject-token-info-subject-DefaultSecurityManager" class="headerlink" title="3. createSubject(token, info, subject) | DefaultSecurityManager"></a>3. <code>createSubject(token, info, subject)</code> | DefaultSecurityManager</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// line 166</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> SubjectContext <span class="title">createSubjectContext</span><span class="params">()</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> DefaultSubjectContext();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * Creates a &#123;<span class="doctag">@code</span> Subject&#125; instance for the user represented by the given method arguments.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@param</span> token    the &#123;<span class="doctag">@code</span> AuthenticationToken&#125; submitted for the successful authentication.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@param</span> info     the &#123;<span class="doctag">@code</span> AuthenticationInfo&#125; of a newly authenticated user.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@param</span> existing the existing &#123;<span class="doctag">@code</span> Subject&#125; instance that initiated the authentication attempt</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@return</span> the &#123;<span class="doctag">@code</span> Subject&#125; instance that represents the context and session data for the newly</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> *         authenticated subject.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> Subject <span class="title">createSubject</span><span class="params">(AuthenticationToken token, AuthenticationInfo info, Subject existing)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">    SubjectContext context = createSubjectContext();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">    context.setAuthenticated(<span class="keyword">true</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">// 将 token、authenticationInfo、subject 存入 subjectContext 的 backingMap 中</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">    context.setAuthenticationToken(token);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line">    context.setAuthenticationInfo(info);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">if</span> (existing != <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line">        context.setSubject(existing);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> createSubject(context);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">24</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
 <p>关于<code>createSubject(context)</code> 解析参考 <a href="createSubject(subjectContext">createSubject(subjectContext): Subject</a>: Subject)</p>
-<h3 id="createSubject-subjectContext-Subject"><a href="#createSubject-subjectContext-Subject" class="headerlink" title="createSubject(subjectContext): Subject"></a>createSubject(subjectContext): Subject</h3><h4 id="1-createSubject-subjectContext-DefaultSecurityManager"><a href="#1-createSubject-subjectContext-DefaultSecurityManager" class="headerlink" title="1. createSubject(subjectContext) | DefaultSecurityManager"></a>1. <code>createSubject(subjectContext)</code> | DefaultSecurityManager</h4><pre><code class="java">    /**
-     * This implementation functions as follows:
-     * &lt;p/&gt;
-     * &lt;ol&gt;
-     * &lt;li&gt;Ensures the {@code SubjectContext} is as populated as it can be, using heuristics to acquire
-     * data that may not have already been available to it (such as a referenced session or remembered principals).&lt;/li&gt;
-     * &lt;li&gt;Calls {@link #doCreateSubject(org.apache.shiro.subject.SubjectContext)} to actually perform the
-     * {@code Subject} instance creation.&lt;/li&gt;
-     * &lt;li&gt;calls {@link #save(org.apache.shiro.subject.Subject) save(subject)} to ensure the constructed
-     * {@code Subject}&#39;s state is accessible for future requests/invocations if necessary.&lt;/li&gt;
-     * &lt;li&gt;returns the constructed {@code Subject} instance.&lt;/li&gt;
-     * &lt;/ol&gt;
-     *
-     * @param subjectContext any data needed to direct how the Subject should be constructed.
-     * @return the {@code Subject} instance reflecting the specified contextual data.
-     * @see #ensureSecurityManager(org.apache.shiro.subject.SubjectContext)
-     * @see #resolveSession(org.apache.shiro.subject.SubjectContext)
-     * @see #resolvePrincipals(org.apache.shiro.subject.SubjectContext)
-     * @see #doCreateSubject(org.apache.shiro.subject.SubjectContext)
-     * @see #save(org.apache.shiro.subject.Subject)
-     * @since 1.0
-     */
-    public Subject createSubject(SubjectContext subjectContext) {
-        //create a copy so we don&#39;t modify the argument&#39;s backing map:
-        SubjectContext context = copy(subjectContext);
+<h3 id="createSubject-subjectContext-Subject"><a href="#createSubject-subjectContext-Subject" class="headerlink" title="createSubject(subjectContext): Subject"></a>createSubject(subjectContext): Subject</h3><h4 id="1-createSubject-subjectContext-DefaultSecurityManager"><a href="#1-createSubject-subjectContext-DefaultSecurityManager" class="headerlink" title="1. createSubject(subjectContext) | DefaultSecurityManager"></a>1. <code>createSubject(subjectContext)</code> | DefaultSecurityManager</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * This implementation functions as follows:</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &lt;p/&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &lt;ol&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &lt;li&gt;Ensures the &#123;<span class="doctag">@code</span> SubjectContext&#125; is as populated as it can be, using heuristics to acquire</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * data that may not have already been available to it (such as a referenced session or remembered principals).&lt;/li&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &lt;li&gt;Calls &#123;<span class="doctag">@link</span> #doCreateSubject(org.apache.shiro.subject.SubjectContext)&#125; to actually perform the</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &#123;<span class="doctag">@code</span> Subject&#125; instance creation.&lt;/li&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &lt;li&gt;calls &#123;<span class="doctag">@link</span> #save(org.apache.shiro.subject.Subject) save(subject)&#125; to ensure the constructed</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &#123;<span class="doctag">@code</span> Subject&#125;'s state is accessible for future requests/invocations if necessary.&lt;/li&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &lt;li&gt;returns the constructed &#123;<span class="doctag">@code</span> Subject&#125; instance.&lt;/li&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &lt;/ol&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@param</span> subjectContext any data needed to direct how the Subject should be constructed.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@return</span> the &#123;<span class="doctag">@code</span> Subject&#125; instance reflecting the specified contextual data.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@see</span> #ensureSecurityManager(org.apache.shiro.subject.SubjectContext)</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@see</span> #resolveSession(org.apache.shiro.subject.SubjectContext)</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@see</span> #resolvePrincipals(org.apache.shiro.subject.SubjectContext)</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@see</span> #doCreateSubject(org.apache.shiro.subject.SubjectContext)</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@see</span> #save(org.apache.shiro.subject.Subject)</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@since</span> 1.0</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Subject <span class="title">createSubject</span><span class="params">(SubjectContext subjectContext)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">24</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">//create a copy so we don't modify the argument's backing map:</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">25</span></pre></td><td class="code"><pre><span class="line">    SubjectContext context = copy(subjectContext);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">26</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">27</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">//ensure that the context has a SecurityManager instance, and if not, add one:</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">28</span></pre></td><td class="code"><pre><span class="line">    context = ensureSecurityManager(context);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">29</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">30</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">//Resolve an associated Session (usually based on a referenced session ID), and place it in the context before</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">31</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">//sending to the SubjectFactory.  The SubjectFactory should not need to know how to acquire sessions as the</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">32</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">//process is often environment specific - better to shield the SF from these details:</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">33</span></pre></td><td class="code"><pre><span class="line">    context = resolveSession(context);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">34</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">35</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">//Similarly, the SubjectFactory should not require any concept of RememberMe - translate that here first</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">36</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">//if possible before handing off to the SubjectFactory:</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">37</span></pre></td><td class="code"><pre><span class="line">    context = resolvePrincipals(context);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">38</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">39</span></pre></td><td class="code"><pre><span class="line">    Subject subject = doCreateSubject(context);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">40</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">41</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">//save this subject for future reference if necessary:</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">42</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">//(this is needed here in case rememberMe principals were resolved and they need to be stored in the</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">43</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">//session, so we don't constantly rehydrate the rememberMe PrincipalCollection on every operation).</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">44</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">//Added in 1.2:</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">45</span></pre></td><td class="code"><pre><span class="line">    save(subject);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">46</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">47</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> subject;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">48</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">49</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">50</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">51</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * Actually creates a &#123;<span class="doctag">@code</span> Subject&#125; instance by delegating to the internal</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">52</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> #getSubjectFactory() subjectFactory&#125;.  By the time this method is invoked, all possible</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">53</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &#123;<span class="doctag">@code</span> SubjectContext&#125; data (session, principals, et. al.) has been made accessible using all known heuristics</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">54</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * and will be accessible to the &#123;<span class="doctag">@code</span> subjectFactory&#125; via the &#123;<span class="doctag">@code</span> subjectContext.resolve*&#125; methods.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">55</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">56</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@param</span> context the populated context (data map) to be used by the &#123;<span class="doctag">@code</span> SubjectFactory&#125; when creating a</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">57</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> *                &#123;<span class="doctag">@code</span> Subject&#125; instance.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">58</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@return</span> a &#123;<span class="doctag">@code</span> Subject&#125; instance reflecting the data in the specified &#123;<span class="doctag">@code</span> SubjectContext&#125; data map.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">59</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@see</span> #getSubjectFactory()</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">60</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@see</span> SubjectFactory#createSubject(org.apache.shiro.subject.SubjectContext)</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">61</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@since</span> 1.2</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">62</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">63</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> Subject <span class="title">doCreateSubject</span><span class="params">(SubjectContext context)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">64</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> getSubjectFactory().createSubject(context);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">65</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">66</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">67</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">68</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * Saves the subject's state to a persistent location for future reference if necessary.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">69</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &lt;p/&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">70</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * This implementation merely delegates to the internal &#123;<span class="doctag">@link</span> #setSubjectDAO(SubjectDAO) subjectDAO&#125; and calls</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">71</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> SubjectDAO#save(org.apache.shiro.subject.Subject) subjectDAO.save(subject)&#125;.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">72</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">73</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@param</span> subject the subject for which state will potentially be persisted</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">74</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@see</span> SubjectDAO#save(org.apache.shiro.subject.Subject)</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">75</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@since</span> 1.2</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">76</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">77</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">save</span><span class="params">(Subject subject)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">78</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">this</span>.subjectDAO.save(subject);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">79</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
 
-        //ensure that the context has a SecurityManager instance, and if not, add one:
-        context = ensureSecurityManager(context);
-
-        //Resolve an associated Session (usually based on a referenced session ID), and place it in the context before
-        //sending to the SubjectFactory.  The SubjectFactory should not need to know how to acquire sessions as the
-        //process is often environment specific - better to shield the SF from these details:
-        context = resolveSession(context);
-
-        //Similarly, the SubjectFactory should not require any concept of RememberMe - translate that here first
-        //if possible before handing off to the SubjectFactory:
-        context = resolvePrincipals(context);
-
-        Subject subject = doCreateSubject(context);
-
-        //save this subject for future reference if necessary:
-        //(this is needed here in case rememberMe principals were resolved and they need to be stored in the
-        //session, so we don&#39;t constantly rehydrate the rememberMe PrincipalCollection on every operation).
-        //Added in 1.2:
-        save(subject);
-
-        return subject;
-    }
-
-    /**
-     * Actually creates a {@code Subject} instance by delegating to the internal
-     * {@link #getSubjectFactory() subjectFactory}.  By the time this method is invoked, all possible
-     * {@code SubjectContext} data (session, principals, et. al.) has been made accessible using all known heuristics
-     * and will be accessible to the {@code subjectFactory} via the {@code subjectContext.resolve*} methods.
-     *
-     * @param context the populated context (data map) to be used by the {@code SubjectFactory} when creating a
-     *                {@code Subject} instance.
-     * @return a {@code Subject} instance reflecting the data in the specified {@code SubjectContext} data map.
-     * @see #getSubjectFactory()
-     * @see SubjectFactory#createSubject(org.apache.shiro.subject.SubjectContext)
-     * @since 1.2
-     */
-    protected Subject doCreateSubject(SubjectContext context) {
-        return getSubjectFactory().createSubject(context);
-    }
-
-    /**
-     * Saves the subject&#39;s state to a persistent location for future reference if necessary.
-     * &lt;p/&gt;
-     * This implementation merely delegates to the internal {@link #setSubjectDAO(SubjectDAO) subjectDAO} and calls
-     * {@link SubjectDAO#save(org.apache.shiro.subject.Subject) subjectDAO.save(subject)}.
-     *
-     * @param subject the subject for which state will potentially be persisted
-     * @see SubjectDAO#save(org.apache.shiro.subject.Subject)
-     * @since 1.2
-     */
-    protected void save(Subject subject) {
-        this.subjectDAO.save(subject);
-    }
-</code></pre>
 <p>createSubject(subjectContext) 中那几个 resolveXxx 方法的解析，请看 <a href="">Shiro源码解析之Subject和SubjectContext</a></p>
 <h4 id="2-getSubjectFacotry-createSubject"><a href="#2-getSubjectFacotry-createSubject" class="headerlink" title="2. getSubjectFacotry().createSubject()"></a>2. <code>getSubjectFacotry().createSubject()</code></h4><p>这个方法在 <code>DefaultSubjectFactory</code>、<code>DefaultWebSubjectFactory</code> 分别有一个实现，如下：</p>
-<pre><code class="java">    public Subject createSubject(SubjectContext context) {
-        SecurityManager securityManager = context.resolveSecurityManager();
-        Session session = context.resolveSession();
-        boolean sessionCreationEnabled = context.isSessionCreationEnabled();
-        PrincipalCollection principals = context.resolvePrincipals();
-        boolean authenticated = context.resolveAuthenticated();
-        String host = context.resolveHost();
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Subject <span class="title">createSubject</span><span class="params">(SubjectContext context)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">    SecurityManager securityManager = context.resolveSecurityManager();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">    Session session = context.resolveSession();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">boolean</span> sessionCreationEnabled = context.isSessionCreationEnabled();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">    PrincipalCollection principals = context.resolvePrincipals();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">boolean</span> authenticated = context.resolveAuthenticated();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">    String host = context.resolveHost();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> DelegatingSubject(principals, authenticated, host, session, sessionCreationEnabled, securityManager);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
 
-        return new DelegatingSubject(principals, authenticated, host, session, sessionCreationEnabled, securityManager);
-    }</code></pre>
-<pre><code class="java">    public Subject createSubject(SubjectContext context) {
-        if (!(context instanceof WebSubjectContext)) {
-            return super.createSubject(context);
-        }
-        WebSubjectContext wsc = (WebSubjectContext) context;
-        SecurityManager securityManager = wsc.resolveSecurityManager();
-        Session session = wsc.resolveSession();
-        boolean sessionEnabled = wsc.isSessionCreationEnabled();
-        PrincipalCollection principals = wsc.resolvePrincipals();
-        boolean authenticated = wsc.resolveAuthenticated();
-        String host = wsc.resolveHost();
-        // web 应用特有的
-        ServletRequest request = wsc.resolveServletRequest();
-        ServletResponse response = wsc.resolveServletResponse();
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Subject <span class="title">createSubject</span><span class="params">(SubjectContext context)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">if</span> (!(context <span class="keyword">instanceof</span> WebSubjectContext)) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.createSubject(context);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">    WebSubjectContext wsc = (WebSubjectContext) context;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">    SecurityManager securityManager = wsc.resolveSecurityManager();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">    Session session = wsc.resolveSession();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">boolean</span> sessionEnabled = wsc.isSessionCreationEnabled();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">    PrincipalCollection principals = wsc.resolvePrincipals();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">boolean</span> authenticated = wsc.resolveAuthenticated();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">    String host = wsc.resolveHost();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">// web 应用特有的</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">    ServletRequest request = wsc.resolveServletRequest();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">    ServletResponse response = wsc.resolveServletResponse();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> WebDelegatingSubject(principals, authenticated, host, session, sessionEnabled,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">            request, response, securityManager);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
 
-        return new WebDelegatingSubject(principals, authenticated, host, session, sessionEnabled,
-                request, response, securityManager);
-    }</code></pre>
 <p>通过 debug 我们来看一下，第一次 getSubject() 得到的 subject 对象里包含哪些属性</p>
 <p><img src="/blog/images/201910/image-20191025104928852.png" alt="image-20191025104928852"></p>
 <p>顺便看一下 SecurityManager 中的属性方法</p>
 <p><img src="/blog/images/201910/image-20191025110723800.png" alt="image-20191025110723800"></p>
 <h4 id="3-save-subject-void-DefaultSecurityManager"><a href="#3-save-subject-void-DefaultSecurityManager" class="headerlink" title="3. save(subject): void | DefaultSecurityManager"></a>3. <code>save(subject): void</code> | DefaultSecurityManager</h4><p>这个方法调用了 <code>this.subjectDAO.save(subject)</code></p>
-<pre><code class="java">    // line 133
-    /**
-     * Saves the subject&#39;s state to the subject&#39;s {@link org.apache.shiro.subject.Subject#getSession() session} only
-     * if {@link #isSessionStorageEnabled(Subject) sessionStorageEnabled(subject)}.  If session storage is not enabled
-     * for the specific {@code Subject}, this method does nothing.
-     * &lt;p/&gt;
-     * In either case, the argument {@code Subject} is returned directly (a new Subject instance is not created).
-     *
-     * @param subject the Subject instance for which its state will be created or updated.
-     * @return the same {@code Subject} passed in (a new Subject instance is not created).
-     */
-    public Subject save(Subject subject) {
-        if (isSessionStorageEnabled(subject)) {
-            saveToSession(subject);
-        } else {
-            log.trace(&quot;Session storage of subject state for Subject [{}] has been disabled: identity and &quot; +
-                    &quot;authentication state are expected to be initialized on every request or invocation.&quot;, subject);
-        }
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// line 133</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * Saves the subject's state to the subject's &#123;<span class="doctag">@link</span> org.apache.shiro.subject.Subject#getSession() session&#125; only</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * if &#123;<span class="doctag">@link</span> #isSessionStorageEnabled(Subject) sessionStorageEnabled(subject)&#125;.  If session storage is not enabled</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * for the specific &#123;<span class="doctag">@code</span> Subject&#125;, this method does nothing.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &lt;p/&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * In either case, the argument &#123;<span class="doctag">@code</span> Subject&#125; is returned directly (a new Subject instance is not created).</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@param</span> subject the Subject instance for which its state will be created or updated.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@return</span> the same &#123;<span class="doctag">@code</span> Subject&#125; passed in (a new Subject instance is not created).</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Subject <span class="title">save</span><span class="params">(Subject subject)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">if</span> (isSessionStorageEnabled(subject)) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">        saveToSession(subject);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">    &#125; <span class="keyword">else</span> &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">        log.trace(<span class="string">"Session storage of subject state for Subject [&#123;&#125;] has been disabled: identity and "</span> +</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">                <span class="string">"authentication state are expected to be initialized on every request or invocation."</span>, subject);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> subject;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">24</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * Saves the subject's state (it's principals and authentication state) to its</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">25</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> org.apache.shiro.subject.Subject#getSession() session&#125;.  The session can be retrieved at a later time</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">26</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * (typically from a &#123;<span class="doctag">@link</span> org.apache.shiro.session.mgt.SessionManager SessionManager&#125; to be used to recreate</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">27</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * the &#123;<span class="doctag">@code</span> Subject&#125; instance.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">28</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">29</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@param</span> subject the subject for which state will be persisted to its session.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">30</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">31</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">saveToSession</span><span class="params">(Subject subject)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">32</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">//performs merge logic, only updating the Subject's session if it does not match the current state:</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">33</span></pre></td><td class="code"><pre><span class="line">    mergePrincipals(subject);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">34</span></pre></td><td class="code"><pre><span class="line">    mergeAuthenticationState(subject);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">35</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">36</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">37</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// line 172</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">38</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">39</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * Merges the Subject's current &#123;<span class="doctag">@link</span> org.apache.shiro.subject.Subject#getPrincipals()&#125; with whatever may be in</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">40</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * any available session.  Only updates the Subject's session if the session does not match the current principals</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">41</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * state.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">42</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">43</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@param</span> subject the Subject for which principals will potentially be merged into the Subject's session.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">44</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">45</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">mergePrincipals</span><span class="params">(Subject subject)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">46</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">//merge PrincipalCollection state:</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">47</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">48</span></pre></td><td class="code"><pre><span class="line">    PrincipalCollection currentPrincipals = <span class="keyword">null</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">49</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">50</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">//SHIRO-380: added if/else block - need to retain original (source) principals</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">51</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">//This technique (reflection) is only temporary - a proper long term solution needs to be found,</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">52</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">//but this technique allowed an immediate fix that is API point-version forwards and backwards compatible</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">53</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">//</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">54</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">//A more comprehensive review / cleaning of runAs should be performed for Shiro 1.3 / 2.0 +</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">55</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">if</span> (subject.isRunAs() &amp;&amp; subject <span class="keyword">instanceof</span> DelegatingSubject) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">56</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">try</span> &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">57</span></pre></td><td class="code"><pre><span class="line">            Field field = DelegatingSubject.class.getDeclaredField("principals");</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">58</span></pre></td><td class="code"><pre><span class="line">            field.setAccessible(<span class="keyword">true</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">59</span></pre></td><td class="code"><pre><span class="line">            currentPrincipals = (PrincipalCollection)field.get(subject);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">60</span></pre></td><td class="code"><pre><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">61</span></pre></td><td class="code"><pre><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Unable to access DelegatingSubject principals property."</span>, e);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">62</span></pre></td><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">63</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">64</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">if</span> (currentPrincipals == <span class="keyword">null</span> || currentPrincipals.isEmpty()) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">65</span></pre></td><td class="code"><pre><span class="line">        currentPrincipals = subject.getPrincipals();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">66</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">67</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">68</span></pre></td><td class="code"><pre><span class="line">    Session session = subject.getSession(<span class="keyword">false</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">69</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">70</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">if</span> (session == <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">71</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">if</span> (!isEmpty(currentPrincipals)) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">72</span></pre></td><td class="code"><pre><span class="line">            session = subject.getSession();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">73</span></pre></td><td class="code"><pre><span class="line">            session.setAttribute(DefaultSubjectContext.PRINCIPALS_SESSION_KEY, currentPrincipals);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">74</span></pre></td><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">75</span></pre></td><td class="code"><pre><span class="line">        <span class="comment">// otherwise no session and no principals - nothing to save</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">76</span></pre></td><td class="code"><pre><span class="line">    &#125; <span class="keyword">else</span> &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">77</span></pre></td><td class="code"><pre><span class="line">        PrincipalCollection existingPrincipals =</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">78</span></pre></td><td class="code"><pre><span class="line">                (PrincipalCollection) session.getAttribute(DefaultSubjectContext.PRINCIPALS_SESSION_KEY);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">79</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">80</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">if</span> (isEmpty(currentPrincipals)) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">81</span></pre></td><td class="code"><pre><span class="line">            <span class="keyword">if</span> (!isEmpty(existingPrincipals)) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">82</span></pre></td><td class="code"><pre><span class="line">                session.removeAttribute(DefaultSubjectContext.PRINCIPALS_SESSION_KEY);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">83</span></pre></td><td class="code"><pre><span class="line">            &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">84</span></pre></td><td class="code"><pre><span class="line">            <span class="comment">// otherwise both are null or empty - no need to update the session</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">85</span></pre></td><td class="code"><pre><span class="line">        &#125; <span class="keyword">else</span> &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">86</span></pre></td><td class="code"><pre><span class="line">            <span class="keyword">if</span> (!currentPrincipals.equals(existingPrincipals)) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">87</span></pre></td><td class="code"><pre><span class="line">                session.setAttribute(DefaultSubjectContext.PRINCIPALS_SESSION_KEY, currentPrincipals);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">88</span></pre></td><td class="code"><pre><span class="line">            &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">89</span></pre></td><td class="code"><pre><span class="line">            <span class="comment">// otherwise they're the same - no need to update the session</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">90</span></pre></td><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">91</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">92</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">93</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">94</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">95</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * Merges the Subject's current authentication state with whatever may be in</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">96</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * any available session.  Only updates the Subject's session if the session does not match the current</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">97</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * authentication state.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">98</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">99</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@param</span> subject the Subject for which principals will potentially be merged into the Subject's session.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">100</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">101</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">mergeAuthenticationState</span><span class="params">(Subject subject)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">102</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">103</span></pre></td><td class="code"><pre><span class="line">    Session session = subject.getSession(<span class="keyword">false</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">104</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">105</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">if</span> (session == <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">106</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">if</span> (subject.isAuthenticated()) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">107</span></pre></td><td class="code"><pre><span class="line">            session = subject.getSession();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">108</span></pre></td><td class="code"><pre><span class="line">            session.setAttribute(DefaultSubjectContext.AUTHENTICATED_SESSION_KEY, Boolean.TRUE);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">109</span></pre></td><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">110</span></pre></td><td class="code"><pre><span class="line">        <span class="comment">//otherwise no session and not authenticated - nothing to save</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">111</span></pre></td><td class="code"><pre><span class="line">    &#125; <span class="keyword">else</span> &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">112</span></pre></td><td class="code"><pre><span class="line">        Boolean existingAuthc = (Boolean) session.getAttribute(DefaultSubjectContext.AUTHENTICATED_SESSION_KEY);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">113</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">114</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">if</span> (subject.isAuthenticated()) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">115</span></pre></td><td class="code"><pre><span class="line">            <span class="keyword">if</span> (existingAuthc == <span class="keyword">null</span> || !existingAuthc) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">116</span></pre></td><td class="code"><pre><span class="line">                session.setAttribute(DefaultSubjectContext.AUTHENTICATED_SESSION_KEY, Boolean.TRUE);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">117</span></pre></td><td class="code"><pre><span class="line">            &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">118</span></pre></td><td class="code"><pre><span class="line">            <span class="comment">//otherwise authc state matches - no need to update the session</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">119</span></pre></td><td class="code"><pre><span class="line">        &#125; <span class="keyword">else</span> &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">120</span></pre></td><td class="code"><pre><span class="line">            <span class="keyword">if</span> (existingAuthc != <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">121</span></pre></td><td class="code"><pre><span class="line">                <span class="comment">//existing doesn't match the current state - remove it:</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">122</span></pre></td><td class="code"><pre><span class="line">                session.removeAttribute(DefaultSubjectContext.AUTHENTICATED_SESSION_KEY);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">123</span></pre></td><td class="code"><pre><span class="line">            &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">124</span></pre></td><td class="code"><pre><span class="line">            <span class="comment">//otherwise not in the session and not authenticated - no need to update the session</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">125</span></pre></td><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">126</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">127</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
 
-        return subject;
-    }
 
-    /**
-     * Saves the subject&#39;s state (it&#39;s principals and authentication state) to its
-     * {@link org.apache.shiro.subject.Subject#getSession() session}.  The session can be retrieved at a later time
-     * (typically from a {@link org.apache.shiro.session.mgt.SessionManager SessionManager} to be used to recreate
-     * the {@code Subject} instance.
-     *
-     * @param subject the subject for which state will be persisted to its session.
-     */
-    protected void saveToSession(Subject subject) {
-        //performs merge logic, only updating the Subject&#39;s session if it does not match the current state:
-        mergePrincipals(subject);
-        mergeAuthenticationState(subject);
-    }
 
-    // line 172
-    /**
-     * Merges the Subject&#39;s current {@link org.apache.shiro.subject.Subject#getPrincipals()} with whatever may be in
-     * any available session.  Only updates the Subject&#39;s session if the session does not match the current principals
-     * state.
-     *
-     * @param subject the Subject for which principals will potentially be merged into the Subject&#39;s session.
-     */
-    protected void mergePrincipals(Subject subject) {
-        //merge PrincipalCollection state:
 
-        PrincipalCollection currentPrincipals = null;
 
-        //SHIRO-380: added if/else block - need to retain original (source) principals
-        //This technique (reflection) is only temporary - a proper long term solution needs to be found,
-        //but this technique allowed an immediate fix that is API point-version forwards and backwards compatible
-        //
-        //A more comprehensive review / cleaning of runAs should be performed for Shiro 1.3 / 2.0 +
-        if (subject.isRunAs() &amp;&amp; subject instanceof DelegatingSubject) {
-            try {
-                Field field = DelegatingSubject.class.getDeclaredField(&quot;principals&quot;);
-                field.setAccessible(true);
-                currentPrincipals = (PrincipalCollection)field.get(subject);
-            } catch (Exception e) {
-                throw new IllegalStateException(&quot;Unable to access DelegatingSubject principals property.&quot;, e);
-            }
-        }
-        if (currentPrincipals == null || currentPrincipals.isEmpty()) {
-            currentPrincipals = subject.getPrincipals();
-        }
-
-        Session session = subject.getSession(false);
-
-        if (session == null) {
-            if (!isEmpty(currentPrincipals)) {
-                session = subject.getSession();
-                session.setAttribute(DefaultSubjectContext.PRINCIPALS_SESSION_KEY, currentPrincipals);
-            }
-            // otherwise no session and no principals - nothing to save
-        } else {
-            PrincipalCollection existingPrincipals =
-                    (PrincipalCollection) session.getAttribute(DefaultSubjectContext.PRINCIPALS_SESSION_KEY);
-
-            if (isEmpty(currentPrincipals)) {
-                if (!isEmpty(existingPrincipals)) {
-                    session.removeAttribute(DefaultSubjectContext.PRINCIPALS_SESSION_KEY);
-                }
-                // otherwise both are null or empty - no need to update the session
-            } else {
-                if (!currentPrincipals.equals(existingPrincipals)) {
-                    session.setAttribute(DefaultSubjectContext.PRINCIPALS_SESSION_KEY, currentPrincipals);
-                }
-                // otherwise they&#39;re the same - no need to update the session
-            }
-        }
-    }
-
-    /**
-     * Merges the Subject&#39;s current authentication state with whatever may be in
-     * any available session.  Only updates the Subject&#39;s session if the session does not match the current
-     * authentication state.
-     *
-     * @param subject the Subject for which principals will potentially be merged into the Subject&#39;s session.
-     */
-    protected void mergeAuthenticationState(Subject subject) {
-
-        Session session = subject.getSession(false);
-
-        if (session == null) {
-            if (subject.isAuthenticated()) {
-                session = subject.getSession();
-                session.setAttribute(DefaultSubjectContext.AUTHENTICATED_SESSION_KEY, Boolean.TRUE);
-            }
-            //otherwise no session and not authenticated - nothing to save
-        } else {
-            Boolean existingAuthc = (Boolean) session.getAttribute(DefaultSubjectContext.AUTHENTICATED_SESSION_KEY);
-
-            if (subject.isAuthenticated()) {
-                if (existingAuthc == null || !existingAuthc) {
-                    session.setAttribute(DefaultSubjectContext.AUTHENTICATED_SESSION_KEY, Boolean.TRUE);
-                }
-                //otherwise authc state matches - no need to update the session
-            } else {
-                if (existingAuthc != null) {
-                    //existing doesn&#39;t match the current state - remove it:
-                    session.removeAttribute(DefaultSubjectContext.AUTHENTICATED_SESSION_KEY);
-                }
-                //otherwise not in the session and not authenticated - no need to update the session
-            }
-        }
-    }
-</code></pre>
 <h2 id="理解-subject-login"><a href="#理解-subject-login" class="headerlink" title="理解 subject.login()"></a>理解 subject.login()</h2><p>从众多 SecurityManager 的方法图中可知，只有 <code>DefaultSecurityManager</code> 实现了 <code>login()</code> 方法，所以从它的源码开始解析。</p>
 <p>*<em>1. DefaultSecurityManager | <code>login(token)</code> *</em></p>
-<pre><code class="java">    // line 259
-    /**
-     * First authenticates the {@code AuthenticationToken} argument, and if successful, constructs a
-     * {@code Subject} instance representing the authenticated account&#39;s identity.
-     * &lt;p/&gt;
-     * Once constructed, the {@code Subject} instance is then {@link #bind bound} to the application for
-     * subsequent access before being returned to the caller.
-     *
-     * @param token the authenticationToken to process for the login attempt.
-     * @return a Subject representing the authenticated user.
-     * @throws AuthenticationException if there is a problem authenticating the specified {@code token}.
-     */
-    public Subject login(Subject subject, AuthenticationToken token) throws AuthenticationException {
-        AuthenticationInfo info;
-        try {
-            info = authenticate(token);
-        } catch (AuthenticationException ae) {
-            try {
-                onFailedLogin(token, ae, subject);
-            } catch (Exception e) {
-                if (log.isInfoEnabled()) {
-                    log.info(&quot;onFailedLogin method threw an &quot; +
-                            &quot;exception.  Logging and propagating original AuthenticationException.&quot;, e);
-                }
-            }
-            throw ae; //propagate
-        }
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// line 259</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * First authenticates the &#123;<span class="doctag">@code</span> AuthenticationToken&#125; argument, and if successful, constructs a</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &#123;<span class="doctag">@code</span> Subject&#125; instance representing the authenticated account's identity.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &lt;p/&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * Once constructed, the &#123;<span class="doctag">@code</span> Subject&#125; instance is then &#123;<span class="doctag">@link</span> #bind bound&#125; to the application for</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * subsequent access before being returned to the caller.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@param</span> token the authenticationToken to process for the login attempt.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@return</span> a Subject representing the authenticated user.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@throws</span> AuthenticationException if there is a problem authenticating the specified &#123;<span class="doctag">@code</span> token&#125;.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Subject <span class="title">login</span><span class="params">(Subject subject, AuthenticationToken token)</span> <span class="keyword">throws</span> AuthenticationException </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">    AuthenticationInfo info;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">try</span> &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">        info = authenticate(token);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">    &#125; <span class="keyword">catch</span> (AuthenticationException ae) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">try</span> &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line">            onFailedLogin(token, ae, subject);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line">            <span class="keyword">if</span> (log.isInfoEnabled()) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line">                log.info(<span class="string">"onFailedLogin method threw an "</span> +</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line">                        <span class="string">"exception.  Logging and propagating original AuthenticationException."</span>, e);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">24</span></pre></td><td class="code"><pre><span class="line">            &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">25</span></pre></td><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">26</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">throw</span> ae; <span class="comment">//propagate</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">27</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">28</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">29</span></pre></td><td class="code"><pre><span class="line">    Subject loggedIn = createSubject(token, info, subject);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">30</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">31</span></pre></td><td class="code"><pre><span class="line">    onSuccessfulLogin(token, info, loggedIn);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">32</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">33</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> loggedIn;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">34</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
 
-        Subject loggedIn = createSubject(token, info, subject);
-
-        onSuccessfulLogin(token, info, loggedIn);
-
-        return loggedIn;
-    }</code></pre>
 <p>** 2. AuthenticatingSecurityManager | <code>authenticate(token)</code> **</p>
 <p>** 3. ModularRealmAuthenticator | <code>authenticate(token)</code><br>查看源码的时候，一直弄不懂 ModularRealmAuthenticator 对象中的 <code>Collection&lt;Realm&gt; realms</code> 是什么时候赋值的。<br>因为我们只是 <code>securityManager.setRealm(userRealm)</code> 这样的方式来填充 realm，但是是什么时候给你 <code>Authenticator</code> 填充 realm 的呢？<br>通过debug才发现，<code>AuthenticatingSecurityManager</code> 重写了父类 <code>RealmSecurityManger</code> 的 <code>afterRealmsSet()</code> 方法，在里面给 <code>authenticator</code> 填充了 realms </p>
-<pre><code class="java">    // line 90
-    /**
-     * Passes on the {@link #getRealms() realms} to the internal delegate &lt;code&gt;Authenticator&lt;/code&gt; instance so
-     * that it may use them during authentication attempts.
-     */
-    protected void afterRealmsSet() {
-        super.afterRealmsSet();
-        if (this.authenticator instanceof ModularRealmAuthenticator) {
-            ((ModularRealmAuthenticator) this.authenticator).setRealms(getRealms());
-        }
-    }</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// line 90</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * Passes on the &#123;<span class="doctag">@link</span> #getRealms() realms&#125; to the internal delegate &lt;code&gt;Authenticator&lt;/code&gt; instance so</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * that it may use them during authentication attempts.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">afterRealmsSet</span><span class="params">()</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">super</span>.afterRealmsSet();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.authenticator <span class="keyword">instanceof</span> ModularRealmAuthenticator) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">        ((ModularRealmAuthenticator) <span class="keyword">this</span>.authenticator).setRealms(getRealms());</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+
+
 
     </div>
-</article>
-</main>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/blog/alipay-reward-image.jpg" alt="LiuChuanWei 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/blog/alipay-reward-image.jpg" alt="LiuChuanWei 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
 </div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" rel="tag"># 源码解析</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/10/18/210-Java/Shiro/Shiro%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BSessionManager03-SessionValidationScheduler/" rel="prev" title="Shiro源码解析之SessionManager03-SessionValidationScheduler">
+      <i class="fa fa-chevron-left"></i> Shiro源码解析之SessionManager03-SessionValidationScheduler
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/10/22/210-Java/Shiro/Shiro%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BAuthenticator/" rel="next" title="Shiro源码解析之Authenticator">
+      Shiro源码解析之Authenticator <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#了解-SecurityManger"><span class="nav-number">1.</span> <span class="nav-text">了解 SecurityManger</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#继承图"><span class="nav-number">1.1.</span> <span class="nav-text">继承图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SecurityManager"><span class="nav-number">1.2.</span> <span class="nav-text">SecurityManager</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CachingSecurityManager"><span class="nav-number">1.3.</span> <span class="nav-text">CachingSecurityManager</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RealmSecurityManager"><span class="nav-number">1.4.</span> <span class="nav-text">RealmSecurityManager</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AuthenticatingSecurityManager"><span class="nav-number">1.5.</span> <span class="nav-text">AuthenticatingSecurityManager</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AuthorizingSecurityManager"><span class="nav-number">1.6.</span> <span class="nav-text">AuthorizingSecurityManager</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SessionSecurityManager"><span class="nav-number">1.7.</span> <span class="nav-text">SessionSecurityManager</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DefaultSecurityManager"><span class="nav-number">1.8.</span> <span class="nav-text">DefaultSecurityManager</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DefaultSecurityManager-1"><span class="nav-number">1.9.</span> <span class="nav-text">DefaultSecurityManager</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#小结"><span class="nav-number">1.10.</span> <span class="nav-text">小结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#理解-SecurityManager"><span class="nav-number">2.</span> <span class="nav-text">理解 SecurityManager</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#login-Subject-AuthenticationToken-Subject"><span class="nav-number">2.1.</span> <span class="nav-text">login(Subject, AuthenticationToken): Subject</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-login-subject-token-DefaultSecurityManager"><span class="nav-number">2.1.1.</span> <span class="nav-text">1. login(subject, token) | DefaultSecurityManager</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-authencate-token-AuthenticatingSecurityManager"><span class="nav-number">2.1.2.</span> <span class="nav-text">2. authencate(token) | AuthenticatingSecurityManager</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-createSubject-token-info-subject-DefaultSecurityManager"><span class="nav-number">2.1.3.</span> <span class="nav-text">3. createSubject(token, info, subject) | DefaultSecurityManager</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#createSubject-subjectContext-Subject"><span class="nav-number">2.2.</span> <span class="nav-text">createSubject(subjectContext): Subject</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-createSubject-subjectContext-DefaultSecurityManager"><span class="nav-number">2.2.1.</span> <span class="nav-text">1. createSubject(subjectContext) | DefaultSecurityManager</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-getSubjectFacotry-createSubject"><span class="nav-number">2.2.2.</span> <span class="nav-text">2. getSubjectFacotry().createSubject()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-save-subject-void-DefaultSecurityManager"><span class="nav-number">2.2.3.</span> <span class="nav-text">3. save(subject): void | DefaultSecurityManager</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#理解-subject-login"><span class="nav-number">3.</span> <span class="nav-text">理解 subject.login()</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">LiuChuanWei</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">37</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/liuchuanv" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;liuchuanv" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiuChuanWei</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme: 'forest',
+      logLevel: 3,
+      flowchart: { curve: 'linear' },
+      gantt: { axisFormat: '%m/%d/%Y' },
+      sequence: { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
 </body>
 </html>

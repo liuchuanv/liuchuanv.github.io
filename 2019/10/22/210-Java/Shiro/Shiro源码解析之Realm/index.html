@@ -1,45 +1,257 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
-    <title>静言思之</title>
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/lib/github-markdown-css/github-markdown.css">
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://liuchuanv.github.io').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.6.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="了解 Realm继承图 Realm CachingRealm AuthenticatingRealm AuthorizingRealm UserRealm通常我们自定义的 realm——UserRealm  理解RealmgetAuthenticationInfo(AuthenticationToken): AuthenticationInfo1. AuthenticationRealm | ge">
+<meta name="keywords" content="源码解析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Shiro源码解析之Realm">
+<meta property="og:url" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;2019&#x2F;10&#x2F;22&#x2F;210-Java&#x2F;Shiro&#x2F;Shiro%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BRealm&#x2F;index.html">
+<meta property="og:site_name" content="静言思之">
+<meta property="og:description" content="了解 Realm继承图 Realm CachingRealm AuthenticatingRealm AuthorizingRealm UserRealm通常我们自定义的 realm——UserRealm  理解RealmgetAuthenticationInfo(AuthenticationToken): AuthenticationInfo1. AuthenticationRealm | ge">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;blog&#x2F;images&#x2F;201910&#x2F;UserRealm.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;blog&#x2F;images&#x2F;201910&#x2F;1571724441972.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;blog&#x2F;images&#x2F;201910&#x2F;1571724474817.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;blog&#x2F;images&#x2F;201910&#x2F;AuthenticatingRealm.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;blog&#x2F;images&#x2F;201910&#x2F;AuthorizingRealm.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;blog&#x2F;images&#x2F;201910&#x2F;1571734551679.png">
+<meta property="og:updated_time" content="2019-10-28T06:05:41.166Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;blog&#x2F;images&#x2F;201910&#x2F;UserRealm.png">
+
+<link rel="canonical" href="https://liuchuanv.github.io/2019/10/22/210-Java/Shiro/Shiro%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BRealm/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>Shiro源码解析之Realm | 静言思之</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
 </head>
-<body>
-<div class="container">
-<header class="header">
-    <div class="blog-title">
-        <a href="/" class="logo">静言思之</a>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">静言思之</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
     </div>
-    <nav class="navbar">
-        <ul class="menu">
-            
-                <li class="menu-item">
-                    <a href="/" class="menu-item-link">首页</a>
-                </li>
-            
-                <li class="menu-item">
-                    <a href="/archives" class="menu-item-link">归档</a>
-                </li>
-            
-                <li class="menu-item">
-                    <a href="https://github.com/ahonn" target="_blank" rel="noopener" class="menu-item-link">交友</a>
-                </li>
-            
-        </ul>
-    </nav>
-</header>
-<main class="main">
-    <article class="post">
-    <div class="post-title">
-        <h2 class="title">Shiro源码解析之Realm</h2>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
-    <div class="post-meta">
-        <span class="post-time">2019-10-22</span>
-    </div>
-    <div class="markdown-body">
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">21</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">17</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">37</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://liuchuanv.github.io/2019/10/22/210-Java/Shiro/Shiro%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BRealm/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="LiuChuanWei">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="静言思之">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Shiro源码解析之Realm
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-10-22 11:17:07" itemprop="dateCreated datePublished" datetime="2019-10-22T11:17:07+08:00">2019-10-22</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-10-28 14:05:41" itemprop="dateModified" datetime="2019-10-28T14:05:41+08:00">2019-10-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/Shiro/" itemprop="url" rel="index">
+                    <span itemprop="name">Shiro</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
         <h2 id="了解-Realm"><a href="#了解-Realm" class="headerlink" title="了解 Realm"></a>了解 Realm</h2><h3 id="继承图"><a href="#继承图" class="headerlink" title="继承图"></a>继承图</h3><p><img src="/blog/images/201910/UserRealm.png" alt="UserRealm"></p>
 <h3 id="Realm"><a href="#Realm" class="headerlink" title="Realm"></a>Realm</h3><p><img src="/blog/images/201910/1571724441972.png" alt="1571724441972"></p>
 <h3 id="CachingRealm"><a href="#CachingRealm" class="headerlink" title="CachingRealm"></a>CachingRealm</h3><p><img src="/blog/images/201910/1571724474817.png" alt="1571724474817"></p>
@@ -47,173 +259,10 @@
 <h3 id="AuthorizingRealm"><a href="#AuthorizingRealm" class="headerlink" title="AuthorizingRealm"></a>AuthorizingRealm</h3><p><img src="/blog/images/201910/AuthorizingRealm.png" alt="AuthorizingRealm"></p>
 <h3 id="UserRealm"><a href="#UserRealm" class="headerlink" title="UserRealm"></a>UserRealm</h3><p><em>通常我们自定义的 realm——<code>UserRealm</code></em></p>
 <p><img src="/blog/images/201910/1571734551679.png" alt="1571734551679"></p>
-<h2 id="理解Realm"><a href="#理解Realm" class="headerlink" title="理解Realm"></a>理解Realm</h2><h3 id="getAuthenticationInfo-AuthenticationToken-AuthenticationInfo"><a href="#getAuthenticationInfo-AuthenticationToken-AuthenticationInfo" class="headerlink" title="getAuthenticationInfo(AuthenticationToken): AuthenticationInfo"></a>getAuthenticationInfo(AuthenticationToken): AuthenticationInfo</h3><h4 id="1-AuthenticationRealm-getAuthenticationInfo"><a href="#1-AuthenticationRealm-getAuthenticationInfo" class="headerlink" title="1. AuthenticationRealm | getAuthenticationInfo"></a>1. AuthenticationRealm | <code>getAuthenticationInfo</code></h4><pre><code class="java">    // line 541
-    /**
-     * This implementation functions as follows:
-     * &lt;ol&gt;
-     * &lt;li&gt;It attempts to acquire any cached {@link AuthenticationInfo} corresponding to the specified
-     * {@link AuthenticationToken} argument.  If a cached value is found, it will be used for credentials matching,
-     * alleviating the need to perform any lookups with a data source.&lt;/li&gt;
-     * &lt;li&gt;If there is no cached {@link AuthenticationInfo} found, delegate to the
-     * {@link #doGetAuthenticationInfo(org.apache.shiro.authc.AuthenticationToken)} method to perform the actual
-     * lookup.  If authentication caching is enabled and possible, any returned info object will be
-     * {@link #cacheAuthenticationInfoIfPossible(org.apache.shiro.authc.AuthenticationToken, org.apache.shiro.authc.AuthenticationInfo) cached}
-     * to be used in future authentication attempts.&lt;/li&gt;
-     * &lt;li&gt;If an AuthenticationInfo instance is not found in the cache or by lookup, {@code null} is returned to
-     * indicate an account cannot be found.&lt;/li&gt;
-     * &lt;li&gt;If an AuthenticationInfo instance is found (either cached or via lookup), ensure the submitted
-     * AuthenticationToken&#39;s credentials match the expected {@code AuthenticationInfo}&#39;s credentials using the
-     * {@link #getCredentialsMatcher() credentialsMatcher}.  This means that credentials are always verified
-     * for an authentication attempt.&lt;/li&gt;
-     * &lt;/ol&gt;
-     *
-     * @param token the submitted account principal and credentials.
-     * @return the AuthenticationInfo corresponding to the given {@code token}, or {@code null} if no
-     *         AuthenticationInfo could be found.
-     * @throws AuthenticationException if authentication failed.
-     */
-    public final AuthenticationInfo getAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
+<h2 id="理解Realm"><a href="#理解Realm" class="headerlink" title="理解Realm"></a>理解Realm</h2><h3 id="getAuthenticationInfo-AuthenticationToken-AuthenticationInfo"><a href="#getAuthenticationInfo-AuthenticationToken-AuthenticationInfo" class="headerlink" title="getAuthenticationInfo(AuthenticationToken): AuthenticationInfo"></a>getAuthenticationInfo(AuthenticationToken): AuthenticationInfo</h3><h4 id="1-AuthenticationRealm-getAuthenticationInfo"><a href="#1-AuthenticationRealm-getAuthenticationInfo" class="headerlink" title="1. AuthenticationRealm | getAuthenticationInfo"></a>1. AuthenticationRealm | <code>getAuthenticationInfo</code></h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// line 541</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * This implementation functions as follows:</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &lt;ol&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &lt;li&gt;It attempts to acquire any cached &#123;<span class="doctag">@link</span> AuthenticationInfo&#125; corresponding to the specified</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> AuthenticationToken&#125; argument.  If a cached value is found, it will be used for credentials matching,</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * alleviating the need to perform any lookups with a data source.&lt;/li&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &lt;li&gt;If there is no cached &#123;<span class="doctag">@link</span> AuthenticationInfo&#125; found, delegate to the</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> #doGetAuthenticationInfo(org.apache.shiro.authc.AuthenticationToken)&#125; method to perform the actual</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * lookup.  If authentication caching is enabled and possible, any returned info object will be</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> #cacheAuthenticationInfoIfPossible(org.apache.shiro.authc.AuthenticationToken, org.apache.shiro.authc.AuthenticationInfo) cached&#125;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * to be used in future authentication attempts.&lt;/li&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &lt;li&gt;If an AuthenticationInfo instance is not found in the cache or by lookup, &#123;<span class="doctag">@code</span> null&#125; is returned to</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * indicate an account cannot be found.&lt;/li&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &lt;li&gt;If an AuthenticationInfo instance is found (either cached or via lookup), ensure the submitted</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * AuthenticationToken's credentials match the expected &#123;<span class="doctag">@code</span> AuthenticationInfo&#125;'s credentials using the</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> #getCredentialsMatcher() credentialsMatcher&#125;.  This means that credentials are always verified</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * for an authentication attempt.&lt;/li&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &lt;/ol&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@param</span> token the submitted account principal and credentials.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@return</span> the AuthenticationInfo corresponding to the given &#123;<span class="doctag">@code</span> token&#125;, or &#123;<span class="doctag">@code</span> null&#125; if no</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> *         AuthenticationInfo could be found.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">24</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@throws</span> AuthenticationException if authentication failed.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">25</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">26</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> AuthenticationInfo <span class="title">getAuthenticationInfo</span><span class="params">(AuthenticationToken token)</span> <span class="keyword">throws</span> AuthenticationException </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">27</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">28</span></pre></td><td class="code"><pre><span class="line">    AuthenticationInfo info = getCachedAuthenticationInfo(token);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">29</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">if</span> (info == <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">30</span></pre></td><td class="code"><pre><span class="line">        <span class="comment">//otherwise not cached, perform the lookup:</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">31</span></pre></td><td class="code"><pre><span class="line">        info = doGetAuthenticationInfo(token);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">32</span></pre></td><td class="code"><pre><span class="line">        log.debug(<span class="string">"Looked up AuthenticationInfo [&#123;&#125;] from doGetAuthenticationInfo"</span>, info);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">33</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">if</span> (token != <span class="keyword">null</span> &amp;&amp; info != <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">34</span></pre></td><td class="code"><pre><span class="line">            cacheAuthenticationInfoIfPossible(token, info);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">35</span></pre></td><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">36</span></pre></td><td class="code"><pre><span class="line">    &#125; <span class="keyword">else</span> &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">37</span></pre></td><td class="code"><pre><span class="line">        log.debug(<span class="string">"Using cached authentication info [&#123;&#125;] to perform credentials matching."</span>, info);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">38</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">39</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">40</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">if</span> (info != <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">41</span></pre></td><td class="code"><pre><span class="line">        assertCredentialsMatch(token, info);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">42</span></pre></td><td class="code"><pre><span class="line">    &#125; <span class="keyword">else</span> &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">43</span></pre></td><td class="code"><pre><span class="line">        log.debug(<span class="string">"No AuthenticationInfo found for submitted AuthenticationToken [&#123;&#125;].  Returning null."</span>, token);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">44</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">45</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">46</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> info;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">47</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">48</span></pre></td><td class="code"><pre><span class="line">......</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">49</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// line 696</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">50</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">51</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * Retrieves authentication data from an implementation-specific datasource (RDBMS, LDAP, etc) for the given</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">52</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * authentication token.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">53</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &lt;p/&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">54</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * For most datasources, this means just 'pulling' authentication data for an associated subject/user and nothing</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">55</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * more and letting Shiro do the rest.  But in some systems, this method could actually perform EIS specific</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">56</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * log-in logic in addition to just retrieving data - it is up to the Realm implementation.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">57</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &lt;p/&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">58</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * A &#123;<span class="doctag">@code</span> null&#125; return value means that no account could be associated with the specified token.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">59</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">60</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@param</span> token the authentication token containing the user's principal and credentials.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">61</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@return</span> an &#123;<span class="doctag">@link</span> AuthenticationInfo&#125; object containing account data resulting from the</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">62</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> *         authentication ONLY if the lookup is successful (i.e. account exists and is valid, etc.)</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">63</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@throws</span> AuthenticationException if there is an error acquiring data or performing</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">64</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> *                                 realm-specific authentication logic for the specified &lt;tt&gt;token&lt;/tt&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">65</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">66</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">abstract</span> AuthenticationInfo <span class="title">doGetAuthenticationInfo</span><span class="params">(AuthenticationToken token)</span> <span class="keyword">throws</span> AuthenticationException</span>;</span></pre></td></tr></table></figure>
 
-        AuthenticationInfo info = getCachedAuthenticationInfo(token);
-        if (info == null) {
-            //otherwise not cached, perform the lookup:
-            info = doGetAuthenticationInfo(token);
-            log.debug(&quot;Looked up AuthenticationInfo [{}] from doGetAuthenticationInfo&quot;, info);
-            if (token != null &amp;&amp; info != null) {
-                cacheAuthenticationInfoIfPossible(token, info);
-            }
-        } else {
-            log.debug(&quot;Using cached authentication info [{}] to perform credentials matching.&quot;, info);
-        }
+<h4 id="2-AuthenticationRealm-getCachedAuthenticationInfo-token"><a href="#2-AuthenticationRealm-getCachedAuthenticationInfo-token" class="headerlink" title="2. AuthenticationRealm | getCachedAuthenticationInfo(token)"></a>2. AuthenticationRealm | <code>getCachedAuthenticationInfo(token)</code></h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// line 471</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * Returns any cached AuthenticationInfo corresponding to the specified token or &#123;<span class="doctag">@code</span> null&#125; if there currently</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * isn't any cached data.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@param</span> token the token submitted during the authentication attempt.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@return</span> any cached AuthenticationInfo corresponding to the specified token or &#123;<span class="doctag">@code</span> null&#125; if there currently</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> *         isn't any cached data.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@since</span> 1.2</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> AuthenticationInfo <span class="title">getCachedAuthenticationInfo</span><span class="params">(AuthenticationToken token)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">    AuthenticationInfo info = <span class="keyword">null</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">    Cache&lt;Object, AuthenticationInfo&gt; cache = getAvailableAuthenticationCache();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">if</span> (cache != <span class="keyword">null</span> &amp;&amp; token != <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">        log.trace(<span class="string">"Attempting to retrieve the AuthenticationInfo from cache."</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">        Object key = getAuthenticationCacheKey(token);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line">        info = cache.get(key);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">if</span> (info == <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line">            log.trace(<span class="string">"No AuthorizationInfo found in cache for key [&#123;&#125;]"</span>, key);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line">        &#125; <span class="keyword">else</span> &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line">            log.trace(<span class="string">"Found cached AuthorizationInfo for key [&#123;&#125;]"</span>, key);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">24</span></pre></td><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">25</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">26</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">27</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> info;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">28</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">29</span></pre></td><td class="code"><pre><span class="line">...... </span></pre></td></tr><tr><td class="gutter"><pre><span class="line">30</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// line 419</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">31</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">32</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * Returns any available &#123;<span class="doctag">@link</span> Cache&#125; instance to use for authentication caching.  This functions as follows:</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">33</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &lt;ol&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">34</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &lt;li&gt;If an &#123;<span class="doctag">@link</span> #setAuthenticationCache(org.apache.shiro.cache.Cache) authenticationCache&#125; has been explicitly</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">35</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * configured (it is not null), it is returned.&lt;/li&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">36</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &lt;li&gt;If there is no &#123;<span class="doctag">@link</span> #getAuthenticationCache() authenticationCache&#125; configured:</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">37</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &lt;ol&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">38</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &lt;li&gt;If authentication caching is &#123;<span class="doctag">@link</span> #isAuthenticationCachingEnabled() enabled&#125;, any available</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">39</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> #getCacheManager() cacheManager&#125; will be consulted to obtain an available authentication cache.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">40</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &lt;/li&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">41</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &lt;li&gt;If authentication caching is disabled, this implementation does nothing.&lt;/li&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">42</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &lt;/ol&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">43</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &lt;/li&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">44</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &lt;/ol&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">45</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">46</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@return</span> any available &#123;<span class="doctag">@link</span> Cache&#125; instance to use for authentication caching.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">47</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">48</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> Cache&lt;Object, AuthenticationInfo&gt; <span class="title">getAvailableAuthenticationCache</span><span class="params">()</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">49</span></pre></td><td class="code"><pre><span class="line">    Cache&lt;Object, AuthenticationInfo&gt; cache = getAuthenticationCache();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">50</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">boolean</span> authcCachingEnabled = isAuthenticationCachingEnabled();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">51</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">if</span> (cache == <span class="keyword">null</span> &amp;&amp; authcCachingEnabled) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">52</span></pre></td><td class="code"><pre><span class="line">        cache = getAuthenticationCacheLazy();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">53</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">54</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> cache;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">55</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">56</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">57</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">58</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * Checks to see if the authenticationCache class attribute is null, and if so, attempts to acquire one from</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">59</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * any configured &#123;<span class="doctag">@link</span> #getCacheManager() cacheManager&#125;.  If one is acquired, it is set as the class attribute.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">60</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * The class attribute is then returned.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">61</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">62</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@return</span> an available cache instance to be used for authentication caching or &#123;<span class="doctag">@code</span> null&#125; if one is not available.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">63</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@since</span> 1.2</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">64</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">65</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> Cache&lt;Object, AuthenticationInfo&gt; <span class="title">getAuthenticationCacheLazy</span><span class="params">()</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">66</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">67</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.authenticationCache == <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">68</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">69</span></pre></td><td class="code"><pre><span class="line">        log.trace(<span class="string">"No authenticationCache instance set.  Checking for a cacheManager..."</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">70</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">71</span></pre></td><td class="code"><pre><span class="line">        CacheManager cacheManager = getCacheManager();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">72</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">73</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">if</span> (cacheManager != <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">74</span></pre></td><td class="code"><pre><span class="line">            String cacheName = getAuthenticationCacheName();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">75</span></pre></td><td class="code"><pre><span class="line">            log.debug(<span class="string">"CacheManager [&#123;&#125;] configured.  Building authentication cache '&#123;&#125;'"</span>, cacheManager, cacheName);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">76</span></pre></td><td class="code"><pre><span class="line">            <span class="keyword">this</span>.authenticationCache = cacheManager.getCache(cacheName);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">77</span></pre></td><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">78</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">79</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">80</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.authenticationCache;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">81</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">82</span></pre></td><td class="code"><pre><span class="line">......</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">83</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// line 611</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">84</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">85</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * Returns the key under which &#123;<span class="doctag">@link</span> AuthenticationInfo&#125; instances are cached if authentication caching is enabled.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">86</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * This implementation defaults to returning the token's</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">87</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> org.apache.shiro.authc.AuthenticationToken#getPrincipal() principal&#125;, which is usually a username in</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">88</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * most applications.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">89</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &lt;h3&gt;Cache Invalidation on Logout&lt;/h3&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">90</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &lt;b&gt;<span class="doctag">NOTE:</span>&lt;/b&gt; If you want to be able to invalidate an account's cached &#123;<span class="doctag">@code</span> AuthenticationInfo&#125; on logout, you</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">91</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * must ensure the &#123;<span class="doctag">@link</span> #getAuthenticationCacheKey(org.apache.shiro.subject.PrincipalCollection)&#125; method returns</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">92</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * the same value as this method.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">93</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">94</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@param</span> token the authentication token for which any successful authentication will be cached.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">95</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@return</span> the cache key to use to cache the associated &#123;<span class="doctag">@link</span> AuthenticationInfo&#125; after a successful authentication.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">96</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@since</span> 1.2</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">97</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">98</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> Object <span class="title">getAuthenticationCacheKey</span><span class="params">(AuthenticationToken token)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">99</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> token != <span class="keyword">null</span> ? token.getPrincipal() : <span class="keyword">null</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">100</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
 
-        if (info != null) {
-            assertCredentialsMatch(token, info);
-        } else {
-            log.debug(&quot;No AuthenticationInfo found for submitted AuthenticationToken [{}].  Returning null.&quot;, token);
-        }
-
-        return info;
-    }
-    ......
-    // line 696
-    /**
-     * Retrieves authentication data from an implementation-specific datasource (RDBMS, LDAP, etc) for the given
-     * authentication token.
-     * &lt;p/&gt;
-     * For most datasources, this means just &#39;pulling&#39; authentication data for an associated subject/user and nothing
-     * more and letting Shiro do the rest.  But in some systems, this method could actually perform EIS specific
-     * log-in logic in addition to just retrieving data - it is up to the Realm implementation.
-     * &lt;p/&gt;
-     * A {@code null} return value means that no account could be associated with the specified token.
-     *
-     * @param token the authentication token containing the user&#39;s principal and credentials.
-     * @return an {@link AuthenticationInfo} object containing account data resulting from the
-     *         authentication ONLY if the lookup is successful (i.e. account exists and is valid, etc.)
-     * @throws AuthenticationException if there is an error acquiring data or performing
-     *                                 realm-specific authentication logic for the specified &lt;tt&gt;token&lt;/tt&gt;
-     */
-    protected abstract AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException;</code></pre>
-<h4 id="2-AuthenticationRealm-getCachedAuthenticationInfo-token"><a href="#2-AuthenticationRealm-getCachedAuthenticationInfo-token" class="headerlink" title="2. AuthenticationRealm | getCachedAuthenticationInfo(token)"></a>2. AuthenticationRealm | <code>getCachedAuthenticationInfo(token)</code></h4><pre><code class="java">    // line 471
-
-    /**
-     * Returns any cached AuthenticationInfo corresponding to the specified token or {@code null} if there currently
-     * isn&#39;t any cached data.
-     *
-     * @param token the token submitted during the authentication attempt.
-     * @return any cached AuthenticationInfo corresponding to the specified token or {@code null} if there currently
-     *         isn&#39;t any cached data.
-     * @since 1.2
-     */
-    private AuthenticationInfo getCachedAuthenticationInfo(AuthenticationToken token) {
-        AuthenticationInfo info = null;
-
-        Cache&lt;Object, AuthenticationInfo&gt; cache = getAvailableAuthenticationCache();
-        if (cache != null &amp;&amp; token != null) {
-            log.trace(&quot;Attempting to retrieve the AuthenticationInfo from cache.&quot;);
-            Object key = getAuthenticationCacheKey(token);
-            info = cache.get(key);
-            if (info == null) {
-                log.trace(&quot;No AuthorizationInfo found in cache for key [{}]&quot;, key);
-            } else {
-                log.trace(&quot;Found cached AuthorizationInfo for key [{}]&quot;, key);
-            }
-        }
-
-        return info;
-    }
-    ...... 
-    // line 419
-    /**
-     * Returns any available {@link Cache} instance to use for authentication caching.  This functions as follows:
-     * &lt;ol&gt;
-     * &lt;li&gt;If an {@link #setAuthenticationCache(org.apache.shiro.cache.Cache) authenticationCache} has been explicitly
-     * configured (it is not null), it is returned.&lt;/li&gt;
-     * &lt;li&gt;If there is no {@link #getAuthenticationCache() authenticationCache} configured:
-     * &lt;ol&gt;
-     * &lt;li&gt;If authentication caching is {@link #isAuthenticationCachingEnabled() enabled}, any available
-     * {@link #getCacheManager() cacheManager} will be consulted to obtain an available authentication cache.
-     * &lt;/li&gt;
-     * &lt;li&gt;If authentication caching is disabled, this implementation does nothing.&lt;/li&gt;
-     * &lt;/ol&gt;
-     * &lt;/li&gt;
-     * &lt;/ol&gt;
-     *
-     * @return any available {@link Cache} instance to use for authentication caching.
-     */
-    private Cache&lt;Object, AuthenticationInfo&gt; getAvailableAuthenticationCache() {
-        Cache&lt;Object, AuthenticationInfo&gt; cache = getAuthenticationCache();
-        boolean authcCachingEnabled = isAuthenticationCachingEnabled();
-        if (cache == null &amp;&amp; authcCachingEnabled) {
-            cache = getAuthenticationCacheLazy();
-        }
-        return cache;
-    }
-
-    /**
-     * Checks to see if the authenticationCache class attribute is null, and if so, attempts to acquire one from
-     * any configured {@link #getCacheManager() cacheManager}.  If one is acquired, it is set as the class attribute.
-     * The class attribute is then returned.
-     *
-     * @return an available cache instance to be used for authentication caching or {@code null} if one is not available.
-     * @since 1.2
-     */
-    private Cache&lt;Object, AuthenticationInfo&gt; getAuthenticationCacheLazy() {
-
-        if (this.authenticationCache == null) {
-
-            log.trace(&quot;No authenticationCache instance set.  Checking for a cacheManager...&quot;);
-
-            CacheManager cacheManager = getCacheManager();
-
-            if (cacheManager != null) {
-                String cacheName = getAuthenticationCacheName();
-                log.debug(&quot;CacheManager [{}] configured.  Building authentication cache &#39;{}&#39;&quot;, cacheManager, cacheName);
-                this.authenticationCache = cacheManager.getCache(cacheName);
-            }
-        }
-
-        return this.authenticationCache;
-    }
-    ......
-    // line 611
-    /**
-     * Returns the key under which {@link AuthenticationInfo} instances are cached if authentication caching is enabled.
-     * This implementation defaults to returning the token&#39;s
-     * {@link org.apache.shiro.authc.AuthenticationToken#getPrincipal() principal}, which is usually a username in
-     * most applications.
-     * &lt;h3&gt;Cache Invalidation on Logout&lt;/h3&gt;
-     * &lt;b&gt;NOTE:&lt;/b&gt; If you want to be able to invalidate an account&#39;s cached {@code AuthenticationInfo} on logout, you
-     * must ensure the {@link #getAuthenticationCacheKey(org.apache.shiro.subject.PrincipalCollection)} method returns
-     * the same value as this method.
-     *
-     * @param token the authentication token for which any successful authentication will be cached.
-     * @return the cache key to use to cache the associated {@link AuthenticationInfo} after a successful authentication.
-     * @since 1.2
-     */
-    protected Object getAuthenticationCacheKey(AuthenticationToken token) {
-        return token != null ? token.getPrincipal() : null;
-    }
-</code></pre>
 <p>从缓存 authenticationCache 中获取 authenticationInfo，从 cacheManager 中获取缓存。</p>
 <blockquote>
 <p><strong>问题：</strong></p>
@@ -222,106 +271,14 @@
 </ol>
 </blockquote>
 <h4 id="3-UserRealm-doGetAuthenticationInfo-token"><a href="#3-UserRealm-doGetAuthenticationInfo-token" class="headerlink" title="3. UserRealm | doGetAuthenticationInfo(token)"></a>3. UserRealm | <code>doGetAuthenticationInfo(token)</code></h4><p>自定义Realm实现 doGetAuthenticationInfo(token) 方法</p>
-<pre><code class="java">    /**
-     * 登录认证
-     */
-    @Override
-    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException
-    {
-        UsernamePasswordToken upToken = (UsernamePasswordToken) token;
-        String username = upToken.getUsername();
-        String password = &quot;&quot;;
-        if (upToken.getPassword() != null)
-        {
-            password = new String(upToken.getPassword());
-        }
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * 登录认证</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> AuthenticationInfo <span class="title">doGetAuthenticationInfo</span><span class="params">(AuthenticationToken token)</span> <span class="keyword">throws</span> AuthenticationException</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="function"></span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">    UsernamePasswordToken upToken = (UsernamePasswordToken) token;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">    String username = upToken.getUsername();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">    String password = <span class="string">""</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">if</span> (upToken.getPassword() != <span class="keyword">null</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">    &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">        password = <span class="keyword">new</span> String(upToken.getPassword());</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">    SysUser user = <span class="keyword">null</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">try</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">    &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">        user = loginService.login(username, password);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">catch</span> (CaptchaException e)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line">    &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> AuthenticationException(e.getMessage(), e);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">24</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">catch</span> (UserNotExistsException e)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">25</span></pre></td><td class="code"><pre><span class="line">    &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">26</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> UnknownAccountException(e.getMessage(), e);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">27</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">28</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">catch</span> (UserPasswordNotMatchException e)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">29</span></pre></td><td class="code"><pre><span class="line">    &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">30</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IncorrectCredentialsException(e.getMessage(), e);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">31</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">32</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">catch</span> (UserPasswordRetryLimitExceedException e)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">33</span></pre></td><td class="code"><pre><span class="line">    &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">34</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ExcessiveAttemptsException(e.getMessage(), e);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">35</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">36</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">catch</span> (UserBlockedException e)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">37</span></pre></td><td class="code"><pre><span class="line">    &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">38</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> LockedAccountException(e.getMessage(), e);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">39</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">40</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">catch</span> (RoleBlockedException e)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">41</span></pre></td><td class="code"><pre><span class="line">    &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">42</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> LockedAccountException(e.getMessage(), e);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">43</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">44</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">catch</span> (Exception e)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">45</span></pre></td><td class="code"><pre><span class="line">    &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">46</span></pre></td><td class="code"><pre><span class="line">        log.info(<span class="string">"对用户["</span> + username + <span class="string">"]进行登录验证..验证未通过&#123;&#125;"</span>, e.getMessage());</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">47</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> AuthenticationException(e.getMessage(), e);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">48</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">49</span></pre></td><td class="code"><pre><span class="line">    SimpleAuthenticationInfo info = <span class="keyword">new</span> SimpleAuthenticationInfo(user, password, getName());</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">50</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> info;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">51</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
 
-        SysUser user = null;
-        try
-        {
-            user = loginService.login(username, password);
-        }
-        catch (CaptchaException e)
-        {
-            throw new AuthenticationException(e.getMessage(), e);
-        }
-        catch (UserNotExistsException e)
-        {
-            throw new UnknownAccountException(e.getMessage(), e);
-        }
-        catch (UserPasswordNotMatchException e)
-        {
-            throw new IncorrectCredentialsException(e.getMessage(), e);
-        }
-        catch (UserPasswordRetryLimitExceedException e)
-        {
-            throw new ExcessiveAttemptsException(e.getMessage(), e);
-        }
-        catch (UserBlockedException e)
-        {
-            throw new LockedAccountException(e.getMessage(), e);
-        }
-        catch (RoleBlockedException e)
-        {
-            throw new LockedAccountException(e.getMessage(), e);
-        }
-        catch (Exception e)
-        {
-            log.info(&quot;对用户[&quot; + username + &quot;]进行登录验证..验证未通过{}&quot;, e.getMessage());
-            throw new AuthenticationException(e.getMessage(), e);
-        }
-        SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(user, password, getName());
-        return info;
-    }
-</code></pre>
 <p><code>SimpleAuthenticationInfo</code> 是一个比较有意思的类，在下面会有具体的分析</p>
-<h4 id="4-AuthenticationRealm-cacheAuthenticationInfoIfPossible-token-info"><a href="#4-AuthenticationRealm-cacheAuthenticationInfoIfPossible-token-info" class="headerlink" title="4. AuthenticationRealm | cacheAuthenticationInfoIfPossible(token, info)"></a>4. AuthenticationRealm | <code>cacheAuthenticationInfoIfPossible(token, info)</code></h4><pre><code class="java">    // line 498
-    /**
-     * Caches the specified info if authentication caching
-     * {@link #isAuthenticationCachingEnabled(org.apache.shiro.authc.AuthenticationToken, org.apache.shiro.authc.AuthenticationInfo) isEnabled}
-     * for the specific token/info pair and a cache instance is available to be used.
-     *
-     * @param token the authentication token submitted which resulted in a successful authentication attempt.
-     * @param info  the AuthenticationInfo to cache as a result of the successful authentication attempt.
-     * @since 1.2
-     */
-    private void cacheAuthenticationInfoIfPossible(AuthenticationToken token, AuthenticationInfo info) {
-        if (!isAuthenticationCachingEnabled(token, info)) {
-            log.debug(&quot;AuthenticationInfo caching is disabled for info [{}].  Submitted token: [{}].&quot;, info, token);
-            //return quietly, caching is disabled for this token/info pair:
-            return;
-        }
+<h4 id="4-AuthenticationRealm-cacheAuthenticationInfoIfPossible-token-info"><a href="#4-AuthenticationRealm-cacheAuthenticationInfoIfPossible-token-info" class="headerlink" title="4. AuthenticationRealm | cacheAuthenticationInfoIfPossible(token, info)"></a>4. AuthenticationRealm | <code>cacheAuthenticationInfoIfPossible(token, info)</code></h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// line 498</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * Caches the specified info if authentication caching</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> #isAuthenticationCachingEnabled(org.apache.shiro.authc.AuthenticationToken, org.apache.shiro.authc.AuthenticationInfo) isEnabled&#125;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * for the specific token/info pair and a cache instance is available to be used.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@param</span> token the authentication token submitted which resulted in a successful authentication attempt.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@param</span> info  the AuthenticationInfo to cache as a result of the successful authentication attempt.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@since</span> 1.2</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">cacheAuthenticationInfoIfPossible</span><span class="params">(AuthenticationToken token, AuthenticationInfo info)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">if</span> (!isAuthenticationCachingEnabled(token, info)) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">        log.debug(<span class="string">"AuthenticationInfo caching is disabled for info [&#123;&#125;].  Submitted token: [&#123;&#125;]."</span>, info, token);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">        <span class="comment">//return quietly, caching is disabled for this token/info pair:</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">return</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">    Cache&lt;Object, AuthenticationInfo&gt; cache = getAvailableAuthenticationCache();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">if</span> (cache != <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line">        Object key = getAuthenticationCacheKey(token);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line">        cache.put(key, info);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line">        log.trace(<span class="string">"Cached AuthenticationInfo for continued authentication.  key=[&#123;&#125;], value=[&#123;&#125;]."</span>, key, info);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">24</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
 
-        Cache&lt;Object, AuthenticationInfo&gt; cache = getAvailableAuthenticationCache();
-        if (cache != null) {
-            Object key = getAuthenticationCacheKey(token);
-            cache.put(key, info);
-            log.trace(&quot;Cached AuthenticationInfo for continued authentication.  key=[{}], value=[{}].&quot;, key, info);
-        }
-    }</code></pre>
 <p>将 authenticationInfo 存入缓存中，不过 <code>isAuthenticationCachingEnabled(token, info)</code> 默认是 false。</p>
-<h4 id="5-AuthenticationRealm-assertCredentialsMatch"><a href="#5-AuthenticationRealm-assertCredentialsMatch" class="headerlink" title="5. AuthenticationRealm | assertCredentialsMatch"></a>5. AuthenticationRealm | <code>assertCredentialsMatch</code></h4><pre><code class="java">    /**
-     * Asserts that the submitted {@code AuthenticationToken}&#39;s credentials match the stored account
-     * {@code AuthenticationInfo}&#39;s credentials, and if not, throws an {@link AuthenticationException}.
-     *
-     * @param token the submitted authentication token
-     * @param info  the AuthenticationInfo corresponding to the given {@code token}
-     * @throws AuthenticationException if the token&#39;s credentials do not match the stored account credentials.
-     */
-    protected void assertCredentialsMatch(AuthenticationToken token, AuthenticationInfo info) throws AuthenticationException {
-        CredentialsMatcher cm = getCredentialsMatcher();
-        if (cm != null) {
-            if (!cm.doCredentialsMatch(token, info)) {
-                //not successful - throw an exception to indicate this:
-                String msg = &quot;Submitted credentials for token [&quot; + token + &quot;] did not match the expected credentials.&quot;;
-                throw new IncorrectCredentialsException(msg);
-            }
-        } else {
-            throw new AuthenticationException(&quot;A CredentialsMatcher must be configured in order to verify &quot; +
-                    &quot;credentials during authentication.  If you do not wish for credentials to be examined, you &quot; +
-                    &quot;can configure an &quot; + AllowAllCredentialsMatcher.class.getName() + &quot; instance.&quot;);
-        }
-    }</code></pre>
+<h4 id="5-AuthenticationRealm-assertCredentialsMatch"><a href="#5-AuthenticationRealm-assertCredentialsMatch" class="headerlink" title="5. AuthenticationRealm | assertCredentialsMatch"></a>5. AuthenticationRealm | <code>assertCredentialsMatch</code></h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * Asserts that the submitted &#123;<span class="doctag">@code</span> AuthenticationToken&#125;'s credentials match the stored account</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &#123;<span class="doctag">@code</span> AuthenticationInfo&#125;'s credentials, and if not, throws an &#123;<span class="doctag">@link</span> AuthenticationException&#125;.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@param</span> token the submitted authentication token</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@param</span> info  the AuthenticationInfo corresponding to the given &#123;<span class="doctag">@code</span> token&#125;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@throws</span> AuthenticationException if the token's credentials do not match the stored account credentials.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">assertCredentialsMatch</span><span class="params">(AuthenticationToken token, AuthenticationInfo info)</span> <span class="keyword">throws</span> AuthenticationException </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">    CredentialsMatcher cm = getCredentialsMatcher();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">if</span> (cm != <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">if</span> (!cm.doCredentialsMatch(token, info)) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">            <span class="comment">//not successful - throw an exception to indicate this:</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">            String msg = <span class="string">"Submitted credentials for token ["</span> + token + <span class="string">"] did not match the expected credentials."</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IncorrectCredentialsException(msg);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">    &#125; <span class="keyword">else</span> &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> AuthenticationException(<span class="string">"A CredentialsMatcher must be configured in order to verify "</span> +</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line">                <span class="string">"credentials during authentication.  If you do not wish for credentials to be examined, you "</span> +</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line">                "can configure an " + AllowAllCredentialsMatcher.class.getName() + " instance.");</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
 <h4 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h4><ol>
 <li>从缓存中获取 AuthenticationInfo，如果开启了 AuthenticationInfo 缓存的话（AuthenticationRealm）</li>
 <li>调用 doGetAuthenticationInfo(token) 获取 AuthentionInfo （AuthenticationRealm）</li>
@@ -331,8 +288,205 @@
 </ol>
 
     </div>
-</article>
-</main>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/blog/alipay-reward-image.jpg" alt="LiuChuanWei 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/blog/alipay-reward-image.jpg" alt="LiuChuanWei 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
 </div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" rel="tag"># 源码解析</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/10/22/210-Java/Shiro/Shiro%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BAuthenticator01-Realm/" rel="prev" title="Shiro源码解析之Realm">
+      <i class="fa fa-chevron-left"></i> Shiro源码解析之Realm
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/10/25/210-Java/Shiro/Shiro%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BSecurityUtils.getSubject()%E6%B5%81%E7%A8%8B/" rel="next" title="shiro源码解析之SecurityUtils.getSubject()">
+      shiro源码解析之SecurityUtils.getSubject() <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#了解-Realm"><span class="nav-number">1.</span> <span class="nav-text">了解 Realm</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#继承图"><span class="nav-number">1.1.</span> <span class="nav-text">继承图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Realm"><span class="nav-number">1.2.</span> <span class="nav-text">Realm</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CachingRealm"><span class="nav-number">1.3.</span> <span class="nav-text">CachingRealm</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AuthenticatingRealm"><span class="nav-number">1.4.</span> <span class="nav-text">AuthenticatingRealm</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AuthorizingRealm"><span class="nav-number">1.5.</span> <span class="nav-text">AuthorizingRealm</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UserRealm"><span class="nav-number">1.6.</span> <span class="nav-text">UserRealm</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#理解Realm"><span class="nav-number">2.</span> <span class="nav-text">理解Realm</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#getAuthenticationInfo-AuthenticationToken-AuthenticationInfo"><span class="nav-number">2.1.</span> <span class="nav-text">getAuthenticationInfo(AuthenticationToken): AuthenticationInfo</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-AuthenticationRealm-getAuthenticationInfo"><span class="nav-number">2.1.1.</span> <span class="nav-text">1. AuthenticationRealm | getAuthenticationInfo</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-AuthenticationRealm-getCachedAuthenticationInfo-token"><span class="nav-number">2.1.2.</span> <span class="nav-text">2. AuthenticationRealm | getCachedAuthenticationInfo(token)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-UserRealm-doGetAuthenticationInfo-token"><span class="nav-number">2.1.3.</span> <span class="nav-text">3. UserRealm | doGetAuthenticationInfo(token)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-AuthenticationRealm-cacheAuthenticationInfoIfPossible-token-info"><span class="nav-number">2.1.4.</span> <span class="nav-text">4. AuthenticationRealm | cacheAuthenticationInfoIfPossible(token, info)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-AuthenticationRealm-assertCredentialsMatch"><span class="nav-number">2.1.5.</span> <span class="nav-text">5. AuthenticationRealm | assertCredentialsMatch</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#小结"><span class="nav-number">2.1.6.</span> <span class="nav-text">小结</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">LiuChuanWei</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">37</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/liuchuanv" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;liuchuanv" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiuChuanWei</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme: 'forest',
+      logLevel: 3,
+      flowchart: { curve: 'linear' },
+      gantt: { axisFormat: '%m/%d/%Y' },
+      sequence: { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
 </body>
 </html>
