@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://liuchuanv.github.io').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.6.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="数组 Array定义1var arr1 &#x3D; [&quot;周一&quot;, &quot;周二&quot;, &quot;周三&quot;];2var arr2 &#x3D; new Array(&quot;2019年&quot;, &quot;2020年&quot;, &quot;2021年&quot;); 属性Array 具有 length 属性，即可获取也可设置。 1&#x2F;&#x2F; 获取数据长度2var arrayLength &#x3D; arr.length;3&#x2F;&#x2F; 设置数组长度（超出数组长度的元素将被抛弃）4arr.length &#x3D;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="230-Web&#x2F;javascript&#x2F;JavaScript基础数据类型2">
+<meta property="og:url" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;2019&#x2F;12&#x2F;03&#x2F;230-Web&#x2F;javascript&#x2F;JavaScript%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B2&#x2F;index.html">
+<meta property="og:site_name" content="静言思之">
+<meta property="og:description" content="数组 Array定义1var arr1 &#x3D; [&quot;周一&quot;, &quot;周二&quot;, &quot;周三&quot;];2var arr2 &#x3D; new Array(&quot;2019年&quot;, &quot;2020年&quot;, &quot;2021年&quot;); 属性Array 具有 length 属性，即可获取也可设置。 1&#x2F;&#x2F; 获取数据长度2var arrayLength &#x3D; arr.length;3&#x2F;&#x2F; 设置数组长度（超出数组长度的元素将被抛弃）4arr.length &#x3D;">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-12-03T10:58:36.027Z">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://liuchuanv.github.io/2019/12/03/230-Web/javascript/JavaScript%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B2/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>230-Web/javascript/JavaScript基础数据类型2 | 静言思之</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">静言思之</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">23</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">19</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">39</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://liuchuanv.github.io/2019/12/03/230-Web/javascript/JavaScript%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="LiuChuanWei">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="静言思之">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          230-Web/javascript/JavaScript基础数据类型2
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-12-03 19:58:03 / 修改时间：18:58:36" itemprop="dateCreated datePublished" datetime="2019-12-03T19:58:03+08:00">2019-12-03</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="数组-Array"><a href="#数组-Array" class="headerlink" title="数组 Array"></a>数组 Array</h3><h4 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> arr1 = [<span class="string">"周一"</span>, <span class="string">"周二"</span>, <span class="string">"周三"</span>];</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> arr2 = <span class="keyword">new</span> <span class="built_in">Array</span>(<span class="string">"2019年"</span>, <span class="string">"2020年"</span>, <span class="string">"2021年"</span>);</span></pre></td></tr></table></figure>
+<h4 id="属性"><a href="#属性" class="headerlink" title="属性"></a>属性</h4><p>Array 具有 <code>length</code> 属性，即可获取也可设置。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取数据长度</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> arrayLength = arr.length;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 设置数组长度（超出数组长度的元素将被抛弃）</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">arr.length = <span class="number">2</span>;</span></pre></td></tr></table></figure>
+
+<h4 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h4><ul>
+<li><p><code>pop();</code>     // 取出并删除数组最后一个元素</p>
+</li>
+<li><p><code>push(element);</code>    // 在数组末尾追加元素</p>
+</li>
+<li><p><code>shifit();</code>        // 取出并删除数组第一个元素</p>
+</li>
+<li><p><code>unshift(element);</code>    // 在数组开头添加元素</p>
+</li>
+<li><p><code>indexOf(element);</code>     // 查找元素的第一个位置</p>
+</li>
+<li><p><code>lastIndexOf(element);</code> // 查找元素的最后一个位置</p>
+</li>
+<li><p><code>splice(start, length, [e1, ...]);</code> </p>
+<p>  // 从start位置开始删除length个元素，并插入后面的参数元素（相当于替换）</p>
+  <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> arr1 = [<span class="number">2</span>, <span class="number">4</span>, <span class="number">6</span>];</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">arr1.splice(<span class="number">1</span>, <span class="number">2</span>, <span class="number">1</span>, <span class="number">3</span>, <span class="number">5</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(arr1);	<span class="comment">// 输出 '[2, 1, 3, 5]'</span></span></pre></td></tr></table></figure>
+</li>
+<li><p><code>join(char);</code>        // 数组元素以字符相连接，并返回字符串</p>
+</li>
+<li><p><code>sort([fn]);</code>        // 默认把元素看做字符串自然排序，也可传入函数自定义排序</p>
+  <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> arr2 = [<span class="number">3</span>, <span class="number">5</span>, <span class="number">2</span>, <span class="number">9</span>];</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">arr2.sort(<span class="function"><span class="keyword">function</span>(<span class="params">n1, n2</span>) </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">	<span class="keyword">return</span> n1 - n2;	<span class="comment">// 前者大于后者，升序排列</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">&#125;);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(arr2);	<span class="comment">// 输出 '[2, 3, 5, 9]'</span></span></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<h4 id="遍历"><a href="#遍历" class="headerlink" title="遍历"></a>遍历</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> arr = [<span class="string">'冰箱'</span>, <span class="string">'电视'</span>, <span class="string">'手机'</span>];</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 第1种遍历</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">var</span> i=<span class="number">0</span>; i&lt;arr.length; i++) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">    <span class="built_in">console</span>.log(i, arr[i]);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 第2种遍历</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">arr.forEach(<span class="function"><span class="keyword">function</span>(<span class="params">item, index, array</span>)</span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">    <span class="built_in">console</span>.log(index, item);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">&#125;)</span></pre></td></tr></table></figure>
+
+<h4 id="扩展"><a href="#扩展" class="headerlink" title="扩展"></a>扩展</h4><ul>
+<li>查询元素在数组中的位置</li>
+</ul>
+<h3 id="对象-Object"><a href="#对象-Object" class="headerlink" title="对象 Object"></a>对象 Object</h3><h3 id="函数-function"><a href="#函数-function" class="headerlink" title="函数 function"></a>函数 function</h3><blockquote>
+<p> 一个函数应该只返回一种类型的值。 </p>
+<p>函数中有一个默认的数组变量arguments，存储着传入函数的所有参数。为了使用函数参数方便，建议给参数起个名字。</p>
+</blockquote>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fun1</span>(<span class="params">obj, name, value</span>)</span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">    <span class="built_in">console</span>.log(<span class="built_in">arguments</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">    <span class="built_in">console</span>.log(obj);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">    <span class="built_in">console</span>.log(name);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">    <span class="built_in">console</span>.log(value);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">fun1(&#123;<span class="string">'id'</span>:<span class="number">12</span>&#125;, <span class="string">'username'</span>, <span class="string">'张三'</span>);</span></pre></td></tr></table></figure>
+
+
+<h3 id="日期-Date"><a href="#日期-Date" class="headerlink" title="日期 Date"></a>日期 Date</h3><h4 id="定义-1"><a href="#定义-1" class="headerlink" title="定义"></a>定义</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> date1 = <span class="keyword">new</span> <span class="built_in">Date</span>();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> date2 = <span class="keyword">new</span> <span class="built_in">Date</span>(timestamp);	<span class="comment">// timestamp 毫秒单位的时间戳</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> date3 = <span class="keyword">new</span> <span class="built_in">Date</span>(year, month<span class="number">-1</span>, dayOfMonth, hour, minute, second);</span></pre></td></tr></table></figure>
+
+<h4 id="方法-1"><a href="#方法-1" class="headerlink" title="方法"></a>方法</h4><ul>
+<li><code>getFullYear();</code>　 //获取年份</li>
+<li><code>getMonth();</code>　　　 //获取月份，月份从0开始，即0表示1月，1表示2月，以此类推</li>
+<li><code>getDate();</code>　　　　//获取当前月份的第几日</li>
+<li><code>getHours();</code>　　  //时</li>
+<li><code>getMinutes();</code>　　//分</li>
+<li><code>getSeconds();</code>　　//秒</li>
+<li><code>getTime();</code>        // 毫米级时间戳</li>
+</ul>
+<h4 id="扩展-1"><a href="#扩展-1" class="headerlink" title="扩展"></a>扩展</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * 扩展Date对象的功能</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * @param format</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * @returns</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * @example  (new Date()).format('yyyy-MM-dd hh:mm:ss')    结果是 2018-08-13 08:42:34 这样的格式 ;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"><span class="built_in">Date</span>.prototype.format = <span class="function"><span class="keyword">function</span> (<span class="params">format</span>) </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">var</span> o = &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">        <span class="string">"M+"</span>: <span class="keyword">this</span>.getMonth() + <span class="number">1</span>, <span class="comment">// month</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">        <span class="string">"d+"</span>: <span class="keyword">this</span>.getDate(), <span class="comment">// day</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">        <span class="string">"h+"</span>: <span class="keyword">this</span>.getHours(), <span class="comment">// hour</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">        <span class="string">"m+"</span>: <span class="keyword">this</span>.getMinutes(), <span class="comment">// minute</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">        <span class="string">"s+"</span>: <span class="keyword">this</span>.getSeconds(), <span class="comment">// second</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">        <span class="string">"q+"</span>: <span class="built_in">Math</span>.floor((<span class="keyword">this</span>.getMonth() + <span class="number">3</span>) / <span class="number">3</span>), <span class="comment">// quarter</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">        <span class="string">"S"</span>: <span class="keyword">this</span>.getMilliseconds()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">        <span class="comment">// millisecond</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">if</span> (<span class="regexp">/(y+)/</span>.test(format)) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line">        format = format.replace(<span class="built_in">RegExp</span>.$<span class="number">1</span>, (<span class="keyword">this</span>.getFullYear() + <span class="string">""</span>).substr(<span class="number">4</span> - <span class="built_in">RegExp</span>.$<span class="number">1.</span>length));</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> k <span class="keyword">in</span> o) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">if</span> (<span class="keyword">new</span> <span class="built_in">RegExp</span>(<span class="string">"("</span> + k + <span class="string">")"</span>).test(format)) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line">            format = format.replace(<span class="built_in">RegExp</span>.$<span class="number">1</span>, <span class="built_in">RegExp</span>.$<span class="number">1.</span>length == <span class="number">1</span> ? o[k] : (<span class="string">"00"</span> + o[k]).substr((<span class="string">""</span> + o[k]).length));</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">24</span></pre></td><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">25</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">26</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> format;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">27</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">28</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">29</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">30</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * 扩展Date对象的功能</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">31</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * 获取上一个月日期对象</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">32</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * @param date</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">33</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * @returns &#123;Date&#125;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">34</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">35</span></pre></td><td class="code"><pre><span class="line"><span class="built_in">Date</span>.prototype.getPreMonth = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">36</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">var</span> year = <span class="keyword">this</span>.getFullYear();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">37</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">var</span> month = <span class="keyword">this</span>.getMonth()+<span class="number">1</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">38</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">var</span> day = <span class="keyword">this</span>.getDate();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">39</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">var</span> hour = <span class="keyword">this</span>.getHours();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">40</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">var</span> minute = <span class="keyword">this</span>.getMinutes();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">41</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">var</span> second = <span class="keyword">this</span>.getSeconds();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">42</span></pre></td><td class="code"><pre><span class="line">    </span></pre></td></tr><tr><td class="gutter"><pre><span class="line">43</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">var</span> y = year;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">44</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">var</span> m = <span class="built_in">parseInt</span>(month) - <span class="number">1</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">45</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">if</span> (m == <span class="number">0</span>) &#123;    <span class="comment">// 如果是一月</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">46</span></pre></td><td class="code"><pre><span class="line">        y = <span class="built_in">parseInt</span>(y) - <span class="number">1</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">47</span></pre></td><td class="code"><pre><span class="line">        m = <span class="number">12</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">48</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">49</span></pre></td><td class="code"><pre><span class="line">    </span></pre></td></tr><tr><td class="gutter"><pre><span class="line">50</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">var</span> monthDays = <span class="keyword">new</span> <span class="built_in">Date</span>(y, m, <span class="number">0</span>).getDate(); <span class="comment">//获取 m 月的天数</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">51</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">var</span> d = day;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">52</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">if</span> (d &gt; monthDays) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">53</span></pre></td><td class="code"><pre><span class="line">        d = monthDays;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">54</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">55</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Date</span>(y, m<span class="number">-1</span>, d, hour, minute, second);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">56</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">57</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">58</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">59</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">60</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * 扩展Date对象的功能</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">61</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * 获取下一个月的日期</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">62</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * @param date</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">63</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * @returns &#123;Date&#125;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">64</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">65</span></pre></td><td class="code"><pre><span class="line"><span class="built_in">Date</span>.prototype.getNextMonth = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">66</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">var</span> year = date.getFullYear();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">67</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">var</span> month = date.getMonth()+<span class="number">1</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">68</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">var</span> day = date.getDate();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">69</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">var</span> hour = date.getHours();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">70</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">var</span> minute = date.getMinutes();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">71</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">var</span> second = date.getSeconds();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">72</span></pre></td><td class="code"><pre><span class="line">    </span></pre></td></tr><tr><td class="gutter"><pre><span class="line">73</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">var</span> y = year;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">74</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">var</span> m = <span class="built_in">parseInt</span>(month) + <span class="number">1</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">75</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">if</span> (m == <span class="number">13</span>) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">76</span></pre></td><td class="code"><pre><span class="line">        y = <span class="built_in">parseInt</span>(y) + <span class="number">1</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">77</span></pre></td><td class="code"><pre><span class="line">        m = <span class="number">1</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">78</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">79</span></pre></td><td class="code"><pre><span class="line">    </span></pre></td></tr><tr><td class="gutter"><pre><span class="line">80</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">var</span> d = day;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">81</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">var</span> monthDays = <span class="keyword">new</span> <span class="built_in">Date</span>(y, m, <span class="number">0</span>).getDate(); <span class="comment">// 获取 m 月的天数</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">82</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">if</span> (d &gt; monthDays) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">83</span></pre></td><td class="code"><pre><span class="line">        d = monthDays;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">84</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">85</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Date</span>(y, m<span class="number">-1</span>, d, hour, minute, second);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">86</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/blog/alipay-reward-image.jpg" alt="LiuChuanWei 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/blog/alipay-reward-image.jpg" alt="LiuChuanWei 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/12/03/220-Database/MySQL/MySQL%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93/" rel="prev" title="220-Database/MySQL/MySQL问题总结">
+      <i class="fa fa-chevron-left"></i> 220-Database/MySQL/MySQL问题总结
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/12/03/230-Web/javascript/%E5%B7%A5%E5%85%B7%E5%87%BD%E6%95%B0%E6%80%BB%E7%BB%93/" rel="next" title="230-Web/javascript/工具函数总结">
+      230-Web/javascript/工具函数总结 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#数组-Array"><span class="nav-number">1.</span> <span class="nav-text">数组 Array</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#定义"><span class="nav-number">1.1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#属性"><span class="nav-number">1.2.</span> <span class="nav-text">属性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#方法"><span class="nav-number">1.3.</span> <span class="nav-text">方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#遍历"><span class="nav-number">1.4.</span> <span class="nav-text">遍历</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#扩展"><span class="nav-number">1.5.</span> <span class="nav-text">扩展</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#对象-Object"><span class="nav-number">2.</span> <span class="nav-text">对象 Object</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#函数-function"><span class="nav-number">3.</span> <span class="nav-text">函数 function</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#日期-Date"><span class="nav-number">4.</span> <span class="nav-text">日期 Date</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#定义-1"><span class="nav-number">4.1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#方法-1"><span class="nav-number">4.2.</span> <span class="nav-text">方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#扩展-1"><span class="nav-number">4.3.</span> <span class="nav-text">扩展</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">LiuChuanWei</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/liuchuanv" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;liuchuanv" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiuChuanWei</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme: 'forest',
+      logLevel: 3,
+      flowchart: { curve: 'linear' },
+      gantt: { axisFormat: '%m/%d/%Y' },
+      sequence: { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+</body>
+</html>

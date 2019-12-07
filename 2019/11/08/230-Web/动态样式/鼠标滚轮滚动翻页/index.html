@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://liuchuanv.github.io').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.6.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="参考自 JS滚轮事件(mousewheel&#x2F;DOMMouseScroll)了解页面代码改造自 原生JS实现全屏滚动（无滚动条） 1&amp;lt;!DOCTYPE html&amp;gt;2&amp;lt;html&amp;gt;3	&amp;lt;head&amp;gt;4		&amp;lt;meta charset&#x3D;&quot;utf-8&quot; &#x2F;&amp;gt;5		&amp;lt;title&amp;gt;&amp;lt;&#x2F;title&amp;gt;6		&amp;lt;style type&#x3D;&quot;text&#x2F;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="鼠标滚轮滚动翻页">
+<meta property="og:url" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;2019&#x2F;11&#x2F;08&#x2F;230-Web&#x2F;%E5%8A%A8%E6%80%81%E6%A0%B7%E5%BC%8F&#x2F;%E9%BC%A0%E6%A0%87%E6%BB%9A%E8%BD%AE%E6%BB%9A%E5%8A%A8%E7%BF%BB%E9%A1%B5&#x2F;index.html">
+<meta property="og:site_name" content="静言思之">
+<meta property="og:description" content="参考自 JS滚轮事件(mousewheel&#x2F;DOMMouseScroll)了解页面代码改造自 原生JS实现全屏滚动（无滚动条） 1&amp;lt;!DOCTYPE html&amp;gt;2&amp;lt;html&amp;gt;3	&amp;lt;head&amp;gt;4		&amp;lt;meta charset&#x3D;&quot;utf-8&quot; &#x2F;&amp;gt;5		&amp;lt;title&amp;gt;&amp;lt;&#x2F;title&amp;gt;6		&amp;lt;style type&#x3D;&quot;text&#x2F;">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-11-20T01:31:09.273Z">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://liuchuanv.github.io/2019/11/08/230-Web/%E5%8A%A8%E6%80%81%E6%A0%B7%E5%BC%8F/%E9%BC%A0%E6%A0%87%E6%BB%9A%E8%BD%AE%E6%BB%9A%E5%8A%A8%E7%BF%BB%E9%A1%B5/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>鼠标滚轮滚动翻页 | 静言思之</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">静言思之</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">23</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">19</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">39</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://liuchuanv.github.io/2019/11/08/230-Web/%E5%8A%A8%E6%80%81%E6%A0%B7%E5%BC%8F/%E9%BC%A0%E6%A0%87%E6%BB%9A%E8%BD%AE%E6%BB%9A%E5%8A%A8%E7%BF%BB%E9%A1%B5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="LiuChuanWei">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="静言思之">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          鼠标滚轮滚动翻页
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-11-08 10:37:42" itemprop="dateCreated datePublished" datetime="2019-11-08T10:37:42+08:00">2019-11-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-11-20 09:31:09" itemprop="dateModified" datetime="2019-11-20T09:31:09+08:00">2019-11-20</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index">
+                    <span itemprop="name">前端</span>
+                  </a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%89%8D%E7%AB%AF/%E5%8A%A8%E6%80%81%E6%A0%B7%E5%BC%8F/" itemprop="url" rel="index">
+                    <span itemprop="name">动态样式</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>参考自 <a href="https://www.zhangxinxu.com/wordpress/2013/04/js-mousewheel-dommousescroll-event/" target="_blank" rel="noopener">JS滚轮事件(mousewheel/DOMMouseScroll)了解</a><br>页面代码改造自 <a href="https://blog.csdn.net/qq_40756247/article/details/86138474" target="_blank" rel="noopener">原生JS实现全屏滚动（无滚动条）</a></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE html&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">	<span class="tag">&lt;<span class="name">head</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">		<span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"utf-8"</span> /&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">		<span class="tag">&lt;<span class="name">title</span>&gt;</span><span class="tag">&lt;/<span class="name">title</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">		<span class="tag">&lt;<span class="name">style</span> <span class="attr">type</span>=<span class="string">"text/css"</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">			* &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">				margin: 0;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">				padding: 0;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">				font-size: 0;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">			&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line"><span class="css">			<span class="selector-class">.box</span> &#123;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">				position: relative;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">				width: 100%;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">				height: 100vh;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">				overflow: hidden;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">			&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">			ul &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line">				position: relative;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line">			&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line">			li &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line">				width: 100%;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line">				height: 100vh;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">24</span></pre></td><td class="code"><pre><span class="line">				font-size: 30px;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">25</span></pre></td><td class="code"><pre><span class="line">				position: relative;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">26</span></pre></td><td class="code"><pre><span class="line">				display: flex;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">27</span></pre></td><td class="code"><pre><span class="line">				justify-content: center;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">28</span></pre></td><td class="code"><pre><span class="line">				text-align: center;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">29</span></pre></td><td class="code"><pre><span class="line">			&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">30</span></pre></td><td class="code"><pre><span class="line">			</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">31</span></pre></td><td class="code"><pre><span class="line"><span class="css">			<span class="selector-class">.nav</span> &#123;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">32</span></pre></td><td class="code"><pre><span class="line">				position: fixed;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">33</span></pre></td><td class="code"><pre><span class="line">				right: 2%;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">34</span></pre></td><td class="code"><pre><span class="line">				top: 35%;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">35</span></pre></td><td class="code"><pre><span class="line">			&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">36</span></pre></td><td class="code"><pre><span class="line"><span class="css">			<span class="selector-class">.nav</span> <span class="selector-tag">li</span> &#123;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">37</span></pre></td><td class="code"><pre><span class="line">				width: 16px;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">38</span></pre></td><td class="code"><pre><span class="line">				height: 16px;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">39</span></pre></td><td class="code"><pre><span class="line">				border-radius: 50%;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">40</span></pre></td><td class="code"><pre><span class="line"><span class="css">				<span class="selector-tag">border</span>: 1<span class="selector-class">.5px</span> <span class="selector-tag">solid</span> <span class="selector-id">#000</span>;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">41</span></pre></td><td class="code"><pre><span class="line">				margin-bottom: 5px;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">42</span></pre></td><td class="code"><pre><span class="line">			&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">43</span></pre></td><td class="code"><pre><span class="line">		<span class="tag">&lt;/<span class="name">style</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">44</span></pre></td><td class="code"><pre><span class="line">	<span class="tag">&lt;/<span class="name">head</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">45</span></pre></td><td class="code"><pre><span class="line">	<span class="tag">&lt;<span class="name">body</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">46</span></pre></td><td class="code"><pre><span class="line">		<span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"box"</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">47</span></pre></td><td class="code"><pre><span class="line">			<span class="tag">&lt;<span class="name">ul</span> <span class="attr">style</span>=<span class="string">"transition: 0.5s ease; top:0;"</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">48</span></pre></td><td class="code"><pre><span class="line">				<span class="tag">&lt;<span class="name">li</span>&gt;</span>一页面<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">49</span></pre></td><td class="code"><pre><span class="line">				<span class="tag">&lt;<span class="name">li</span>&gt;</span>二页面<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">50</span></pre></td><td class="code"><pre><span class="line">				<span class="tag">&lt;<span class="name">li</span>&gt;</span>三页面<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">51</span></pre></td><td class="code"><pre><span class="line">				<span class="tag">&lt;<span class="name">li</span>&gt;</span>四页面<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">52</span></pre></td><td class="code"><pre><span class="line">			<span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">53</span></pre></td><td class="code"><pre><span class="line">		<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">54</span></pre></td><td class="code"><pre><span class="line">		<span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"nav"</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">55</span></pre></td><td class="code"><pre><span class="line">			<span class="tag">&lt;<span class="name">ul</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">56</span></pre></td><td class="code"><pre><span class="line">				<span class="tag">&lt;<span class="name">li</span>&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">57</span></pre></td><td class="code"><pre><span class="line">				<span class="tag">&lt;<span class="name">li</span>&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">58</span></pre></td><td class="code"><pre><span class="line">				<span class="tag">&lt;<span class="name">li</span>&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">59</span></pre></td><td class="code"><pre><span class="line">				<span class="tag">&lt;<span class="name">li</span>&gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">60</span></pre></td><td class="code"><pre><span class="line">			<span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">61</span></pre></td><td class="code"><pre><span class="line">		<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">62</span></pre></td><td class="code"><pre><span class="line">		<span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">63</span></pre></td><td class="code"><pre><span class="line">			/**</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">64</span></pre></td><td class="code"><pre><span class="line">			 * 简易的事件添加方法封装</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">65</span></pre></td><td class="code"><pre><span class="line">			 */</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">66</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">			<span class="keyword">var</span> addEvent = (<span class="function"><span class="keyword">function</span><span class="params">(window, undefined)</span> </span>&#123;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">67</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">				<span class="keyword">var</span> _eventCompat = <span class="function"><span class="keyword">function</span><span class="params">(event)</span> </span>&#123;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">68</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">					<span class="keyword">var</span> type = event.type;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">69</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">					<span class="keyword">if</span> (type == <span class="string">'DOMMouseScroll'</span> || type == <span class="string">'mousewheel'</span>) &#123;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">70</span></pre></td><td class="code"><pre><span class="line">						event.delta = (event.wheelDelta) ? event.wheelDelta / 120 : -(event.detail || 0) / 3;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">71</span></pre></td><td class="code"><pre><span class="line">					&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">72</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">					<span class="comment">//alert(event.delta);</span></span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">73</span></pre></td><td class="code"><pre><span class="line">					if (event.srcElement &amp;&amp; !event.target) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">74</span></pre></td><td class="code"><pre><span class="line">						event.target = event.srcElement;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">75</span></pre></td><td class="code"><pre><span class="line">					&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">76</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">					<span class="keyword">if</span> (!event.preventDefault &amp;&amp; event.returnValue !== <span class="literal">undefined</span>) &#123;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">77</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">						event.preventDefault = <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>&#123;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">78</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">							event.returnValue = <span class="literal">false</span>;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">79</span></pre></td><td class="code"><pre><span class="line">						&#125;;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">80</span></pre></td><td class="code"><pre><span class="line">					&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">81</span></pre></td><td class="code"><pre><span class="line">					/*</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">82</span></pre></td><td class="code"><pre><span class="line">					   ......其他一些兼容性处理 */</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">83</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">					<span class="keyword">return</span> event;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">84</span></pre></td><td class="code"><pre><span class="line">				&#125;;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">85</span></pre></td><td class="code"><pre><span class="line"><span class="javascript">				<span class="keyword">if</span> (<span class="built_in">window</span>.addEventListener) &#123;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">86</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">					<span class="keyword">return</span> <span class="function"><span class="keyword">function</span><span class="params">(el, type, fn, capture)</span> </span>&#123;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">87</span></pre></td><td class="code"><pre><span class="line"><span class="javascript">						<span class="keyword">if</span> (type === <span class="string">"mousewheel"</span> &amp;&amp; <span class="built_in">document</span>.mozFullScreen !== <span class="literal">undefined</span>) &#123;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">88</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">							type = <span class="string">"DOMMouseScroll"</span>;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">89</span></pre></td><td class="code"><pre><span class="line">						&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">90</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">						el.addEventListener(type, <span class="function"><span class="keyword">function</span><span class="params">(event)</span> </span>&#123;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">91</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">							fn.call(<span class="keyword">this</span>, _eventCompat(event));</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">92</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">						&#125;, capture || <span class="literal">false</span>);</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">93</span></pre></td><td class="code"><pre><span class="line">					&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">94</span></pre></td><td class="code"><pre><span class="line"><span class="javascript">				&#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="built_in">window</span>.attachEvent) &#123;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">95</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">					<span class="keyword">return</span> <span class="function"><span class="keyword">function</span><span class="params">(el, type, fn, capture)</span> </span>&#123;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">96</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">						el.attachEvent(<span class="string">"on"</span> + type, <span class="function"><span class="keyword">function</span><span class="params">(event)</span> </span>&#123;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">97</span></pre></td><td class="code"><pre><span class="line"><span class="javascript">							event = event || <span class="built_in">window</span>.event;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">98</span></pre></td><td class="code"><pre><span class="line">							fn.call(el, _eventCompat(event));</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">99</span></pre></td><td class="code"><pre><span class="line">						&#125;);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">100</span></pre></td><td class="code"><pre><span class="line">					&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">101</span></pre></td><td class="code"><pre><span class="line">				&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">102</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">				<span class="keyword">return</span> <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>&#123;&#125;;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">103</span></pre></td><td class="code"><pre><span class="line"><span class="javascript">			&#125;)(<span class="built_in">window</span>);</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">104</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">105</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">			<span class="comment">// 滚动锁</span></span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">106</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">			<span class="keyword">var</span> mousewheelLock = <span class="literal">false</span>;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">107</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">			<span class="keyword">var</span> pageIndex = <span class="number">0</span>,	<span class="comment">// 页码</span></span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">108</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">				pageNum = <span class="number">4</span>;	<span class="comment">// 页数</span></span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">109</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">			<span class="comment">// 滚动动画时间	</span></span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">110</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">			<span class="keyword">var</span> scrollAnimateTime = <span class="number">1200</span>;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">111</span></pre></td><td class="code"><pre><span class="line">				</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">112</span></pre></td><td class="code"><pre><span class="line"><span class="javascript">			<span class="keyword">var</span> oUl = <span class="built_in">document</span>.querySelector(<span class="string">"ul"</span>);</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">113</span></pre></td><td class="code"><pre><span class="line"><span class="javascript">			<span class="keyword">var</span> navLis = <span class="built_in">document</span>.querySelectorAll(<span class="string">".nav li"</span>);</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">114</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">			navLis[pageIndex].style.background = <span class="string">'black'</span>;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">115</span></pre></td><td class="code"><pre><span class="line">			</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">116</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">			<span class="comment">/** 添加鼠标滚轮事件 **/</span></span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">117</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">			addEvent(oUl, <span class="string">'mousewheel'</span>, <span class="function"><span class="keyword">function</span><span class="params">(event)</span> </span>&#123;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">118</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">				<span class="keyword">if</span> (mousewheelLock) <span class="keyword">return</span> ;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">119</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">                mousewheelLock = <span class="literal">true</span>;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">120</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">                <span class="comment">// 向下滚动</span></span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">121</span></pre></td><td class="code"><pre><span class="line">                if (event.delta &lt; 0) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">122</span></pre></td><td class="code"><pre><span class="line">                    nextPage();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">123</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">                &#125; <span class="keyword">else</span> &#123;	<span class="comment">// 向上滚动</span></span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">124</span></pre></td><td class="code"><pre><span class="line">                    prevPage();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">125</span></pre></td><td class="code"><pre><span class="line">                &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">126</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">                setTimeout(<span class="function"><span class="keyword">function</span><span class="params">()</span></span>&#123;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">127</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">                    mousewheelLock = <span class="literal">false</span>;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">128</span></pre></td><td class="code"><pre><span class="line">                &#125;, scrollAnimateTime);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">129</span></pre></td><td class="code"><pre><span class="line">			&#125;);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">130</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">			<span class="comment">// 下一页</span></span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">131</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">			<span class="function"><span class="keyword">function</span> <span class="title">nextPage</span><span class="params">()</span> </span>&#123;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">132</span></pre></td><td class="code"><pre><span class="line">				if (pageIndex &lt; pageNum-1 ) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">133</span></pre></td><td class="code"><pre><span class="line">					changePage(pageIndex++);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">134</span></pre></td><td class="code"><pre><span class="line">				&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">135</span></pre></td><td class="code"><pre><span class="line">			&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">136</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">			<span class="comment">// 上一页</span></span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">137</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">			<span class="function"><span class="keyword">function</span> <span class="title">prevPage</span><span class="params">()</span> </span>&#123;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">138</span></pre></td><td class="code"><pre><span class="line">				if (pageIndex &gt; 0 ) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">139</span></pre></td><td class="code"><pre><span class="line">					changePage(pageIndex--);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">140</span></pre></td><td class="code"><pre><span class="line">				&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">141</span></pre></td><td class="code"><pre><span class="line">			&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">142</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">            <span class="comment">// 改变页面</span></span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">143</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">			<span class="function"><span class="keyword">function</span> <span class="title">changePage</span><span class="params">(selectedPageIndex)</span> </span>&#123; </span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">144</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">				oUl.style.top = -selectedPageIndex * <span class="number">100</span> + <span class="string">'vh'</span>;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">145</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">				<span class="keyword">for</span> (<span class="keyword">var</span> i=<span class="number">0</span>; i&lt;navLis.length; i++) &#123;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">146</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">					navLis[i].style.background = <span class="string">'white'</span>;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">147</span></pre></td><td class="code"><pre><span class="line">				&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">148</span></pre></td><td class="code"><pre><span class="line"><span class="actionscript">				navLis[pageIndex].style.background = <span class="string">'black'</span>;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">149</span></pre></td><td class="code"><pre><span class="line">			&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">150</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">151</span></pre></td><td class="code"><pre><span class="line">		<span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">152</span></pre></td><td class="code"><pre><span class="line">	<span class="tag">&lt;/<span class="name">body</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">153</span></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/blog/alipay-reward-image.jpg" alt="LiuChuanWei 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/blog/alipay-reward-image.jpg" alt="LiuChuanWei 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/11/02/230-Web/Html/JS%E4%B8%AD%E7%9A%84%E4%BD%8D%E7%BD%AE%E5%92%8C%E5%AE%BD%E5%BA%A6%EF%BC%9AclientWidth%E3%80%81offsetWidth%E3%80%81scrollWidth%E7%AD%89%E5%8C%BA%E5%88%AB/" rel="prev" title="JS中的位置和宽度：clientWidth、offsetWidth、scrollWidth 等的区别">
+      <i class="fa fa-chevron-left"></i> JS中的位置和宽度：clientWidth、offsetWidth、scrollWidth 等的区别
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/11/11/230-Web/javascript/JavaScript%E5%92%8CJquery%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97/" rel="next" title="JavaScript和Jquery插件开发指南">
+      JavaScript和Jquery插件开发指南 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">LiuChuanWei</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/liuchuanv" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;liuchuanv" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiuChuanWei</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme: 'forest',
+      logLevel: 3,
+      flowchart: { curve: 'linear' },
+      gantt: { axisFormat: '%m/%d/%Y' },
+      sequence: { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+</body>
+</html>

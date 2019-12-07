@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://liuchuanv.github.io').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.6.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="了解 SessionDAO类继承图 SessionDAO AbstractSessionDAO SessionIdGenerator sessionIdGenerator 用来生成 sessionId； CachingSessionDAO省略 getter 和 setter EnterpriseCachingSessionDAO MemorySessionDAO 理解 MemorySessionD">
+<meta name="keywords" content="源码解析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Shiro源码解析之SessionManager02-SessionDAO">
+<meta property="og:url" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;2019&#x2F;10&#x2F;18&#x2F;210-Java&#x2F;Shiro&#x2F;Shiro%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BSessionManager02-SessionDAO&#x2F;index.html">
+<meta property="og:site_name" content="静言思之">
+<meta property="og:description" content="了解 SessionDAO类继承图 SessionDAO AbstractSessionDAO SessionIdGenerator sessionIdGenerator 用来生成 sessionId； CachingSessionDAO省略 getter 和 setter EnterpriseCachingSessionDAO MemorySessionDAO 理解 MemorySessionD">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;blog&#x2F;images&#x2F;201910&#x2F;image-20191028104313016.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;blog&#x2F;images&#x2F;201910&#x2F;1571367544804.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;blog&#x2F;images&#x2F;201910&#x2F;1571367836411.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;blog&#x2F;images&#x2F;201910&#x2F;1571368167696.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;blog&#x2F;images&#x2F;201910&#x2F;1571368312829.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;blog&#x2F;images&#x2F;201910&#x2F;1571369743342.png">
+<meta property="og:updated_time" content="2019-10-28T03:06:13.336Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;blog&#x2F;images&#x2F;201910&#x2F;image-20191028104313016.png">
+
+<link rel="canonical" href="https://liuchuanv.github.io/2019/10/18/210-Java/Shiro/Shiro%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BSessionManager02-SessionDAO/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>Shiro源码解析之SessionManager02-SessionDAO | 静言思之</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">静言思之</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">23</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">19</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">39</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://liuchuanv.github.io/2019/10/18/210-Java/Shiro/Shiro%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BSessionManager02-SessionDAO/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="LiuChuanWei">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="静言思之">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Shiro源码解析之SessionManager02-SessionDAO
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-10-18 13:59:18" itemprop="dateCreated datePublished" datetime="2019-10-18T13:59:18+08:00">2019-10-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-10-28 11:06:13" itemprop="dateModified" datetime="2019-10-28T11:06:13+08:00">2019-10-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/Shiro/" itemprop="url" rel="index">
+                    <span itemprop="name">Shiro</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="了解-SessionDAO"><a href="#了解-SessionDAO" class="headerlink" title="了解 SessionDAO"></a>了解 SessionDAO</h2><h3 id="类继承图"><a href="#类继承图" class="headerlink" title="类继承图"></a>类继承图</h3><p><img src="/blog/images/201910/image-20191028104313016.png" alt="image-20191028104313016"></p>
+<h3 id="SessionDAO"><a href="#SessionDAO" class="headerlink" title="SessionDAO"></a>SessionDAO</h3><p><img src="/blog/images/201910/1571367544804.png" alt="1571367544804"></p>
+<h3 id="AbstractSessionDAO"><a href="#AbstractSessionDAO" class="headerlink" title="AbstractSessionDAO"></a>AbstractSessionDAO</h3><p><img src="/blog/images/201910/1571367836411.png" alt="1571367836411"><br> <code>SessionIdGenerator sessionIdGenerator</code> 用来生成 sessionId；</p>
+<h3 id="CachingSessionDAO"><a href="#CachingSessionDAO" class="headerlink" title="CachingSessionDAO"></a>CachingSessionDAO</h3><p>省略 getter 和 setter<br><img src="/blog/images/201910/1571368167696.png" alt="1571368167696"></p>
+<h3 id="EnterpriseCachingSessionDAO"><a href="#EnterpriseCachingSessionDAO" class="headerlink" title="EnterpriseCachingSessionDAO"></a>EnterpriseCachingSessionDAO</h3><p><img src="/blog/images/201910/1571368312829.png" alt="1571368312829"></p>
+<h3 id="MemorySessionDAO"><a href="#MemorySessionDAO" class="headerlink" title="MemorySessionDAO"></a>MemorySessionDAO</h3><p><img src="/blog/images/201910/1571369743342.png" alt="1571369743342"></p>
+<h2 id="理解-MemorySessionDAO"><a href="#理解-MemorySessionDAO" class="headerlink" title="理解 MemorySessionDAO"></a>理解 MemorySessionDAO</h2><h3 id="create-Session-Serializable"><a href="#create-Session-Serializable" class="headerlink" title="create(Session): Serializable"></a>create(Session): Serializable</h3><h4 id="1-AbstractSessionDAO-create"><a href="#1-AbstractSessionDAO-create" class="headerlink" title="1. AbstractSessionDAO | create()"></a>1. AbstractSessionDAO | <code>create()</code></h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">   <span class="comment">// line 85</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="comment">   * Generates a new ID to be applied to the specified &#123;<span class="doctag">@code</span> session&#125; instance.  This method is usually called</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"><span class="comment">   * from within a subclass's &#123;<span class="doctag">@link</span> #doCreate&#125; implementation where they assign the returned id to the session</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"><span class="comment">   * instance and then create a record with this ID in the EIS data store.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="comment">   * &lt;p/&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"><span class="comment">   * Subclass implementations backed by EIS data stores that auto-generate IDs during record creation, such as</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"><span class="comment">   * relational databases, don't need to use this method or the &#123;<span class="doctag">@link</span> #getSessionIdGenerator() sessionIdGenerator&#125;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line"><span class="comment">   * attribute - they can simply return the data store's generated ID from the &#123;<span class="doctag">@link</span> #doCreate&#125; implementation</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line"><span class="comment">   * if desired.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line"><span class="comment">   * &lt;p/&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line"><span class="comment">   * This implementation uses the &#123;<span class="doctag">@link</span> #setSessionIdGenerator configured&#125; &#123;<span class="doctag">@link</span> SessionIdGenerator&#125; to create</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line"><span class="comment">   * the ID.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line"><span class="comment">   *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line"><span class="comment">   * <span class="doctag">@param</span> session the new session instance for which an ID will be generated and then assigned</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line"><span class="comment">   * <span class="doctag">@return</span> the generated ID to assign</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line"><span class="comment">   */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">  <span class="function"><span class="keyword">protected</span> Serializable <span class="title">generateSessionId</span><span class="params">(Session session)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line">      <span class="keyword">if</span> (<span class="keyword">this</span>.sessionIdGenerator == <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line">          String msg = <span class="string">"sessionIdGenerator attribute has not been configured."</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line">          <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(msg);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line">      &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line">      <span class="keyword">return</span> <span class="keyword">this</span>.sessionIdGenerator.generateId(session);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">24</span></pre></td><td class="code"><pre><span class="line">  &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">25</span></pre></td><td class="code"><pre><span class="line">	</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">26</span></pre></td><td class="code"><pre><span class="line">  <span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">27</span></pre></td><td class="code"><pre><span class="line"><span class="comment">   * Creates the session by delegating EIS creation to subclasses via the &#123;<span class="doctag">@link</span> #doCreate&#125; method, and then</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">28</span></pre></td><td class="code"><pre><span class="line"><span class="comment">   * asserting that the returned sessionId is not null.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">29</span></pre></td><td class="code"><pre><span class="line"><span class="comment">   *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">30</span></pre></td><td class="code"><pre><span class="line"><span class="comment">   * <span class="doctag">@param</span> session Session object to create in the EIS and associate with an ID.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">31</span></pre></td><td class="code"><pre><span class="line"><span class="comment">   */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">32</span></pre></td><td class="code"><pre><span class="line">  <span class="function"><span class="keyword">public</span> Serializable <span class="title">create</span><span class="params">(Session session)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">33</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 调用 doCreate()，返回 sessionId</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">34</span></pre></td><td class="code"><pre><span class="line">      Serializable sessionId = doCreate(session);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">35</span></pre></td><td class="code"><pre><span class="line">      verifySessionId(sessionId);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">36</span></pre></td><td class="code"><pre><span class="line">      <span class="keyword">return</span> sessionId;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">37</span></pre></td><td class="code"><pre><span class="line">  &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">38</span></pre></td><td class="code"><pre><span class="line">  <span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">39</span></pre></td><td class="code"><pre><span class="line"><span class="comment">   * Ensures the sessionId returned from the subclass implementation of &#123;<span class="doctag">@link</span> #doCreate&#125; is not null and not</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">40</span></pre></td><td class="code"><pre><span class="line"><span class="comment">   * already in use.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">41</span></pre></td><td class="code"><pre><span class="line"><span class="comment">   *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">42</span></pre></td><td class="code"><pre><span class="line"><span class="comment">   * <span class="doctag">@param</span> sessionId session id returned from the subclass implementation of &#123;<span class="doctag">@link</span> #doCreate&#125;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">43</span></pre></td><td class="code"><pre><span class="line"><span class="comment">   */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">44</span></pre></td><td class="code"><pre><span class="line">  <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">verifySessionId</span><span class="params">(Serializable sessionId)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">45</span></pre></td><td class="code"><pre><span class="line">      <span class="keyword">if</span> (sessionId == <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">46</span></pre></td><td class="code"><pre><span class="line">          String msg = <span class="string">"sessionId returned from doCreate implementation is null.  Please verify the implementation."</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">47</span></pre></td><td class="code"><pre><span class="line">          <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(msg);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">48</span></pre></td><td class="code"><pre><span class="line">      &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">49</span></pre></td><td class="code"><pre><span class="line">  &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">50</span></pre></td><td class="code"><pre><span class="line">  ......</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">51</span></pre></td><td class="code"><pre><span class="line">  <span class="comment">// line 156</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">52</span></pre></td><td class="code"><pre><span class="line">  <span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">53</span></pre></td><td class="code"><pre><span class="line"><span class="comment">   * Subclass hook to actually persist the given &lt;tt&gt;Session&lt;/tt&gt; instance to the underlying EIS.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">54</span></pre></td><td class="code"><pre><span class="line"><span class="comment">   *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">55</span></pre></td><td class="code"><pre><span class="line"><span class="comment">   * <span class="doctag">@param</span> session the Session instance to persist to the EIS.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">56</span></pre></td><td class="code"><pre><span class="line"><span class="comment">   * <span class="doctag">@return</span> the id of the session created in the EIS (i.e. this is almost always a primary key and should be the</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">57</span></pre></td><td class="code"><pre><span class="line"><span class="comment">   *         value returned from &#123;<span class="doctag">@link</span> org.apache.shiro.session.Session#getId() Session.getId()&#125;.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">58</span></pre></td><td class="code"><pre><span class="line"><span class="comment">   */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">59</span></pre></td><td class="code"><pre><span class="line">  <span class="function"><span class="keyword">protected</span> <span class="keyword">abstract</span> Serializable <span class="title">doCreate</span><span class="params">(Session session)</span></span>;</span></pre></td></tr></table></figure>
+
+<h4 id="2-MemorySessionDAO-doCreate"><a href="#2-MemorySessionDAO-doCreate" class="headerlink" title="2. MemorySessionDAO | doCreate()"></a>2. MemorySessionDAO | <code>doCreate()</code></h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">  <span class="comment">// line 66</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">  <span class="function"><span class="keyword">protected</span> Serializable <span class="title">doCreate</span><span class="params">(Session session)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 生成sessionId </span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">      Serializable sessionId = generateSessionId(session);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 将sessionId填充到 session对象中</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">      assignSessionId(session, sessionId);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 将session存储到ConcurrentHashMap对象中</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">      storeSession(sessionId, session);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">      <span class="keyword">return</span> sessionId;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">  &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">  <span class="function"><span class="keyword">protected</span> Session <span class="title">storeSession</span><span class="params">(Serializable id, Session session)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">      <span class="keyword">if</span> (id == <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">          <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException(<span class="string">"id argument cannot be null."</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">      &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">      <span class="keyword">return</span> sessions.putIfAbsent(id, session);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">  &#125;</span></pre></td></tr></table></figure>
+<blockquote>
+<p>ConcurrentHashMap 是线程安全的 HashMap</p>
+</blockquote>
+<h4 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h4><ol>
+<li>生成 sessionId （MemorySessionDAO）</li>
+<li>将 sessionId 填充到 session中（MemorySessionDAO）</li>
+<li>将 session 存储到 ConcurrentHashMap 对象sessions中，sessionId 作为key（MemorySessionDAO）</li>
+<li>验证 sessionId 是否为空</li>
+<li>返回 sessionId</li>
+</ol>
+<h3 id="readSession-Serializable-Session"><a href="#readSession-Serializable-Session" class="headerlink" title="readSession(Serializable): Session"></a>readSession(Serializable): Session</h3><h4 id="1-AbstractSessionDAO-readSession"><a href="#1-AbstractSessionDAO-readSession" class="headerlink" title="1. AbstractSessionDAO | readSession()"></a>1. AbstractSessionDAO | <code>readSession()</code></h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// line 158</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * Retrieves the Session object from the underlying EIS identified by &lt;tt&gt;sessionId&lt;/tt&gt; by delegating to</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * the &#123;<span class="doctag">@link</span> #doReadSession(java.io.Serializable)&#125; method.  If &#123;<span class="doctag">@code</span> null&#125; is returned from that method, an</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * &#123;<span class="doctag">@link</span> UnknownSessionException&#125; will be thrown.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * <span class="doctag">@param</span> sessionId the id of the session to retrieve from the EIS.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * <span class="doctag">@return</span> the session identified by &lt;tt&gt;sessionId&lt;/tt&gt; in the EIS.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * <span class="doctag">@throws</span> UnknownSessionException if the id specified does not correspond to any session in the EIS.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="keyword">public</span> Session <span class="title">readSession</span><span class="params">(Serializable sessionId)</span> <span class="keyword">throws</span> UnknownSessionException </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">       Session s = doReadSession(sessionId);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">if</span> (s == <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">           <span class="keyword">throw</span> <span class="keyword">new</span> UnknownSessionException(<span class="string">"There is no session with id ["</span> + sessionId + <span class="string">"]"</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">       &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">return</span> s;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">   &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line">   <span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * Subclass implementation hook that retrieves the Session object from the underlying EIS or &#123;<span class="doctag">@code</span> null&#125; if a</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * session with that ID could not be found.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * <span class="doctag">@param</span> sessionId the id of the &lt;tt&gt;Session&lt;/tt&gt; to retrieve.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">24</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * <span class="doctag">@return</span> the Session in the EIS identified by &lt;tt&gt;sessionId&lt;/tt&gt; or &#123;<span class="doctag">@code</span> null&#125; if a</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">25</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    *         session with that ID could not be found.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">26</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">27</span></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="keyword">protected</span> <span class="keyword">abstract</span> Session <span class="title">doReadSession</span><span class="params">(Serializable sessionId)</span></span>;</span></pre></td></tr></table></figure>
+
+<h4 id="2-MemorySessionDAO-doReadSession"><a href="#2-MemorySessionDAO-doReadSession" class="headerlink" title="2. MemorySessionDAO | doReadSession()"></a>2. MemorySessionDAO | <code>doReadSession()</code></h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// line 80</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="keyword">protected</span> Session <span class="title">doReadSession</span><span class="params">(Serializable sessionId)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">return</span> sessions.get(sessionId);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">   &#125;</span></pre></td></tr></table></figure>
+
+<h3 id="update-Session-void"><a href="#update-Session-void" class="headerlink" title="update(Session): void"></a>update(Session): void</h3><h4 id="MemorySessionDAO-update"><a href="#MemorySessionDAO-update" class="headerlink" title="MemorySessionDAO | update()"></a>MemorySessionDAO | <code>update()</code></h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// line 72</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> Session <span class="title">storeSession</span><span class="params">(Serializable id, Session session)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">if</span> (id == <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException(<span class="string">"id argument cannot be null."</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> sessions.putIfAbsent(id, session);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">&#125;	</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// line 84</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">update</span><span class="params">(Session session)</span> <span class="keyword">throws</span> UnknownSessionException </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">    storeSession(session.getId(), session);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+<h3 id="delete-Session-void"><a href="#delete-Session-void" class="headerlink" title="delete(Session): void"></a>delete(Session): void</h3><h4 id="MemorySessionDAO-delete"><a href="#MemorySessionDAO-delete" class="headerlink" title="MemorySessionDAO | delete()"></a>MemorySessionDAO | <code>delete()</code></h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// line 88</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">delete</span><span class="params">(Session session)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">if</span> (session == <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">           <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException(<span class="string">"session argument cannot be null."</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">       &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">       Serializable id = session.getId();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">if</span> (id != <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">           sessions.remove(id);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">       &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">   &#125;</span></pre></td></tr></table></figure>
+
+<h2 id="理解-EnterpiseCachingSessionDAO"><a href="#理解-EnterpiseCachingSessionDAO" class="headerlink" title="理解 EnterpiseCachingSessionDAO"></a>理解 EnterpiseCachingSessionDAO</h2><h3 id="create-Session-Serializable-1"><a href="#create-Session-Serializable-1" class="headerlink" title="create(Session): Serializable"></a>create(Session): Serializable</h3><h4 id="1-CachingSessionDAO-中重写了-readSession"><a href="#1-CachingSessionDAO-中重写了-readSession" class="headerlink" title="1. CachingSessionDAO 中重写了 readSession()"></a>1. CachingSessionDAO 中重写了 <code>readSession()</code></h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">   <span class="comment">// line 177</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * Calls &#123;<span class="doctag">@code</span> super.create(session)&#125;, then caches the session keyed by the returned &#123;<span class="doctag">@code</span> sessionId&#125;, and then</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * returns this &#123;<span class="doctag">@code</span> sessionId&#125;.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * <span class="doctag">@param</span> session Session object to create in the EIS and then cache.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="keyword">public</span> Serializable <span class="title">create</span><span class="params">(Session session)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">       <span class="comment">// 调用父类的create()方法，参考 MemorySessionDAO 中 AbstractSessionDAO 的 create() 方法</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">       <span class="comment">// 内部调用 doCreate() ，然后验证 sessionId</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">       Serializable sessionId = <span class="keyword">super</span>.create(session);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">	<span class="comment">// 缓存session</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">       cache(session, sessionId);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">return</span> sessionId;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">   &#125;</span></pre></td></tr></table></figure>
+
+<h4 id="2-EnterpriseCachingSessioDAO-doCreate"><a href="#2-EnterpriseCachingSessioDAO-doCreate" class="headerlink" title="2. EnterpriseCachingSessioDAO | doCreate()"></a>2. EnterpriseCachingSessioDAO | <code>doCreate()</code></h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// line 63</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="keyword">protected</span> Serializable <span class="title">doCreate</span><span class="params">(Session session)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">       Serializable sessionId = generateSessionId(session);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">       assignSessionId(session, sessionId);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">return</span> sessionId;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">   &#125;</span></pre></td></tr></table></figure>
+
+<h4 id="3-CachingSessionDAO-cache-session-sessionId"><a href="#3-CachingSessionDAO-cache-session-sessionId" class="headerlink" title="3. CachingSessionDAO | cache(session, sessionId)"></a>3. CachingSessionDAO | <code>cache(session, sessionId)</code></h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">   ......</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// line 141</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * Returns the active sessions cache, but if that cache instance is null, first lazily creates the cache instance</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * via the &#123;<span class="doctag">@link</span> #createActiveSessionsCache()&#125; method and then returns the instance.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * &lt;p/&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * Note that this method will only return a non-null value code if the &#123;<span class="doctag">@code</span> CacheManager&#125; has been set.  If</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * not set, there will be no cache.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * <span class="doctag">@return</span> the active sessions cache instance.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="keyword">private</span> Cache&lt;Serializable, Session&gt; <span class="title">getActiveSessionsCacheLazy</span><span class="params">()</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">if</span> (<span class="keyword">this</span>.activeSessions == <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">           <span class="keyword">this</span>.activeSessions = createActiveSessionsCache();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">       &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">return</span> activeSessions;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">   &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// line 157</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * Creates a cache instance used to store active sessions.  Creation is done by first</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * &#123;<span class="doctag">@link</span> #getCacheManager() acquiring&#125; the &#123;<span class="doctag">@code</span> CacheManager&#125;.  If the cache manager is not null, the</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">24</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * cache returned is that resulting from the following call:</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">25</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * &lt;pre&gt;       String name = &#123;<span class="doctag">@link</span> #getActiveSessionsCacheName() getActiveSessionsCacheName()&#125;;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">26</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * cacheManager.getCache(name);&lt;/pre&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">27</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">28</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * <span class="doctag">@return</span> a cache instance used to store active sessions, or &#123;<span class="doctag">@code</span> null&#125; if the &#123;<span class="doctag">@code</span> CacheManager&#125; has</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">29</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    *         not been set.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">30</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">31</span></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="keyword">protected</span> Cache&lt;Serializable, Session&gt; <span class="title">createActiveSessionsCache</span><span class="params">()</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">32</span></pre></td><td class="code"><pre><span class="line">       Cache&lt;Serializable, Session&gt; cache = <span class="keyword">null</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">33</span></pre></td><td class="code"><pre><span class="line">       CacheManager mgr = getCacheManager();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">34</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">if</span> (mgr != <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">35</span></pre></td><td class="code"><pre><span class="line">           String name = getActiveSessionsCacheName();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">36</span></pre></td><td class="code"><pre><span class="line">           cache = mgr.getCache(name);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">37</span></pre></td><td class="code"><pre><span class="line">       &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">38</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">return</span> cache;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">39</span></pre></td><td class="code"><pre><span class="line">   &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">40</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">41</span></pre></td><td class="code"><pre><span class="line">......</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">42</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">43</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// line 220</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">44</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">45</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * Caches the specified session under the cache entry key of &#123;<span class="doctag">@code</span> sessionId&#125;.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">46</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">47</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * <span class="doctag">@param</span> session   the session to cache</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">48</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * <span class="doctag">@param</span> sessionId the session id, to be used as the cache entry key.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">49</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * <span class="doctag">@since</span> 1.0</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">50</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">51</span></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">cache</span><span class="params">(Session session, Serializable sessionId)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">52</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">if</span> (session == <span class="keyword">null</span> || sessionId == <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">53</span></pre></td><td class="code"><pre><span class="line">           <span class="keyword">return</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">54</span></pre></td><td class="code"><pre><span class="line">       &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">55</span></pre></td><td class="code"><pre><span class="line">       <span class="comment">// 获取 cache </span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">56</span></pre></td><td class="code"><pre><span class="line">       Cache&lt;Serializable, Session&gt; cache = getActiveSessionsCacheLazy();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">57</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">if</span> (cache == <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">58</span></pre></td><td class="code"><pre><span class="line">           <span class="keyword">return</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">59</span></pre></td><td class="code"><pre><span class="line">       &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">60</span></pre></td><td class="code"><pre><span class="line">       <span class="comment">// 将 session 存储到 cache 中，sessionId 作为 key</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">61</span></pre></td><td class="code"><pre><span class="line">       cache(session, sessionId, cache);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">62</span></pre></td><td class="code"><pre><span class="line">   &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">63</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">64</span></pre></td><td class="code"><pre><span class="line">   <span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">65</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * Caches the specified session in the given cache under the key of &#123;<span class="doctag">@code</span> sessionId&#125;.  This implementation</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">66</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * simply calls &#123;<span class="doctag">@code</span> cache.put(sessionId,session)&#125; and can be overridden for custom behavior.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">67</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">68</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * <span class="doctag">@param</span> session   the session to cache</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">69</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * <span class="doctag">@param</span> sessionId the id of the session, expected to be the cache key.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">70</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * <span class="doctag">@param</span> cache     the cache to store the session</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">71</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">72</span></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">cache</span><span class="params">(Session session, Serializable sessionId, Cache&lt;Serializable, Session&gt; cache)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">73</span></pre></td><td class="code"><pre><span class="line">       cache.put(sessionId, session);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">74</span></pre></td><td class="code"><pre><span class="line">   &#125;</span></pre></td></tr></table></figure>
+
+
+<p><code>EnterpriseCachingSessionDAO</code> 构造函数中设置了默认的 <code>CacheManager</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">EnterpriseCacheSessionDAO</span><span class="params">()</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">    setCacheManager(<span class="keyword">new</span> AbstractCacheManager() &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">        <span class="meta">@Override</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">        <span class="function"><span class="keyword">protected</span> Cache&lt;Serializable, Session&gt; <span class="title">createCache</span><span class="params">(String name)</span> <span class="keyword">throws</span> CacheException </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> MapCache&lt;Serializable, Session&gt;(name, <span class="keyword">new</span> ConcurrentHashMap&lt;Serializable, Session&gt;());</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">    &#125;);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+<p>从中可以看出，实际中 <code>MapCache</code> 内部也是使用 <code>ConcurrentHashMap</code>对象来存储session的。</p>
+<h3 id="readSession-Serializable-Session-1"><a href="#readSession-Serializable-Session-1" class="headerlink" title="readSession(Serializable): Session"></a>readSession(Serializable): Session</h3><h4 id="1-CachingSessionDAO-readSession"><a href="#1-CachingSessionDAO-readSession" class="headerlink" title="1. CachingSessionDAO | readSession()"></a>1. CachingSessionDAO | <code>readSession()</code></h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">   <span class="comment">// line 250</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * Attempts to acquire the Session from the cache first using the session ID as the cache key.  If no session</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * is found, &#123;<span class="doctag">@code</span> super.readSession(sessionId)&#125; is called to perform the actual retrieval.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * <span class="doctag">@param</span> sessionId the id of the session to retrieve from the EIS.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * <span class="doctag">@return</span> the session identified by &#123;<span class="doctag">@code</span> sessionId&#125; in the EIS.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * <span class="doctag">@throws</span> UnknownSessionException if the id specified does not correspond to any session in the cache or EIS.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="keyword">public</span> Session <span class="title">readSession</span><span class="params">(Serializable sessionId)</span> <span class="keyword">throws</span> UnknownSessionException </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">       <span class="comment">// 根据 sessionId 获取缓存的 session</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">       Session s = getCachedSession(sessionId);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">if</span> (s == <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">           <span class="comment">// 调用父类方法 readSession 获取 session</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">           <span class="comment">// 其内部调用 doReadSession() 获取session</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">           s = <span class="keyword">super</span>.readSession(sessionId);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">       &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">return</span> s;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line">   &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line">......</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line">       </span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// line 189</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line">   <span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">24</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * Returns the cached session with the corresponding &#123;<span class="doctag">@code</span> sessionId&#125; or &#123;<span class="doctag">@code</span> null&#125; if there is</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">25</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * no session cached under that id (or if there is no Cache).</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">26</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">27</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * <span class="doctag">@param</span> sessionId the id of the cached session to acquire.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">28</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * <span class="doctag">@return</span> the cached session with the corresponding &#123;<span class="doctag">@code</span> sessionId&#125;, or &#123;<span class="doctag">@code</span> null&#125; if the session</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">29</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    *         does not exist or is not cached.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">30</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">31</span></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="keyword">protected</span> Session <span class="title">getCachedSession</span><span class="params">(Serializable sessionId)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">32</span></pre></td><td class="code"><pre><span class="line">       Session cached = <span class="keyword">null</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">33</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">if</span> (sessionId != <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">34</span></pre></td><td class="code"><pre><span class="line">           Cache&lt;Serializable, Session&gt; cache = getActiveSessionsCacheLazy();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">35</span></pre></td><td class="code"><pre><span class="line">           <span class="keyword">if</span> (cache != <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">36</span></pre></td><td class="code"><pre><span class="line">               cached = getCachedSession(sessionId, cache);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">37</span></pre></td><td class="code"><pre><span class="line">           &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">38</span></pre></td><td class="code"><pre><span class="line">       &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">39</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">return</span> cached;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">40</span></pre></td><td class="code"><pre><span class="line">   &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">41</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">42</span></pre></td><td class="code"><pre><span class="line">   <span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">43</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * Returns the Session with the specified id from the specified cache.  This method simply calls</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">44</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * &#123;<span class="doctag">@code</span> cache.get(sessionId)&#125; and can be overridden by subclasses for custom acquisition behavior.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">45</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">46</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * <span class="doctag">@param</span> sessionId the id of the session to acquire.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">47</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * <span class="doctag">@param</span> cache     the cache to acquire the session from</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">48</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * <span class="doctag">@return</span> the cached session, or &#123;<span class="doctag">@code</span> null&#125; if the session wasn't in the cache.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">49</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">50</span></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="keyword">protected</span> Session <span class="title">getCachedSession</span><span class="params">(Serializable sessionId, Cache&lt;Serializable, Session&gt; cache)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">51</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">return</span> cache.get(sessionId);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">52</span></pre></td><td class="code"><pre><span class="line">   &#125;</span></pre></td></tr></table></figure>
+
+
+<p><code>EnterpriseCachingSessionDAO</code> 中实现了 <code>doReadSession()</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> Session <span class="title">doReadSession</span><span class="params">(Serializable sessionId)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>; <span class="comment">//should never execute because this implementation relies on parent class to access cache, which</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">//is where all sessions reside - it is the cache implementation that determines if the</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">//cache is memory only or disk-persistent, etc.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+<h3 id="update-Session-void-1"><a href="#update-Session-void-1" class="headerlink" title="update(Session): void"></a>update(Session): void</h3><h4 id="1-CachingSessionDAO-中实现了-update"><a href="#1-CachingSessionDAO-中实现了-update" class="headerlink" title="1. CachingSessionDAO 中实现了 update()"></a>1. CachingSessionDAO 中实现了 <code>update()</code></h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// line 266</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">   <span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * Updates the state of the given session to the EIS by first delegating to</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * &#123;<span class="doctag">@link</span> #doUpdate(org.apache.shiro.session.Session)&#125;.  If the session is a &#123;<span class="doctag">@link</span> ValidatingSession&#125;, it will</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * be added to the cache only if it is &#123;<span class="doctag">@link</span> ValidatingSession#isValid()&#125; and if invalid, will be removed from the</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * cache.  If it is not a &#123;<span class="doctag">@code</span> ValidatingSession&#125; instance, it will be added to the cache in any event.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * <span class="doctag">@param</span> session the session object to update in the EIS.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    * <span class="doctag">@throws</span> UnknownSessionException if no existing EIS session record exists with the</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    *                                 identifier of &#123;<span class="doctag">@link</span> Session#getId() session.getId()&#125;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line"><span class="comment">    */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">update</span><span class="params">(Session session)</span> <span class="keyword">throws</span> UnknownSessionException </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">       doUpdate(session);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">	<span class="comment">// 判断session是否是 ValidatingSession 实例</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">if</span> (session <span class="keyword">instanceof</span> ValidatingSession) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">		<span class="comment">// 判断 session 是否有效</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">           <span class="keyword">if</span> (((ValidatingSession) session).isValid()) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">               cache(session, session.getId());</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line">           &#125; <span class="keyword">else</span> &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line">               uncache(session);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line">           &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line">       &#125; <span class="keyword">else</span> &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line">           cache(session, session.getId());</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">24</span></pre></td><td class="code"><pre><span class="line">       &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">25</span></pre></td><td class="code"><pre><span class="line">   &#125;</span></pre></td></tr></table></figure>
+<h4 id="2-EnterpriseCachingSessionDAO-doUpdate"><a href="#2-EnterpriseCachingSessionDAO-doUpdate" class="headerlink" title="2. EnterpriseCachingSessionDAO | doUpdate()"></a>2. EnterpriseCachingSessionDAO | <code>doUpdate()</code></h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">doUpdate</span><span class="params">(Session session)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">//does nothing - parent class persists to cache.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+<h3 id="delete-Session-void-1"><a href="#delete-Session-void-1" class="headerlink" title="delete(Session): void"></a>delete(Session): void</h3><h4 id="1-CachingSessionDAO-delete"><a href="#1-CachingSessionDAO-delete" class="headerlink" title="1. CachingSessionDAO | delete()"></a>1. CachingSessionDAO | <code>delete()</code></h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * Removes the specified session from any cache and then permanently deletes the session from the EIS by</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * delegating to &#123;<span class="doctag">@link</span> #doDelete&#125;.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@param</span> session the session to remove from caches and permanently delete from the EIS.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">delete</span><span class="params">(Session session)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">	<span class="comment">// 删除缓存中的session</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">    uncache(session);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">// 调用 doDelete()</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">    doDelete(session);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+<h4 id="2-EnterpriseCachingSessionDAO-doDelete"><a href="#2-EnterpriseCachingSessionDAO-doDelete" class="headerlink" title="2. EnterpriseCachingSessionDAO | doDelete()"></a>2. EnterpriseCachingSessionDAO | <code>doDelete()</code></h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">doDelete</span><span class="params">(Session session)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">//does nothing - parent class removes from cache.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p><code>SessionDAO</code>用于 session 存储，它有两个实现：</p>
+<ul>
+<li><code>MemorySessionDAO</code> 使用 <code>ConcurrentHashMap</code> 对象将 session 保存到内存中</li>
+<li><code>EnterpriseCachingSessionDAO</code> 将session保存到缓存中（该缓存默认使用 <code>ConcurrentHashMap</code> 保存到内存中）。其实 <code>EnterpriseCachingSessionDAO</code> 就是一个对外的接口，用户自定义SessionDAO时，只需继承他。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/blog/alipay-reward-image.jpg" alt="LiuChuanWei 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/blog/alipay-reward-image.jpg" alt="LiuChuanWei 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" rel="tag"># 源码解析</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/10/17/210-Java/Shiro/Shiro%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BSessionManager/" rel="prev" title="Shiro源码解析之SessionManager">
+      <i class="fa fa-chevron-left"></i> Shiro源码解析之SessionManager
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/10/18/210-Java/Shiro/Shiro%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BSessionManager01-Session%E5%92%8CSessionFactory/" rel="next" title="Shiro源码解析之SessionManager01-Session和SessionFactory">
+      Shiro源码解析之SessionManager01-Session和SessionFactory <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#了解-SessionDAO"><span class="nav-number">1.</span> <span class="nav-text">了解 SessionDAO</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#类继承图"><span class="nav-number">1.1.</span> <span class="nav-text">类继承图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SessionDAO"><span class="nav-number">1.2.</span> <span class="nav-text">SessionDAO</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AbstractSessionDAO"><span class="nav-number">1.3.</span> <span class="nav-text">AbstractSessionDAO</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CachingSessionDAO"><span class="nav-number">1.4.</span> <span class="nav-text">CachingSessionDAO</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#EnterpriseCachingSessionDAO"><span class="nav-number">1.5.</span> <span class="nav-text">EnterpriseCachingSessionDAO</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MemorySessionDAO"><span class="nav-number">1.6.</span> <span class="nav-text">MemorySessionDAO</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#理解-MemorySessionDAO"><span class="nav-number">2.</span> <span class="nav-text">理解 MemorySessionDAO</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#create-Session-Serializable"><span class="nav-number">2.1.</span> <span class="nav-text">create(Session): Serializable</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-AbstractSessionDAO-create"><span class="nav-number">2.1.1.</span> <span class="nav-text">1. AbstractSessionDAO | create()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-MemorySessionDAO-doCreate"><span class="nav-number">2.1.2.</span> <span class="nav-text">2. MemorySessionDAO | doCreate()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#小结"><span class="nav-number">2.1.3.</span> <span class="nav-text">小结</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#readSession-Serializable-Session"><span class="nav-number">2.2.</span> <span class="nav-text">readSession(Serializable): Session</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-AbstractSessionDAO-readSession"><span class="nav-number">2.2.1.</span> <span class="nav-text">1. AbstractSessionDAO | readSession()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-MemorySessionDAO-doReadSession"><span class="nav-number">2.2.2.</span> <span class="nav-text">2. MemorySessionDAO | doReadSession()</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#update-Session-void"><span class="nav-number">2.3.</span> <span class="nav-text">update(Session): void</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#MemorySessionDAO-update"><span class="nav-number">2.3.1.</span> <span class="nav-text">MemorySessionDAO | update()</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#delete-Session-void"><span class="nav-number">2.4.</span> <span class="nav-text">delete(Session): void</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#MemorySessionDAO-delete"><span class="nav-number">2.4.1.</span> <span class="nav-text">MemorySessionDAO | delete()</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#理解-EnterpiseCachingSessionDAO"><span class="nav-number">3.</span> <span class="nav-text">理解 EnterpiseCachingSessionDAO</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#create-Session-Serializable-1"><span class="nav-number">3.1.</span> <span class="nav-text">create(Session): Serializable</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-CachingSessionDAO-中重写了-readSession"><span class="nav-number">3.1.1.</span> <span class="nav-text">1. CachingSessionDAO 中重写了 readSession()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-EnterpriseCachingSessioDAO-doCreate"><span class="nav-number">3.1.2.</span> <span class="nav-text">2. EnterpriseCachingSessioDAO | doCreate()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-CachingSessionDAO-cache-session-sessionId"><span class="nav-number">3.1.3.</span> <span class="nav-text">3. CachingSessionDAO | cache(session, sessionId)</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#readSession-Serializable-Session-1"><span class="nav-number">3.2.</span> <span class="nav-text">readSession(Serializable): Session</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-CachingSessionDAO-readSession"><span class="nav-number">3.2.1.</span> <span class="nav-text">1. CachingSessionDAO | readSession()</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#update-Session-void-1"><span class="nav-number">3.3.</span> <span class="nav-text">update(Session): void</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-CachingSessionDAO-中实现了-update"><span class="nav-number">3.3.1.</span> <span class="nav-text">1. CachingSessionDAO 中实现了 update()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-EnterpriseCachingSessionDAO-doUpdate"><span class="nav-number">3.3.2.</span> <span class="nav-text">2. EnterpriseCachingSessionDAO | doUpdate()</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#delete-Session-void-1"><span class="nav-number">3.4.</span> <span class="nav-text">delete(Session): void</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-CachingSessionDAO-delete"><span class="nav-number">3.4.1.</span> <span class="nav-text">1. CachingSessionDAO | delete()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-EnterpriseCachingSessionDAO-doDelete"><span class="nav-number">3.4.2.</span> <span class="nav-text">2. EnterpriseCachingSessionDAO | doDelete()</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">LiuChuanWei</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/liuchuanv" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;liuchuanv" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiuChuanWei</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme: 'forest',
+      logLevel: 3,
+      flowchart: { curve: 'linear' },
+      gantt: { axisFormat: '%m/%d/%Y' },
+      sequence: { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+</body>
+</html>
