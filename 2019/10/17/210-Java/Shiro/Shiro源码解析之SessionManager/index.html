@@ -50,7 +50,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="Shiro源码解析之SessionManager">
 <meta property="og:url" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;2019&#x2F;10&#x2F;17&#x2F;210-Java&#x2F;Shiro&#x2F;Shiro%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BSessionManager&#x2F;index.html">
-<meta property="og:site_name" content="静言思之">
+<meta property="og:site_name" content="代码无难事">
 <meta property="og:description" content="了解 SessionManager类继承图   在IDEA中选择某个类，按 Shift+Ctrl+Alt+U生成类继承图；选择某个类，按 F4进入类 按Alt+7查看类的结构 按Alt+F7查看方法在哪里被调用了  使用上面三个快捷键快捷查看框架源码  ！！！记住上面的结构 SessionManager AbstractSessionManager在源码注释中已经说明该类过时了，为了全局过期时间这">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;blog&#x2F;images&#x2F;201910&#x2F;DefaultWebSessionManager.png">
@@ -79,7 +79,7 @@
   };
 </script>
 
-  <title>Shiro源码解析之SessionManager | 静言思之</title>
+  <title>Shiro源码解析之SessionManager | 代码无难事</title>
   
 
 
@@ -123,10 +123,11 @@
     <div>
       <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
-        <span class="site-title">静言思之</span>
+        <span class="site-title">代码无难事</span>
         <span class="logo-line-after"><i></i></span>
       </a>
     </div>
+        <p class="site-subtitle">代码无难事，只怕有心猿</p>
   </div>
 
   <div class="site-nav-toggle">
@@ -149,17 +150,17 @@
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">23</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">24</span></a>
 
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">19</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">21</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">39</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">42</span></a>
 
   </li>
         <li class="menu-item menu-item-about">
@@ -202,7 +203,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="静言思之">
+      <meta itemprop="name" content="代码无难事">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -216,14 +217,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2019-10-17 10:16:50" itemprop="dateCreated datePublished" datetime="2019-10-17T10:16:50+08:00">2019-10-17</time>
+              <time title="创建时间：2019-10-17 10:16:50" itemprop="dateCreated datePublished" datetime="2019-10-17T10:16:50Z">2019-10-17</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-10-30 09:28:36" itemprop="dateModified" datetime="2019-10-30T09:28:36+08:00">2019-10-30</time>
+                <time title="修改时间：2019-10-30 01:28:36" itemprop="dateModified" datetime="2019-10-30T01:28:36Z">2019-10-30</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -379,7 +380,7 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2019/10/15/210-Java/JavaSE/%E6%B5%85%E8%B0%88Java%E4%B8%AD%E5%87%A0%E7%A7%8D%E5%B8%B8%E8%A7%81%E7%9A%84%E6%AF%94%E8%BE%83%E5%99%A8%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%B3%95/" rel="prev" title="【转载】Java中比较器的实现方法">
+    <a href="/2019/10/16/210-Java/JavaSE/%E6%B5%85%E8%B0%88Java%E4%B8%AD%E5%87%A0%E7%A7%8D%E5%B8%B8%E8%A7%81%E7%9A%84%E6%AF%94%E8%BE%83%E5%99%A8%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%B3%95/" rel="prev" title="【转载】Java中比较器的实现方法">
       <i class="fa fa-chevron-left"></i> 【转载】Java中比较器的实现方法
     </a></div>
       <div class="post-nav-item">
@@ -437,20 +438,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-count">42</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-count">24</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-count">21</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

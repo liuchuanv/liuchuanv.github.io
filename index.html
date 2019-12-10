@@ -46,9 +46,9 @@
 </script>
 
   <meta property="og:type" content="website">
-<meta property="og:title" content="静言思之">
+<meta property="og:title" content="代码无难事">
 <meta property="og:url" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;index.html">
-<meta property="og:site_name" content="静言思之">
+<meta property="og:site_name" content="代码无难事">
 <meta property="og:locale" content="zh-CN">
 <meta name="twitter:card" content="summary">
 
@@ -66,7 +66,7 @@
   };
 </script>
 
-  <title>静言思之</title>
+  <title>代码无难事</title>
   
 
 
@@ -110,10 +110,11 @@
     <div>
       <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
-        <span class="site-title">静言思之</span>
+        <span class="site-title">代码无难事</span>
         <span class="logo-line-after"><i></i></span>
       </a>
     </div>
+        <p class="site-subtitle">代码无难事，只怕有心猿</p>
   </div>
 
   <div class="site-nav-toggle">
@@ -136,17 +137,17 @@
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">23</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">24</span></a>
 
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">19</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">21</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">39</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">42</span></a>
 
   </li>
         <li class="menu-item menu-item-about">
@@ -180,6 +181,136 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://liuchuanv.github.io/2019/12/10/210-Java/JavaSE/JWT(%E4%B8%8A)%EF%BC%9A%E8%AE%A4%E8%AF%86%20JSON%20Web%20Token/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="LiuChuanWei">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="代码无难事">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/12/10/210-Java/JavaSE/JWT(%E4%B8%8A)%EF%BC%9A%E8%AE%A4%E8%AF%86%20JSON%20Web%20Token/" class="post-title-link" itemprop="url">JWT (上)：认识 JSON Web Token</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-12-10 00:00:00 / 修改时间：10:50:51" itemprop="dateCreated datePublished" datetime="2019-12-10T00:00:00Z">2019-12-10</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/JavaSE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaSE</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="什么是-JWT？"><a href="#什么是-JWT？" class="headerlink" title="什么是 JWT？"></a>什么是 JWT？</h2><p>JSON Web Token（JWT）是一种开放标准（RFC 7519），它定义了一种紧凑且自包含的方式，作为JSON对象在各方之间安全的传递信息。这个信息可以通过数字签名进行验证并信任。JWTs 可以使用密钥（结合HMAC算法）或者 使用RSA、ECDSA加密的公钥私钥对进行签名。</p>
+<p>尽管JWTs能够在各方之间也提供安全加密，但是仍专注于签名Token。当其他方隐藏了加密Token的某些声明时，签名Token可以验证声明的完整性。当Token使用公钥私钥对进行签名时，这个签名还能证明只有拥有私钥的一方才是签发它的一方。</p>
+<h2 id="什么时候使用-JWT-？"><a href="#什么时候使用-JWT-？" class="headerlink" title="什么时候使用 JWT ？"></a>什么时候使用 JWT ？</h2><ul>
+<li><strong>授权</strong>：这是JWT最普遍的使用场景了。当用户登录之后，每次请求都包含JWT，允许用户访问那些只有携带token才能访问的路由、服务、资源。如今在单点登录中广泛使用了JWT，因为JWT体积小，且能够在不同域名之间被使用。</li>
+<li><strong>信息交换</strong>：JWT是一种在各方之间安全传输信息的好方式。因为JWTs能够签名，比如使用公钥私钥对，你能够确定发送者的身份。另外，签名是使用header和payload计算而来，所以你也可以验证内容是否被篡改。</li>
+</ul>
+<h2 id="JWT的结构"><a href="#JWT的结构" class="headerlink" title="JWT的结构"></a>JWT的结构</h2><p>jwt 包含三部分，之间以点（.）分隔</p>
+<ul>
+<li>Header（头部）</li>
+<li>Payload（负载）</li>
+<li>Signature（签名）</li>
+</ul>
+<p>一个典型的jwt如同下面这样:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">xxxxx.yyyyy.zzzzz</span></pre></td></tr></table></figure>
+
+<p><img src="./images/encoded-jwt3.png" alt="编码的JWT"></p>
+<p>下面分别介绍他们</p>
+<h3 id="Header"><a href="#Header" class="headerlink" title="Header"></a>Header</h3><p>Header部分 是一个 JSON 对象，典型的header包含两部分：</p>
+<ul>
+<li><p><code>alg</code>：使用的签名算法，比如 HMAC SHA256 或 RSA</p>
+</li>
+<li><p><code>typ</code>：token的类型，比如 JWT</p>
+</li>
+</ul>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">  <span class="attr">"alg"</span>: <span class="string">"HS256"</span>,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">  <span class="attr">"typ"</span>: <span class="string">"JWT"</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+<p>最后，用 Base64Url 将这个 JSON 对象编码后，作为 JWT 的第一部分</p>
+<h3 id="Payload"><a href="#Payload" class="headerlink" title="Payload"></a>Payload</h3><p>Payload 部分也是 JSON 对象，用来存放数据。JWT 有7个官方字段</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">* iss (issuer)：签发人</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">* exp (expiration time)：过期时间，以秒为单位</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">* iat (Issued At)：签发时间，能够算出JWT的存在时间</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">* nbf (Not Before)：生效时间</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">* jti (JWT ID)：JWT 的唯一标识。用来防止 JWT 重复。</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">* sub (subject)：主题（很少使用）</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">* aud (audience)：token的受众（很少被使用）</span></pre></td></tr></table></figure>
+<p>除了上面这些字段，还可以自定义私有字段，比如</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">	<span class="attr">"userId"</span>: <span class="string">"1101"</span>,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">	<span class="attr">"userName"</span>: <span class="string">"张三"</span>,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">	<span class="attr">"age"</span>: <span class="string">"23"</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+<p>最后，用 Base64Url 将这个 JSON 对象编码后，作为 JWT 的第二部分</p>
+<p>Tip： JWT 默认不加密，任何人都可以读取，所以不要把敏感信息存放在这个部分，除非加密过。</p>
+<h3 id="Signature"><a href="#Signature" class="headerlink" title="Signature"></a>Signature</h3><p>使用 Header 指定的算法对 Header、Payload、密钥三部分进行签名生成的字符串，作为签名部分。<br>比如使用 HMAC SHA256 算法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">HMACSHA256( </span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">	Base64Url.encode(header) + &quot;.&quot; + Base64Url.encode(payload),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">	secret</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">)</span></pre></td></tr></table></figure>
+<p>签名被用来验证数据是否被篡改，并且如果 token 使用了私钥进行签名，那么签名还可以验证 JWT 的发送者身份。</p>
+<h2 id="怎么使用-JWT-？"><a href="#怎么使用-JWT-？" class="headerlink" title="怎么使用 JWT ？"></a>怎么使用 JWT ？</h2><p>客户端收到服务器返回的 JWT，可以储存在 Cookie 里面，也可以储存在 localStorage。</p>
+<p>此后，客户端每次请求服务器，都要带上这个 JWT。可以把它放在 Cookie 里面自动发送，但是这样并不能跨域，所以更好的做法是放在 HTTP 请求的头信息 <code>Authorization</code> 字段里面。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">Authorization: Bearer &lt;token&gt;</span></pre></td></tr></table></figure>
+
+<p>另一种做法是，跨域的时候，JWT 就放在 POST 请求的数据体里面。</p>
+<h2 id="JWT-的特点"><a href="#JWT-的特点" class="headerlink" title="JWT 的特点"></a>JWT 的特点</h2><ol>
+<li><p>JWT 默认是不加密，但也是可以加密的。生成原始 Token 以后，可以用密钥再加密一次。</p>
+</li>
+<li><p>JWT 不加密的情况下，不能将秘密数据写入 JWT。</p>
+</li>
+<li><p>JWT 不仅可以用于认证，也可以用于交换信息。有效使用 JWT，可以降低服务器查询数据库的次数。</p>
+</li>
+<li><p>JWT 的最大缺点是，由于服务器不保存 session 状态，因此无法在使用过程中废止某个 token，或者更改 token 的权限。也就是说，一旦 JWT 签发了，在到期之前就会始终有效，除非服务器部署额外的逻辑。</p>
+</li>
+<li><p>JWT 本身包含了认证信息，一旦泄露，任何人都可以获得该令牌的所有权限。为了减少盗用，JWT 的有效期应该设置得比较短。对于一些比较重要的权限，使用时应该再次对用户进行认证。</p>
+</li>
+<li><p>为了减少盗用，JWT 不应该使用 HTTP 协议明码传输，要使用 HTTPS 协议传输。</p>
+</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://liuchuanv.github.io/2019/12/06/210-Java/Spring/Spring%E6%B3%A8%E8%A7%A3%EF%BC%9AInitBinder/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -189,7 +320,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="静言思之">
+      <meta itemprop="name" content="代码无难事">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -205,7 +336,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2019-12-06 00:00:00 / 修改时间：17:25:11" itemprop="dateCreated datePublished" datetime="2019-12-06T00:00:00+08:00">2019-12-06</time>
+              <time title="创建时间：2019-12-06 00:00:00 / 修改时间：09:25:11" itemprop="dateCreated datePublished" datetime="2019-12-06T00:00:00Z">2019-12-06</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -280,7 +411,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="静言思之">
+      <meta itemprop="name" content="代码无难事">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -295,14 +426,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2019-12-05 00:00:00" itemprop="dateCreated datePublished" datetime="2019-12-05T00:00:00+08:00">2019-12-05</time>
+              <time title="创建时间：2019-12-05 00:00:00" itemprop="dateCreated datePublished" datetime="2019-12-05T00:00:00Z">2019-12-05</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-07 09:28:17" itemprop="dateModified" datetime="2019-12-07T09:28:17+08:00">2019-12-07</time>
+                <time title="修改时间：2019-12-07 01:28:17" itemprop="dateModified" datetime="2019-12-07T01:28:17Z">2019-12-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -364,7 +495,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="静言思之">
+      <meta itemprop="name" content="代码无难事">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -380,7 +511,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2019-12-04 00:00:00 / 修改时间：10:14:56" itemprop="dateCreated datePublished" datetime="2019-12-04T00:00:00+08:00">2019-12-04</time>
+              <time title="创建时间：2019-12-04 00:00:00 / 修改时间：02:14:56" itemprop="dateCreated datePublished" datetime="2019-12-04T00:00:00Z">2019-12-04</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -448,7 +579,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="静言思之">
+      <meta itemprop="name" content="代码无难事">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -464,7 +595,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2019-12-04 00:00:00 / 修改时间：10:11:47" itemprop="dateCreated datePublished" datetime="2019-12-04T00:00:00+08:00">2019-12-04</time>
+              <time title="创建时间：2019-12-04 00:00:00 / 修改时间：02:11:47" itemprop="dateCreated datePublished" datetime="2019-12-04T00:00:00Z">2019-12-04</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -528,7 +659,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="静言思之">
+      <meta itemprop="name" content="代码无难事">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -543,14 +674,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2019-12-03 19:58:03" itemprop="dateCreated datePublished" datetime="2019-12-03T19:58:03+08:00">2019-12-03</time>
+              <time title="创建时间：2019-12-03 11:58:03" itemprop="dateCreated datePublished" datetime="2019-12-03T11:58:03Z">2019-12-03</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-11-13 09:44:45" itemprop="dateModified" datetime="2019-11-13T09:44:45+08:00">2019-11-13</time>
+                <time title="修改时间：2019-11-13 01:44:45" itemprop="dateModified" datetime="2019-11-13T01:44:45Z">2019-11-13</time>
               </span>
 
           
@@ -597,7 +728,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="静言思之">
+      <meta itemprop="name" content="代码无难事">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -613,7 +744,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2019-12-03 19:58:03 / 修改时间：18:56:42" itemprop="dateCreated datePublished" datetime="2019-12-03T19:58:03+08:00">2019-12-03</time>
+              <time title="创建时间：2019-12-03 11:58:03 / 修改时间：10:56:42" itemprop="dateCreated datePublished" datetime="2019-12-03T11:58:03Z">2019-12-03</time>
             </span>
 
           
@@ -657,7 +788,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="静言思之">
+      <meta itemprop="name" content="代码无难事">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -673,7 +804,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2019-12-03 19:58:03 / 修改时间：18:58:36" itemprop="dateCreated datePublished" datetime="2019-12-03T19:58:03+08:00">2019-12-03</time>
+              <time title="创建时间：2019-12-03 11:58:03 / 修改时间：10:58:36" itemprop="dateCreated datePublished" datetime="2019-12-03T11:58:03Z">2019-12-03</time>
             </span>
 
           
@@ -770,7 +901,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="静言思之">
+      <meta itemprop="name" content="代码无难事">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -785,14 +916,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2019-12-03 19:58:03" itemprop="dateCreated datePublished" datetime="2019-12-03T19:58:03+08:00">2019-12-03</time>
+              <time title="创建时间：2019-12-03 11:58:03" itemprop="dateCreated datePublished" datetime="2019-12-03T11:58:03Z">2019-12-03</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-11-13 09:42:01" itemprop="dateModified" datetime="2019-11-13T09:42:01+08:00">2019-11-13</time>
+                <time title="修改时间：2019-11-13 01:42:01" itemprop="dateModified" datetime="2019-11-13T01:42:01Z">2019-11-13</time>
               </span>
 
           
@@ -850,7 +981,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="静言思之">
+      <meta itemprop="name" content="代码无难事">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -865,14 +996,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2019-12-02 18:44:47" itemprop="dateCreated datePublished" datetime="2019-12-02T18:44:47+08:00">2019-12-02</time>
+              <time title="创建时间：2019-12-02 10:44:47" itemprop="dateCreated datePublished" datetime="2019-12-02T10:44:47Z">2019-12-02</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-07 09:32:08" itemprop="dateModified" datetime="2019-12-07T09:32:08+08:00">2019-12-07</time>
+                <time title="修改时间：2019-12-07 01:32:08" itemprop="dateModified" datetime="2019-12-07T01:32:08Z">2019-12-07</time>
               </span>
 
           
@@ -914,110 +1045,11 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://liuchuanv.github.io/2019/11/28/210-Java/Spring/%E3%80%90SpringBoot%E5%85%A5%E9%97%A8%E3%80%91%E4%BD%BF%E7%94%A8IDEA%E5%88%9B%E5%BB%BA%E7%AC%AC%E4%B8%80%E4%B8%AASpringBoot%E9%A1%B9%E7%9B%AE/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="LiuChuanWei">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="静言思之">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/11/28/210-Java/Spring/%E3%80%90SpringBoot%E5%85%A5%E9%97%A8%E3%80%91%E4%BD%BF%E7%94%A8IDEA%E5%88%9B%E5%BB%BA%E7%AC%AC%E4%B8%80%E4%B8%AASpringBoot%E9%A1%B9%E7%9B%AE/" class="post-title-link" itemprop="url">IDEA创建一个SpringBoot项目</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-11-28 00:00:00" itemprop="dateCreated datePublished" datetime="2019-11-28T00:00:00+08:00">2019-11-28</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-11-29 10:05:43" itemprop="dateModified" datetime="2019-11-29T10:05:43+08:00">2019-11-29</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index">
-                    <span itemprop="name">Java</span>
-                  </a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/SpringBoot/" itemprop="url" rel="index">
-                    <span itemprop="name">SpringBoot</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>[toc]</p>
-<p>看图说话，手把手教你在IDEA中搭建一个SpringBoot项目</p>
-<h3 id="点击-File-gt-New-gt-Project"><a href="#点击-File-gt-New-gt-Project" class="headerlink" title="点击 File -&gt; New -&gt; Project"></a>点击 File -&gt; New -&gt; Project</h3><p><img src="/blog/images/201911/image-20191128113041555.png" alt="image-20191128113041555"></p>
-<h3 id="选择-Spring-Initializr"><a href="#选择-Spring-Initializr" class="headerlink" title="选择 Spring Initializr"></a>选择 Spring Initializr</h3><p><img src="/blog/images/201911/image-20191128113641733.png" alt="image-20191128113641733"></p>
-<h3 id="填写-Group、Artifact-等信息"><a href="#填写-Group、Artifact-等信息" class="headerlink" title="填写 Group、Artifact 等信息"></a>填写 Group、Artifact 等信息</h3><p><img src="/blog/images/201911/image-20191128155036625.png" alt="image-20191128155036625"></p>
-<blockquote>
-<p>Tip：Artifact 命名不能大小写混合，也就是说，要么全部大写，要么全部小写。</p>
-</blockquote>
-<h3 id="选择-Web-gt-Spring-Web"><a href="#选择-Web-gt-Spring-Web" class="headerlink" title="选择 Web -&gt; Spring Web"></a>选择 Web -&gt; Spring Web</h3><p><img src="//blog/images/201911/image-20191128155056548.png" alt="image-20191128155056548"></p>
-<h3 id="选择项目目录"><a href="#选择项目目录" class="headerlink" title="选择项目目录"></a>选择项目目录</h3><p><img src="/blog/images/201911/image-20191128155113536.png" alt="image-20191128155113536"></p>
-<h3 id="创建完毕"><a href="#创建完毕" class="headerlink" title="创建完毕"></a>创建完毕</h3><p><img src="/blog/images/201911/image-20191128155555797.png" alt="image-20191128155555797"></p>
-<h3 id="编写-HelloworldController"><a href="#编写-HelloworldController" class="headerlink" title="编写 HelloworldController"></a>编写 HelloworldController</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.liuchuanv.hellworld;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Controller;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.GetMapping;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RequestMapping;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.ResponseBody;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * description</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@author</span> LiuChuanWei</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2019-11-28 16:00</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line"><span class="meta">@Controller</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/helloworld"</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloworldController</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">    <span class="meta">@GetMapping</span>(<span class="string">"/sayHello"</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line">    <span class="meta">@ResponseBody</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">sayHello</span><span class="params">()</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">return</span> <span class="string">"Hello Baby!"</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
-
-<blockquote>
-<p>Tip：方法 sayHello 的注解 @ResponseBody 作用是将方法返回值写入到response的body里，从而将数据直接返回给浏览器；如果没有加该注解，底层会将方法的返回值封装为ModelAndView对象然后返回。</p>
-</blockquote>
-<h3 id="运行-HelloworldApplication"><a href="#运行-HelloworldApplication" class="headerlink" title="运行 HelloworldApplication"></a>运行 HelloworldApplication</h3><p><img src="/blog/images/201911/image-20191128201718629.png" alt="image-20191128201718629"></p>
-<h3 id="访问-http-localhost-8080-helloworld-sayHello"><a href="#访问-http-localhost-8080-helloworld-sayHello" class="headerlink" title="访问  http://localhost:8080/helloworld/sayHello"></a>访问  <a href="http://localhost:8080/helloworld/sayHello" target="_blank" rel="noopener">http://localhost:8080/helloworld/sayHello</a></h3><p><img src="/blog/images/201911/image-20191128160954091.png" alt="image-20191128160954091"></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1061,20 +1093,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-count">42</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-count">24</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-count">21</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

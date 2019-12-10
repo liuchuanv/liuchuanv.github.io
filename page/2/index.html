@@ -46,9 +46,9 @@
 </script>
 
   <meta property="og:type" content="website">
-<meta property="og:title" content="静言思之">
+<meta property="og:title" content="代码无难事">
 <meta property="og:url" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;page&#x2F;2&#x2F;index.html">
-<meta property="og:site_name" content="静言思之">
+<meta property="og:site_name" content="代码无难事">
 <meta property="og:locale" content="zh-CN">
 <meta name="twitter:card" content="summary">
 
@@ -66,7 +66,7 @@
   };
 </script>
 
-  <title>静言思之</title>
+  <title>代码无难事</title>
   
 
 
@@ -110,10 +110,11 @@
     <div>
       <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
-        <span class="site-title">静言思之</span>
+        <span class="site-title">代码无难事</span>
         <span class="logo-line-after"><i></i></span>
       </a>
     </div>
+        <p class="site-subtitle">代码无难事，只怕有心猿</p>
   </div>
 
   <div class="site-nav-toggle">
@@ -136,17 +137,17 @@
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">23</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">24</span></a>
 
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">19</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">21</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">39</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">42</span></a>
 
   </li>
         <li class="menu-item menu-item-about">
@@ -180,6 +181,476 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://liuchuanv.github.io/2019/11/29/240-DevTool&Rule/Markdown/MarkDown%E8%AF%AD%E6%B3%95%E5%A4%A7%E5%85%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="LiuChuanWei">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="代码无难事">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/11/29/240-DevTool&Rule/Markdown/MarkDown%E8%AF%AD%E6%B3%95%E5%A4%A7%E5%85%A8/" class="post-title-link" itemprop="url">MarkDown语法大全</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-11-29 00:00:00 / 修改时间：07:49:08" itemprop="dateCreated datePublished" datetime="2019-11-29T00:00:00Z">2019-11-29</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index">
+                    <span itemprop="name">开发工具</span>
+                  </a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/MarkDown/" itemprop="url" rel="index">
+                    <span itemprop="name">MarkDown</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>MarkDown 是一种纯文本格式的标记语言。通过简单的标记，使得纯文本具有一定的样式。<br>比如: <code># 这是h1标题</code> 这段文本，就可使得 “这是h1标题”文本 具有h1标题的样式了</p>
+<h1 id="这是h1标题"><a href="#这是h1标题" class="headerlink" title="这是h1标题"></a>这是h1标题</h1><p>优点：</p>
+<p>1、因为是纯文本，所以写起来非常简单</p>
+<p>2、简单的标记就能实现好看样式，让写作者不用再受样式的困扰，专注于写作</p>
+<p>3、目前不论是博客平台，还是云笔记，大部分都支持markdown语法了（不支持就out了）</p>
+<p>缺点：</p>
+<p>1、需要先学习一些MarkDown的语法（非常建议边写边学）</p>
+<hr>
+<h2 id="一、标题"><a href="#一、标题" class="headerlink" title="一、标题"></a>一、标题</h2><p>在文字前面加上井号#</p>
+<p>语法：#+空格+内容（几个#就表示几级标题）</p>
+<p>示例：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="section"># 这是一级标题</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="section">## 这是二级标题</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="section">### 这是三级标题</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"><span class="section">#### 这是四级标题</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"><span class="section">##### 这是五级标题</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="section">###### 这是六级标题</span></span></pre></td></tr></table></figure>
+
+<p>效果：</p>
+<h1 id="这是一级标题"><a href="#这是一级标题" class="headerlink" title="这是一级标题"></a>这是一级标题</h1><h2 id="这是二级标题"><a href="#这是二级标题" class="headerlink" title="这是二级标题"></a>这是二级标题</h2><h3 id="这是三级标题"><a href="#这是三级标题" class="headerlink" title="这是三级标题"></a>这是三级标题</h3><h4 id="这是四级标题"><a href="#这是四级标题" class="headerlink" title="这是四级标题"></a>这是四级标题</h4><h5 id="这是五级标题"><a href="#这是五级标题" class="headerlink" title="这是五级标题"></a>这是五级标题</h5><h6 id="这是六级标题"><a href="#这是六级标题" class="headerlink" title="这是六级标题"></a>这是六级标题</h6><h2 id="二、字体"><a href="#二、字体" class="headerlink" title="二、字体"></a>二、字体</h2><h3 id="加粗"><a href="#加粗" class="headerlink" title="加粗"></a>加粗</h3><p>在文字前后分别加上两个星号*</p>
+<p>示例：<code>**粗体**</code></p>
+<p>效果：<strong>粗体</strong></p>
+<h3 id="斜体"><a href="#斜体" class="headerlink" title="斜体"></a>斜体</h3><p>在文字前后分别加上一个星号*</p>
+<p>示例：<code>*斜体*</code></p>
+<p>效果：<em>斜体</em></p>
+<h3 id="删除线"><a href="#删除线" class="headerlink" title="删除线"></a>删除线</h3><p>在文字前后分别加上两个波浪线~</p>
+<p>示例：<code>~~删除线~~</code></p>
+<p>效果：<del>删除线</del></p>
+<h3 id="高亮"><a href="#高亮" class="headerlink" title="高亮"></a>高亮</h3><p>在文字前后分别加上两个等号=（有些平台不支持）</p>
+<p>示例：<code>==高亮==</code></p>
+<p>效果：==高亮==</p>
+<p>上面这几种字体样式可以混用，比如：斜体加粗</p>
+<p>示例：<code>***斜体加粗***</code></p>
+<p>效果：<strong><em>斜体加粗</em></strong></p>
+<h2 id="三、列表"><a href="#三、列表" class="headerlink" title="三、列表"></a>三、列表</h2><h3 id="无序列表"><a href="#无序列表" class="headerlink" title="无序列表"></a>无序列表</h3><p>在文字前面加上减号或加号或星号（- + * 任意一种即可）</p>
+<p>示例：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="bullet">- </span>中国</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="bullet">+ </span>英国</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="bullet">* </span>美国</span></pre></td></tr></table></figure>
+
+<p>效果：</p>
+<ul>
+<li>中国</li>
+</ul>
+<ul>
+<li>英国</li>
+</ul>
+<ul>
+<li>美国</li>
+</ul>
+<h3 id="有序列表"><a href="#有序列表" class="headerlink" title="有序列表"></a>有序列表</h3><p>在文字前面加上数字+点+空格</p>
+<p>示例：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="bullet">1. </span>打开冰箱</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="bullet">2. </span>把大象放进冰箱</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="bullet">3. </span>关上冰箱</span></pre></td></tr></table></figure>
+
+<p>效果：</p>
+<ol>
+<li>打开冰箱</li>
+<li>把大象放进冰箱</li>
+<li>关上冰箱</li>
+</ol>
+<h3 id="列表嵌套"><a href="#列表嵌套" class="headerlink" title="列表嵌套"></a>列表嵌套</h3><p>在下级列表前面加上4个空格或者Tab</p>
+<p>示例1：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="bullet">* </span>中国</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="bullet">	* </span>北京</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="bullet">	* </span>上海</span></pre></td></tr></table></figure>
+
+<p>效果：</p>
+<ul>
+<li>中国<ul>
+<li>北京</li>
+<li>上海</li>
+</ul>
+</li>
+</ul>
+<p>示例2：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="bullet">* </span>炒茄子</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="bullet">	1. </span>洗茄子</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="bullet">	2. </span>撕茄子</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"><span class="bullet">	3. </span>炒茄子</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"><span class="bullet">* </span>炒番茄</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="bullet">	1. </span>洗番茄</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"><span class="bullet">	2. </span>削番茄</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"><span class="bullet">	3. </span>炒番茄</span></pre></td></tr></table></figure>
+
+<p>效果：</p>
+<ul>
+<li>炒茄子<ol>
+<li>洗茄子</li>
+<li>撕茄子</li>
+<li>炒茄子</li>
+</ol>
+</li>
+<li>炒番茄<ol>
+<li>洗番茄</li>
+<li>削番茄</li>
+<li>炒番茄</li>
+</ol>
+</li>
+</ul>
+<h2 id="四、超链接"><a href="#四、超链接" class="headerlink" title="四、超链接"></a>四、超链接</h2><p>语法：<code>[标题](地址)</code></p>
+<p>示例：<code>[LiuChuanV的个人博客](https://liuchuanv.github.io/)</code></p>
+<p>效果：<a href="https://liuchuanv.github.io/">LiuChuanV的个人博客</a></p>
+<h2 id="五、图片"><a href="#五、图片" class="headerlink" title="五、图片"></a>五、图片</h2><p>语法：<code>![标题](图片地址)</code></p>
+<p>示例：<code>![我的头像](https://avatars0.githubusercontent.com/u/19567697?s=460&amp;v=4)</code></p>
+<p>效果：<img src="E:/hexo/myblog/source/blog/images/201911/19567697.jpg" alt="我的头像"></p>
+<h2 id="六、引用"><a href="#六、引用" class="headerlink" title="六、引用"></a>六、引用</h2><p>在文字前面加上大于号&gt;（引用文字要单独一行）</p>
+<p>示例：</p>
+<p><code>&gt; 知识就是力量</code></p>
+<p>效果：</p>
+<blockquote>
+<p>知识就是力量</p>
+</blockquote>
+<h2 id="七、分割线"><a href="#七、分割线" class="headerlink" title="七、分割线"></a>七、分割线</h2><p>单独一行三个或三个以上的减号或加号或星号或等号</p>
+<p>示例：<code>---</code></p>
+<p>效果：</p>
+<hr>
+<h2 id="八、代码"><a href="#八、代码" class="headerlink" title="八、代码"></a>八、代码</h2><h3 id="行内代码"><a href="#行内代码" class="headerlink" title="行内代码"></a>行内代码</h3><p>在代码前后加上一个反引号`</p>
+<p>示例：`String a = “行内代码”;`</p>
+<p>效果：<code>String a = &quot;行内代码&quot;;</code></p>
+<h3 id="代码块"><a href="#代码块" class="headerlink" title="代码块"></a>代码块</h3><p>在代码块前后分别加上三个反引号`，这三个反引号各占一行，开头的反引号后可以加上MarkDown支持的语言</p>
+<p>示例：<br>```java<br>public class HelloWorld{<br>    public static void main(String args[]) {<br>        System.out.print(“Hello Baby!”)<br>    }<br>}<br>```</p>
+<p>效果：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloWorld</span></span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">        System.out.print(<span class="string">"Hello Baby!"</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+
+
+<h2 id="九、表格"><a href="#九、表格" class="headerlink" title="九、表格"></a>九、表格</h2><p>单元格之间用竖线|分隔，表头和内容之间用 “栅栏” 分隔</p>
+<p>示例：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">|姓名|性别|年龄|</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">|-|-|-|</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">|小明|男|12|</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">|小强|男|22|</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">|小花|女|20|</span></pre></td></tr></table></figure>
+<p>效果：<br>|姓名|性别|年龄|<br>|-|-|-|<br>|小明|男|12|<br>|小强|男|22|<br>|小花|女|20|</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://liuchuanv.github.io/2019/11/29/240-DevTool&Rule/Markdown/MarkDown%E8%AF%AD%E6%B3%95%E5%A4%A7%E5%85%A8%E8%A1%A5%E5%85%85/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="LiuChuanWei">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="代码无难事">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/11/29/240-DevTool&Rule/Markdown/MarkDown%E8%AF%AD%E6%B3%95%E5%A4%A7%E5%85%A8%E8%A1%A5%E5%85%85/" class="post-title-link" itemprop="url">MarkDown语法大全补充</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-11-29 00:00:00 / 修改时间：07:49:25" itemprop="dateCreated datePublished" datetime="2019-11-29T00:00:00Z">2019-11-29</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index">
+                    <span itemprop="name">开发工具</span>
+                  </a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/MarkDown/" itemprop="url" rel="index">
+                    <span itemprop="name">MarkDown</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><p>单独一行加上 [toc] </p>
+<p>示例：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">[toc]</span></pre></td></tr></table></figure>
+
+<p>效果：</p>
+<p>[toc]</p>
+<h2 id="待办"><a href="#待办" class="headerlink" title="待办"></a>待办</h2><p>示例：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="bullet">- </span>[x] 已完成</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="bullet">- </span>[ ] 未完成</span></pre></td></tr></table></figure>
+<p>效果：</p>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> 已完成</li>
+<li><input disabled="" type="checkbox"> 未完成</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://liuchuanv.github.io/2019/11/28/210-Java/Spring/%E3%80%90SpringBoot%E5%85%A5%E9%97%A8%E3%80%91%E4%BD%BF%E7%94%A8IDEA%E5%88%9B%E5%BB%BA%E7%AC%AC%E4%B8%80%E4%B8%AASpringBoot%E9%A1%B9%E7%9B%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="LiuChuanWei">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="代码无难事">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/11/28/210-Java/Spring/%E3%80%90SpringBoot%E5%85%A5%E9%97%A8%E3%80%91%E4%BD%BF%E7%94%A8IDEA%E5%88%9B%E5%BB%BA%E7%AC%AC%E4%B8%80%E4%B8%AASpringBoot%E9%A1%B9%E7%9B%AE/" class="post-title-link" itemprop="url">IDEA创建一个SpringBoot项目</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-11-28 00:00:00" itemprop="dateCreated datePublished" datetime="2019-11-28T00:00:00Z">2019-11-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-11-29 02:05:43" itemprop="dateModified" datetime="2019-11-29T02:05:43Z">2019-11-29</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/SpringBoot/" itemprop="url" rel="index">
+                    <span itemprop="name">SpringBoot</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>[toc]</p>
+<p>看图说话，手把手教你在IDEA中搭建一个SpringBoot项目</p>
+<h3 id="点击-File-gt-New-gt-Project"><a href="#点击-File-gt-New-gt-Project" class="headerlink" title="点击 File -&gt; New -&gt; Project"></a>点击 File -&gt; New -&gt; Project</h3><p><img src="/blog/images/201911/image-20191128113041555.png" alt="image-20191128113041555"></p>
+<h3 id="选择-Spring-Initializr"><a href="#选择-Spring-Initializr" class="headerlink" title="选择 Spring Initializr"></a>选择 Spring Initializr</h3><p><img src="/blog/images/201911/image-20191128113641733.png" alt="image-20191128113641733"></p>
+<h3 id="填写-Group、Artifact-等信息"><a href="#填写-Group、Artifact-等信息" class="headerlink" title="填写 Group、Artifact 等信息"></a>填写 Group、Artifact 等信息</h3><p><img src="/blog/images/201911/image-20191128155036625.png" alt="image-20191128155036625"></p>
+<blockquote>
+<p>Tip：Artifact 命名不能大小写混合，也就是说，要么全部大写，要么全部小写。</p>
+</blockquote>
+<h3 id="选择-Web-gt-Spring-Web"><a href="#选择-Web-gt-Spring-Web" class="headerlink" title="选择 Web -&gt; Spring Web"></a>选择 Web -&gt; Spring Web</h3><p><img src="//blog/images/201911/image-20191128155056548.png" alt="image-20191128155056548"></p>
+<h3 id="选择项目目录"><a href="#选择项目目录" class="headerlink" title="选择项目目录"></a>选择项目目录</h3><p><img src="/blog/images/201911/image-20191128155113536.png" alt="image-20191128155113536"></p>
+<h3 id="创建完毕"><a href="#创建完毕" class="headerlink" title="创建完毕"></a>创建完毕</h3><p><img src="/blog/images/201911/image-20191128155555797.png" alt="image-20191128155555797"></p>
+<h3 id="编写-HelloworldController"><a href="#编写-HelloworldController" class="headerlink" title="编写 HelloworldController"></a>编写 HelloworldController</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.liuchuanv.hellworld;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Controller;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.GetMapping;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RequestMapping;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.ResponseBody;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * description</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@author</span> LiuChuanWei</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2019-11-28 16:00</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line"><span class="meta">@Controller</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/helloworld"</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloworldController</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">    <span class="meta">@GetMapping</span>(<span class="string">"/sayHello"</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line">    <span class="meta">@ResponseBody</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">sayHello</span><span class="params">()</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">return</span> <span class="string">"Hello Baby!"</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Tip：方法 sayHello 的注解 @ResponseBody 作用是将方法返回值写入到response的body里，从而将数据直接返回给浏览器；如果没有加该注解，底层会将方法的返回值封装为ModelAndView对象然后返回。</p>
+</blockquote>
+<h3 id="运行-HelloworldApplication"><a href="#运行-HelloworldApplication" class="headerlink" title="运行 HelloworldApplication"></a>运行 HelloworldApplication</h3><p><img src="/blog/images/201911/image-20191128201718629.png" alt="image-20191128201718629"></p>
+<h3 id="访问-http-localhost-8080-helloworld-sayHello"><a href="#访问-http-localhost-8080-helloworld-sayHello" class="headerlink" title="访问  http://localhost:8080/helloworld/sayHello"></a>访问  <a href="http://localhost:8080/helloworld/sayHello" target="_blank" rel="noopener">http://localhost:8080/helloworld/sayHello</a></h3><p><img src="/blog/images/201911/image-20191128160954091.png" alt="image-20191128160954091"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://liuchuanv.github.io/2019/11/27/210-Java/Spring/Spring%E5%AE%B9%E5%99%A8Bean%E7%9A%84%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D%E9%A1%BA%E5%BA%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="LiuChuanWei">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="代码无难事">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/11/27/210-Java/Spring/Spring%E5%AE%B9%E5%99%A8Bean%E7%9A%84%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D%E9%A1%BA%E5%BA%8F/" class="post-title-link" itemprop="url">Spring容器Bean的自动装配顺序</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-11-27 00:00:00 / 修改时间：09:13:09" itemprop="dateCreated datePublished" datetime="2019-11-27T00:00:00Z">2019-11-27</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/Spring/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DruidConfig</span></span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="class"></span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">    <span class="meta">@Bean</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">    <span class="meta">@ConfigurationProperties</span>(<span class="string">"spring.datasource.druid.master"</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> DataSource <span class="title">masterDataSource</span><span class="params">()</span></span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"><span class="function">    </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">return</span> DruidDataSourceBuilder.create().build();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">    <span class="meta">@Bean</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">    <span class="meta">@ConfigurationProperties</span>(<span class="string">"spring.datasource.druid.slave1"</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">    <span class="meta">@ConditionalOnProperty</span>(prefix = <span class="string">"spring.datasource.druid.slave1"</span>, name = <span class="string">"enabled"</span>, havingValue = <span class="string">"true"</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> DataSource <span class="title">slave1DataSource</span><span class="params">()</span></span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line"><span class="function">    </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">return</span> DruidDataSourceBuilder.create().build();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line">    <span class="meta">@Bean</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line">    <span class="meta">@ConfigurationProperties</span>(<span class="string">"spring.datasource.druid.slave2"</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line">    <span class="meta">@ConditionalOnProperty</span>(prefix = <span class="string">"spring.datasource.druid.slave2"</span>, name = <span class="string">"enabled"</span>, havingValue = <span class="string">"true"</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> DataSource <span class="title">slave2DataSource</span><span class="params">()</span></span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line"><span class="function">    </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">24</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">return</span> DruidDataSourceBuilder.create().build();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">25</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">26</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">27</span></pre></td><td class="code"><pre><span class="line">    <span class="meta">@Bean</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">28</span></pre></td><td class="code"><pre><span class="line">    <span class="meta">@ConfigurationProperties</span>(<span class="string">"spring.datasource.druid.slave3"</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">29</span></pre></td><td class="code"><pre><span class="line">    <span class="meta">@ConditionalOnProperty</span>(prefix = <span class="string">"spring.datasource.druid.slave3"</span>, name = <span class="string">"enabled"</span>, havingValue = <span class="string">"true"</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">30</span></pre></td><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> DataSource <span class="title">slave3DataSource</span><span class="params">()</span></span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">31</span></pre></td><td class="code"><pre><span class="line"><span class="function">    </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">32</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">return</span> DruidDataSourceBuilder.create().build();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">33</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">34</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">35</span></pre></td><td class="code"><pre><span class="line">    <span class="meta">@Bean</span>(name = <span class="string">"dynamicDataSource"</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">36</span></pre></td><td class="code"><pre><span class="line">    <span class="meta">@Primary</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">37</span></pre></td><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> DynamicDataSource <span class="title">dataSource</span><span class="params">(DataSource masterDataSource, DataSource slave1DataSource, DataSource slave2DataSource, DataSource slave3DataSource)</span></span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">38</span></pre></td><td class="code"><pre><span class="line"><span class="function">    </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">39</span></pre></td><td class="code"><pre><span class="line">        Map&lt;Object, Object&gt; targetDataSources = <span class="keyword">new</span> HashMap&lt;&gt;();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">40</span></pre></td><td class="code"><pre><span class="line">        targetDataSources.put(DataSourceType.MASTER.name(), masterDataSource);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">41</span></pre></td><td class="code"><pre><span class="line">        targetDataSources.put(DataSourceType.SLAVE1.name(), slave1DataSource);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">42</span></pre></td><td class="code"><pre><span class="line">        targetDataSources.put(DataSourceType.SLAVE2.name(), slave2DataSource);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">43</span></pre></td><td class="code"><pre><span class="line">        targetDataSources.put(DataSourceType.SLAVE3.name(), slave3DataSource);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">44</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> DynamicDataSource(masterDataSource, targetDataSources);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">45</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">46</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+
+
+<p>在这样一个类中，我迷茫了！</p>
+<p>这么多的DataSource，系统运行的时候到底加载了哪一个啊？</p>
+<h3 id="干净利落的总结"><a href="#干净利落的总结" class="headerlink" title="干净利落的总结"></a>干净利落的总结</h3><ul>
+<li><p>默认<strong>按照类型byType</strong>来查找<code>applicationContext.getBean(bean.class)</code></p>
+</li>
+<li><p>如果使用了注解 <code>@Qualifier</code>，则用*<em>value值匹配bean名称 *</em><code>applicationContext.getBean(&quot;Qualifier的value值&quot;)</code></p>
+</li>
+<li><p>如果使用了注解 <code>@Primary</code>，则会优先加载该组件</p>
+</li>
+<li><p>如果同时使用了<code>@Qualifier</code> 和 <code>@Primary</code>，则按照注解 <code>@Qualifier</code> 的策略查找</p>
+</li>
+<li><p>如果Spring容器存在多个同类型组件，并且没有使用<code>@Qualifier</code>和<code>@Primary</code>，此时会<strong>按属性名和bean名称匹配</strong>查找 <code>applicationContext.getBean(&quot;属性名&quot;)</code></p>
+</li>
+</ul>
+<p>综上所述，当Spring容器中存在多个同类型的bean时，加载优先级：*<em>@Qulifier &gt; @Primary &gt; 属性名 *</em></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://liuchuanv.github.io/2019/11/27/210-Java/Spring/Spirng%E5%8A%A8%E6%80%81%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -189,7 +660,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="静言思之">
+      <meta itemprop="name" content="代码无难事">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -204,14 +675,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2019-11-27 00:00:00" itemprop="dateCreated datePublished" datetime="2019-11-27T00:00:00+08:00">2019-11-27</time>
+              <time title="创建时间：2019-11-27 00:00:00" itemprop="dateCreated datePublished" datetime="2019-11-27T00:00:00Z">2019-11-27</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-02 14:51:18" itemprop="dateModified" datetime="2019-12-02T14:51:18+08:00">2019-12-02</time>
+                <time title="修改时间：2019-12-02 06:51:18" itemprop="dateModified" datetime="2019-12-02T06:51:18Z">2019-12-02</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -345,7 +816,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://liuchuanv.github.io/2019/11/27/210-Java/Spring/Spring%E5%AE%B9%E5%99%A8Bean%E7%9A%84%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D%E9%A1%BA%E5%BA%8F/">
+    <link itemprop="mainEntityOfPage" href="https://liuchuanv.github.io/2019/11/24/270-Hack/Python/Python%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -354,106 +825,12 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="静言思之">
+      <meta itemprop="name" content="代码无难事">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            <a href="/2019/11/27/210-Java/Spring/Spring%E5%AE%B9%E5%99%A8Bean%E7%9A%84%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D%E9%A1%BA%E5%BA%8F/" class="post-title-link" itemprop="url">Spring容器Bean的自动装配顺序</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2019-11-27 00:00:00 / 修改时间：17:13:09" itemprop="dateCreated datePublished" datetime="2019-11-27T00:00:00+08:00">2019-11-27</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index">
-                    <span itemprop="name">Java</span>
-                  </a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/Spring/" itemprop="url" rel="index">
-                    <span itemprop="name">Spring</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DruidConfig</span></span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="class"></span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">    <span class="meta">@Bean</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">    <span class="meta">@ConfigurationProperties</span>(<span class="string">"spring.datasource.druid.master"</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> DataSource <span class="title">masterDataSource</span><span class="params">()</span></span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"><span class="function">    </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">return</span> DruidDataSourceBuilder.create().build();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">    <span class="meta">@Bean</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">    <span class="meta">@ConfigurationProperties</span>(<span class="string">"spring.datasource.druid.slave1"</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">    <span class="meta">@ConditionalOnProperty</span>(prefix = <span class="string">"spring.datasource.druid.slave1"</span>, name = <span class="string">"enabled"</span>, havingValue = <span class="string">"true"</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> DataSource <span class="title">slave1DataSource</span><span class="params">()</span></span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line"><span class="function">    </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">return</span> DruidDataSourceBuilder.create().build();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line">    <span class="meta">@Bean</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line">    <span class="meta">@ConfigurationProperties</span>(<span class="string">"spring.datasource.druid.slave2"</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line">    <span class="meta">@ConditionalOnProperty</span>(prefix = <span class="string">"spring.datasource.druid.slave2"</span>, name = <span class="string">"enabled"</span>, havingValue = <span class="string">"true"</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> DataSource <span class="title">slave2DataSource</span><span class="params">()</span></span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line"><span class="function">    </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">24</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">return</span> DruidDataSourceBuilder.create().build();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">25</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">26</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">27</span></pre></td><td class="code"><pre><span class="line">    <span class="meta">@Bean</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">28</span></pre></td><td class="code"><pre><span class="line">    <span class="meta">@ConfigurationProperties</span>(<span class="string">"spring.datasource.druid.slave3"</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">29</span></pre></td><td class="code"><pre><span class="line">    <span class="meta">@ConditionalOnProperty</span>(prefix = <span class="string">"spring.datasource.druid.slave3"</span>, name = <span class="string">"enabled"</span>, havingValue = <span class="string">"true"</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">30</span></pre></td><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> DataSource <span class="title">slave3DataSource</span><span class="params">()</span></span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">31</span></pre></td><td class="code"><pre><span class="line"><span class="function">    </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">32</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">return</span> DruidDataSourceBuilder.create().build();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">33</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">34</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">35</span></pre></td><td class="code"><pre><span class="line">    <span class="meta">@Bean</span>(name = <span class="string">"dynamicDataSource"</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">36</span></pre></td><td class="code"><pre><span class="line">    <span class="meta">@Primary</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">37</span></pre></td><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> DynamicDataSource <span class="title">dataSource</span><span class="params">(DataSource masterDataSource, DataSource slave1DataSource, DataSource slave2DataSource, DataSource slave3DataSource)</span></span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">38</span></pre></td><td class="code"><pre><span class="line"><span class="function">    </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">39</span></pre></td><td class="code"><pre><span class="line">        Map&lt;Object, Object&gt; targetDataSources = <span class="keyword">new</span> HashMap&lt;&gt;();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">40</span></pre></td><td class="code"><pre><span class="line">        targetDataSources.put(DataSourceType.MASTER.name(), masterDataSource);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">41</span></pre></td><td class="code"><pre><span class="line">        targetDataSources.put(DataSourceType.SLAVE1.name(), slave1DataSource);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">42</span></pre></td><td class="code"><pre><span class="line">        targetDataSources.put(DataSourceType.SLAVE2.name(), slave2DataSource);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">43</span></pre></td><td class="code"><pre><span class="line">        targetDataSources.put(DataSourceType.SLAVE3.name(), slave3DataSource);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">44</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> DynamicDataSource(masterDataSource, targetDataSources);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">45</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">46</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
-
-
-
-<p>在这样一个类中，我迷茫了！</p>
-<p>这么多的DataSource，系统运行的时候到底加载了哪一个啊？</p>
-<h3 id="干净利落的总结"><a href="#干净利落的总结" class="headerlink" title="干净利落的总结"></a>干净利落的总结</h3><ul>
-<li><p>默认<strong>按照类型byType</strong>来查找<code>applicationContext.getBean(bean.class)</code></p>
-</li>
-<li><p>如果使用了注解 <code>@Qualifier</code>，则用*<em>value值匹配bean名称 *</em><code>applicationContext.getBean(&quot;Qualifier的value值&quot;)</code></p>
-</li>
-<li><p>如果使用了注解 <code>@Primary</code>，则会优先加载该组件</p>
-</li>
-<li><p>如果同时使用了<code>@Qualifier</code> 和 <code>@Primary</code>，则按照注解 <code>@Qualifier</code> 的策略查找</p>
-</li>
-<li><p>如果Spring容器存在多个同类型组件，并且没有使用<code>@Qualifier</code>和<code>@Primary</code>，此时会<strong>按属性名和bean名称匹配</strong>查找 <code>applicationContext.getBean(&quot;属性名&quot;)</code></p>
-</li>
-</ul>
-<p>综上所述，当Spring容器中存在多个同类型的bean时，加载优先级：*<em>@Qulifier &gt; @Primary &gt; 属性名 *</em></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://liuchuanv.github.io/2019/11/23/270-Hack/Python/Python%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="LiuChuanWei">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="静言思之">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/11/23/270-Hack/Python/Python%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B/" class="post-title-link" itemprop="url">Python 八种数据类型</a>
+            <a href="/2019/11/24/270-Hack/Python/Python%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B/" class="post-title-link" itemprop="url">Python 八种数据类型</a>
         </h1>
 
         <div class="post-meta">
@@ -463,14 +840,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2019-11-23 21:55:23" itemprop="dateCreated datePublished" datetime="2019-11-23T21:55:23+08:00">2019-11-23</time>
+              <time title="创建时间：2019-11-23 21:55:23" itemprop="dateCreated datePublished" datetime="2019-11-23T21:55:23Z">2019-11-23</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-12-07 09:29:11" itemprop="dateModified" datetime="2019-12-07T09:29:11+08:00">2019-12-07</time>
+                <time title="修改时间：2019-12-07 01:29:11" itemprop="dateModified" datetime="2019-12-07T01:29:11Z">2019-12-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -557,7 +934,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="静言思之">
+      <meta itemprop="name" content="代码无难事">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -573,7 +950,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2019-11-22 10:26:14 / 修改时间：10:28:23" itemprop="dateCreated datePublished" datetime="2019-11-22T10:26:14+08:00">2019-11-22</time>
+              <time title="创建时间：2019-11-22 10:26:14 / 修改时间：02:28:23" itemprop="dateCreated datePublished" datetime="2019-11-22T10:26:14Z">2019-11-22</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -651,7 +1028,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="静言思之">
+      <meta itemprop="name" content="代码无难事">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -667,7 +1044,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2019-11-22 10:26:14 / 修改时间：10:27:24" itemprop="dateCreated datePublished" datetime="2019-11-22T10:26:14+08:00">2019-11-22</time>
+              <time title="创建时间：2019-11-22 10:26:14 / 修改时间：02:27:24" itemprop="dateCreated datePublished" datetime="2019-11-22T10:26:14Z">2019-11-22</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -745,7 +1122,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="静言思之">
+      <meta itemprop="name" content="代码无难事">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -761,7 +1138,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2019-11-22 09:51:05 / 修改时间：09:56:35" itemprop="dateCreated datePublished" datetime="2019-11-22T09:51:05+08:00">2019-11-22</time>
+              <time title="创建时间：2019-11-22 09:51:05 / 修改时间：01:56:35" itemprop="dateCreated datePublished" datetime="2019-11-22T09:51:05Z">2019-11-22</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -854,7 +1231,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="静言思之">
+      <meta itemprop="name" content="代码无难事">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -870,7 +1247,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2019-11-12 14:47:43 / 修改时间：14:48:31" itemprop="dateCreated datePublished" datetime="2019-11-12T14:47:43+08:00">2019-11-12</time>
+              <time title="创建时间：2019-11-12 14:47:43 / 修改时间：06:48:31" itemprop="dateCreated datePublished" datetime="2019-11-12T14:47:43Z">2019-11-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -921,285 +1298,11 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://liuchuanv.github.io/2019/11/12/250-OS/Windows/win7%E5%BC%80%E6%9C%BA%E7%99%BB%E9%99%86%E8%83%8C%E6%99%AF%E5%9B%BE%E7%89%87%E4%BF%AE%E6%94%B9/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="LiuChuanWei">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="静言思之">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/11/12/250-OS/Windows/win7%E5%BC%80%E6%9C%BA%E7%99%BB%E9%99%86%E8%83%8C%E6%99%AF%E5%9B%BE%E7%89%87%E4%BF%AE%E6%94%B9/" class="post-title-link" itemprop="url">win7开机登录背景图片修改</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2019-11-12 14:02:59 / 修改时间：14:26:05" itemprop="dateCreated datePublished" datetime="2019-11-12T14:02:59+08:00">2019-11-12</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index">
-                    <span itemprop="name">操作系统</span>
-                  </a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/Win7/" itemprop="url" rel="index">
-                    <span itemprop="name">Win7</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <ol>
-<li><p>修改注册表</p>
-<ul>
-<li><p>按下 <kbd>Win</kbd>+<kbd>R</kbd>，输入 <code>regedit</code></p>
-</li>
-<li><p>依次打开 <code>HKEY_LOCAL_MACHINE</code> -&gt; <code>SOFTWARE</code> -&gt; <code>Microsoft - Windows</code> -&gt; <code>CurrentVersion</code> -&gt; <code>Authentication</code> -&gt; <code>LogonUI</code> -&gt; <code>Background</code></p>
-</li>
-<li><p>右键<code>OEMBackground</code>键值<code>修改</code>（如果没有这个键值就新建一个）</p>
-<p><img src="/blog/images/201911/1569385149336.png" alt="1569385149336"></p>
-<ul>
-<li>将值设置为1</li>
-</ul>
-<p><img src="/blog/images/201911/1569385173001.png" alt="1569385173001"></p>
-</li>
-</ul>
-</li>
-<li><p>将背景图片复制到指定目录</p>
-<ul>
-<li>将图片文件重命名为 <code>backgroundDefault.jpg</code></li>
-<li>将图片文件复制到 <code>C:\Windows\System32\oobe\info\Backgrounds</code> 目录（没有该目录的话，则创建）</li>
-</ul>
-</li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://liuchuanv.github.io/2019/11/12/250-OS/Windows/win7%E8%99%9A%E6%8B%9F%E6%A1%8C%E9%9D%A2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="LiuChuanWei">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="静言思之">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/11/12/250-OS/Windows/win7%E8%99%9A%E6%8B%9F%E6%A1%8C%E9%9D%A2/" class="post-title-link" itemprop="url">win7虚拟桌面</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2019-11-12 13:52:02 / 修改时间：14:09:20" itemprop="dateCreated datePublished" datetime="2019-11-12T13:52:02+08:00">2019-11-12</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index">
-                    <span itemprop="name">操作系统</span>
-                  </a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/Win7/" itemprop="url" rel="index">
-                    <span itemprop="name">Win7</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>win7 系统本身是没有虚拟桌面功能的，需要使用第三方软件。</p>
-</blockquote>
-<h3 id="Virgo"><a href="#Virgo" class="headerlink" title="Virgo"></a>Virgo</h3><blockquote>
-<p>Virgo 是一款轻量到极致的虚拟桌面软件，这款软件采用 C 语言编写，只有 323 行代码。整个软件大小仅为 8KB，却能实现完善的虚拟桌面功能。下载地址 <a href="https://github.com/henkman/virgo" target="_blank" rel="noopener">Virgo</a></p>
-</blockquote>
-<p>初次打开 Virgo，没有任何提示，也没有菜单和选项，只有一个任务栏的常驻图标显示当前的桌面序号。</p>
-<p><strong>在 Virgo 中最多可以分为 4 个虚拟桌面，而且所有操作只能靠快捷键</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">ALT + 1 ~ 4 切换到 1 ~ 4 号桌面</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">CTRL + 1 ~ 4 将当前活动的窗口移动到 1 ~ 4 号桌面</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">ALT + CTRL + SHIFT + Q 退出程序</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">ALT + CTRL + SHIFT + S 启用或停用其他快捷键</span></pre></td></tr></table></figure>
-<p>Virgo 的快捷键设计很讲究，它只让你记两个操作：切换和移动，分别对应 ALT 和 CTRL 键，每次操作只需要左手的两个手指就可以操作。<br>再加上 Windows 中自带的 Win + 1 ~ 4 快捷键可以选择任务栏中的 1 ~ 4 个应用，只需左手就可以快速切换多个桌面和软件。</p>
-<p>Virgo 不仅可以像自带虚拟桌面一样隔离两个桌面正在运行的窗口。<br>而且当你点击 QQ、微信等图标时，这些窗口会直接显示在你的当前窗口，跟正常情况没有区别，也不会出现「打断操作」的情况.Virgo 用它那 8KB 的大小，就能为那些尚在使用 Windows XP、7、8 的用户增添虚拟桌面功能。也能为 Win 10 用户带来不一样的虚拟桌面体验。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://liuchuanv.github.io/2019/11/12/230-Web/%E6%B5%8F%E8%A7%88%E5%99%A8/chrome78%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BD%91%E9%A1%B5%E4%BF%9D%E5%AD%98%E4%B8%BAmhtml%E6%A0%BC%E5%BC%8F/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="LiuChuanWei">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="静言思之">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/11/12/230-Web/%E6%B5%8F%E8%A7%88%E5%99%A8/chrome78%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BD%91%E9%A1%B5%E4%BF%9D%E5%AD%98%E4%B8%BAmhtml%E6%A0%BC%E5%BC%8F/" class="post-title-link" itemprop="url">chrome78浏览器网页保存为mhtml格式</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2019-11-12 13:30:30 / 修改时间：14:01:39" itemprop="dateCreated datePublished" datetime="2019-11-12T13:30:30+08:00">2019-11-12</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/web%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index">
-                    <span itemprop="name">web前端</span>
-                  </a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/web%E5%89%8D%E7%AB%AF/chrome%E6%B5%8F%E8%A7%88%E5%99%A8/" itemprop="url" rel="index">
-                    <span itemprop="name">chrome浏览器</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>自从chrome浏览器升级75版本之后，在 <code>chrome://flags</code> 中就无法找到 <code>save as mhtml</code>选项了，无法将网页保存为 mhtml 格式了。</p>
-<blockquote>
-<p>原来chrome搞了个”Chrome Flag Ownership”的项目，目的是清理未使用的和过时的flags，现在save-page-as-mhtml仅作为开发者测试使用</p>
-</blockquote>
-<p>解决操作步骤：</p>
-<ol>
-<li><p>右键chrome浏览器快捷方式，点击 “属性”，在 “快捷方式” 栏中追加参数 <code>-- save as mhtml</code></p>
-<p> <img src="/blog/images/201911/image-20191112135931970.png" alt="image-20191112135931970"></p>
-<p> <img src="/blog/images/201911/image-20191112140122749.png" alt="image-20191112140122749"></p>
-</li>
-<li><p>然后关闭所有的chrome浏览器网页，重新打开chrome。</p>
-</li>
-<li><p>直接按 <kbd>Ctrl</kbd>+<code>S</code> 就可保存为mhtml</p>
-</li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1243,20 +1346,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-count">42</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-count">24</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-count">21</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
