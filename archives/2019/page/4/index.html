@@ -12,7 +12,7 @@
 
 <link rel="stylesheet" href="/css/main.css">
 
-
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
 <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
 
 
@@ -25,7 +25,7 @@
     version: '7.6.0',
     exturl: false,
     sidebar: {"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},
-    copycode: {"enable":false,"show_result":false,"style":null},
+    copycode: {"enable":true,"show_result":false,"style":null},
     back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
     bookmark: {"enable":false,"color":"#222","save":"auto"},
     fancybox: false,
@@ -147,7 +147,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">42</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">43</span></a>
 
   </li>
         <li class="menu-item menu-item-about">
@@ -183,13 +183,33 @@
     <div class="posts-collapse">
       <div class="collection-title">
         
-        <span class="collection-header">还行! 目前共计 42 篇日志。 继续努力。</span>
+        <span class="collection-header">还行! 目前共计 43 篇日志。 继续努力。</span>
       </div>
 
       
     <div class="collection-year">
       <h1 class="collection-header">2019</h1>
     </div>
+
+  <article itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      <div class="post-meta">
+        <time itemprop="dateCreated"
+              datetime="2019-10-25T15:54:40Z"
+              content="2019-10-25">
+          10-25
+        </time>
+      </div>
+
+      <h2 class="post-title">
+          <a class="post-title-link" href="/2019/10/25/210-Java/Shiro/Shiro%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BSecurityManager01-Subject%E5%92%8CSubjectContext/" itemprop="url">
+            <span itemprop="name">shiro源码解析之Subject和SubjectContext</span>
+          </a>
+      </h2>
+
+    </header>
+  </article>
 
   <article itemscope itemtype="http://schema.org/Article">
     <header class="post-header">
@@ -303,8 +323,8 @@
       </div>
 
       <h2 class="post-title">
-          <a class="post-title-link" href="/2019/10/19/210-Java/Shiro/Shiro%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BSessionManager03-SessionValidationScheduler/" itemprop="url">
-            <span itemprop="name">Shiro源码解析之SessionManager03-SessionValidationScheduler</span>
+          <a class="post-title-link" href="/2019/10/19/210-Java/Shiro/Shiro%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BSessionManager01-Session%E5%92%8CSessionFactory/" itemprop="url">
+            <span itemprop="name">Shiro源码解析之SessionManager01-Session和SessionFactory</span>
           </a>
       </h2>
 
@@ -323,8 +343,8 @@
       </div>
 
       <h2 class="post-title">
-          <a class="post-title-link" href="/2019/10/19/210-Java/Shiro/Shiro%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BSessionManager01-Session%E5%92%8CSessionFactory/" itemprop="url">
-            <span itemprop="name">Shiro源码解析之SessionManager01-Session和SessionFactory</span>
+          <a class="post-title-link" href="/2019/10/19/210-Java/Shiro/Shiro%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BSessionManager03-SessionValidationScheduler/" itemprop="url">
+            <span itemprop="name">Shiro源码解析之SessionManager03-SessionValidationScheduler</span>
           </a>
       </h2>
 
@@ -365,26 +385,6 @@
       <h2 class="post-title">
           <a class="post-title-link" href="/2019/10/17/210-Java/Shiro/Shiro%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BSessionManager/" itemprop="url">
             <span itemprop="name">Shiro源码解析之SessionManager</span>
-          </a>
-      </h2>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2019-10-15T18:47:07Z"
-              content="2019-10-15">
-          10-15
-        </time>
-      </div>
-
-      <h2 class="post-title">
-          <a class="post-title-link" href="/2019/10/16/210-Java/JavaSE/%E6%B5%85%E8%B0%88Java%E4%B8%AD%E5%87%A0%E7%A7%8D%E5%B8%B8%E8%A7%81%E7%9A%84%E6%AF%94%E8%BE%83%E5%99%A8%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%B3%95/" itemprop="url">
-            <span itemprop="name">【转载】Java中比较器的实现方法</span>
           </a>
       </h2>
 
@@ -436,6 +436,8 @@
 
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="LiuChuanWei"
+      src="/blog/avatar.jpg">
   <p class="site-author-name" itemprop="name">LiuChuanWei</p>
   <div class="site-description" itemprop="description"></div>
 </div>
@@ -444,7 +446,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-count">43</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

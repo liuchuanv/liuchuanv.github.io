@@ -12,7 +12,7 @@
 
 <link rel="stylesheet" href="/css/main.css">
 
-
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
 <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
 
 
@@ -25,7 +25,7 @@
     version: '7.6.0',
     exturl: false,
     sidebar: {"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},
-    copycode: {"enable":false,"show_result":false,"style":null},
+    copycode: {"enable":true,"show_result":false,"style":null},
     back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
     bookmark: {"enable":false,"color":"#222","save":"auto"},
     fancybox: false,
@@ -147,7 +147,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">42</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">43</span></a>
 
   </li>
         <li class="menu-item menu-item-about">
@@ -181,10 +181,90 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://liuchuanv.github.io/2019/11/12/270-Hack/Crawler/Python%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/avatar.jpg">
+      <meta itemprop="name" content="LiuChuanWei">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="代码无难事">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/11/12/270-Hack/Crawler/Python%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93/" class="post-title-link" itemprop="url">Python 问题总结</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-11-12 14:47:43 / 修改时间：06:48:31" itemprop="dateCreated datePublished" datetime="2019-11-12T14:47:43Z">2019-11-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="ModuleNotFoundError-No-module-named-‘requests’"><a href="#ModuleNotFoundError-No-module-named-‘requests’" class="headerlink" title="ModuleNotFoundError: No module named ‘requests’"></a>ModuleNotFoundError: No module named ‘requests’</h3><p>原因：没有导入requests库<br>解决方法：</p>
+<ol>
+<li>打开cmd，进入PYTHON_HOME\Scripts 目录</li>
+<li>执行命令 <code>pip install requests</code></li>
+</ol>
+<h3 id="Python安装pip出错：no-matching-distribution-found-for-xxx"><a href="#Python安装pip出错：no-matching-distribution-found-for-xxx" class="headerlink" title="Python安装pip出错：no matching distribution found for xxx"></a>Python安装pip出错：no matching distribution found for xxx</h3><p>解决方法：</p>
+<ol>
+<li>打开cmd，进入PYTHON_HOME\Scripts 目录</li>
+<li>执行命令 <code>easy_install pip</code> 来安装pip</li>
+<li>更新pip的版本 <code>easy_install --upgrade pip</code></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://liuchuanv.github.io/2019/11/12/250-OS/Windows/win7%E5%BC%80%E6%9C%BA%E7%99%BB%E9%99%86%E8%83%8C%E6%99%AF%E5%9B%BE%E7%89%87%E4%BF%AE%E6%94%B9/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/blog/avatar.jpg">
       <meta itemprop="name" content="LiuChuanWei">
       <meta itemprop="description" content="">
     </span>
@@ -282,7 +362,7 @@
     <link itemprop="mainEntityOfPage" href="https://liuchuanv.github.io/2019/11/12/250-OS/Windows/win7%E8%99%9A%E6%8B%9F%E6%A1%8C%E9%9D%A2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/blog/avatar.jpg">
       <meta itemprop="name" content="LiuChuanWei">
       <meta itemprop="description" content="">
     </span>
@@ -368,7 +448,7 @@
     <link itemprop="mainEntityOfPage" href="https://liuchuanv.github.io/2019/11/12/230-Web/%E6%B5%8F%E8%A7%88%E5%99%A8/chrome78%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BD%91%E9%A1%B5%E4%BF%9D%E5%AD%98%E4%B8%BAmhtml%E6%A0%BC%E5%BC%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/blog/avatar.jpg">
       <meta itemprop="name" content="LiuChuanWei">
       <meta itemprop="description" content="">
     </span>
@@ -458,7 +538,7 @@
     <link itemprop="mainEntityOfPage" href="https://liuchuanv.github.io/2019/11/12/270-Hack/Crawler/Python%E7%88%AC%E8%99%AB%E5%85%AC%E4%BC%97%E5%8F%B7%E5%8E%86%E5%8F%B2%E6%B6%88%E6%81%AF/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/blog/avatar.jpg">
       <meta itemprop="name" content="LiuChuanWei">
       <meta itemprop="description" content="">
     </span>
@@ -549,7 +629,7 @@
     <link itemprop="mainEntityOfPage" href="https://liuchuanv.github.io/2019/11/11/230-Web/javascript/JavaScript%E5%92%8CJquery%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/blog/avatar.jpg">
       <meta itemprop="name" content="LiuChuanWei">
       <meta itemprop="description" content="">
     </span>
@@ -627,7 +707,7 @@
     <link itemprop="mainEntityOfPage" href="https://liuchuanv.github.io/2019/11/08/230-Web/%E5%8A%A8%E6%80%81%E6%A0%B7%E5%BC%8F/%E9%BC%A0%E6%A0%87%E6%BB%9A%E8%BD%AE%E6%BB%9A%E5%8A%A8%E7%BF%BB%E9%A1%B5/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/blog/avatar.jpg">
       <meta itemprop="name" content="LiuChuanWei">
       <meta itemprop="description" content="">
     </span>
@@ -709,7 +789,7 @@
     <link itemprop="mainEntityOfPage" href="https://liuchuanv.github.io/2019/11/03/230-Web/Html/JS%E4%B8%AD%E7%9A%84%E4%BD%8D%E7%BD%AE%E5%92%8C%E5%AE%BD%E5%BA%A6%EF%BC%9AclientWidth%E3%80%81offsetWidth%E3%80%81scrollWidth%E7%AD%89%E5%8C%BA%E5%88%AB/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/blog/avatar.jpg">
       <meta itemprop="name" content="LiuChuanWei">
       <meta itemprop="description" content="">
     </span>
@@ -831,7 +911,7 @@ scrollLeft:内容层左端 到 可视区域左端的距离.</code></pre><figure 
     <link itemprop="mainEntityOfPage" href="https://liuchuanv.github.io/2019/11/03/230-Web/%E5%8A%A8%E6%80%81%E6%A0%B7%E5%BC%8F/%E6%96%87%E6%9C%AC%E8%BF%87%E9%95%BF%E8%87%AA%E5%8A%A8%E6%BB%9A%E5%8A%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/blog/avatar.jpg">
       <meta itemprop="name" content="LiuChuanWei">
       <meta itemprop="description" content="">
     </span>
@@ -929,7 +1009,7 @@ scrollLeft:内容层左端 到 可视区域左端的距离.</code></pre><figure 
     <link itemprop="mainEntityOfPage" href="https://liuchuanv.github.io/2019/10/28/210-Java/Shiro/Shiro%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BAuthenticator02-AuthenticationInfo/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/blog/avatar.jpg">
       <meta itemprop="name" content="LiuChuanWei">
       <meta itemprop="description" content="">
     </span>
@@ -1002,140 +1082,6 @@ scrollLeft:内容层左端 到 可视区域左端的距离.</code></pre><figure 
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://liuchuanv.github.io/2019/10/25/210-Java/Shiro/Shiro%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BSecurityManager01-Subject%E5%92%8CSubjectContext/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="LiuChuanWei">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="代码无难事">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/10/25/210-Java/Shiro/Shiro%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E4%B9%8BSecurityManager01-Subject%E5%92%8CSubjectContext/" class="post-title-link" itemprop="url">shiro源码解析之Subject和SubjectContext</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-10-25 15:54:40" itemprop="dateCreated datePublished" datetime="2019-10-25T15:54:40Z">2019-10-25</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-10-30 01:46:58" itemprop="dateModified" datetime="2019-10-30T01:46:58Z">2019-10-30</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index">
-                    <span itemprop="name">Java</span>
-                  </a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/Shiro/" itemprop="url" rel="index">
-                    <span itemprop="name">Shiro</span>
-                  </a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="解析Subject"><a href="#解析Subject" class="headerlink" title="解析Subject"></a>解析Subject</h1><h2 id="了解-Subject"><a href="#了解-Subject" class="headerlink" title="了解 Subject"></a>了解 Subject</h2><h3 id="继承图"><a href="#继承图" class="headerlink" title="继承图"></a>继承图</h3><p><img src="/blog/images/201910/image-20191025173100171.png" alt="WebDelegatingSubject继承图"></p>
-<h3 id="Subject"><a href="#Subject" class="headerlink" title="Subject"></a>Subject</h3><p><img src="/blog/images/201910/image-20191025172729016.png" alt="Subject方法属性"></p>
-<p><img src="/blog/images/201910/image-20191025172830698.png" alt="Subject内部类Builder的方法属性"></p>
-<h3 id="DelegatingSubject"><a href="#DelegatingSubject" class="headerlink" title="DelegatingSubject"></a>DelegatingSubject</h3><p><img src="/blog/images/201910/image-20191025174237381.png" alt="DelegatingSubject方法属性"></p>
-<h3 id="WebDelegatingSubject"><a href="#WebDelegatingSubject" class="headerlink" title="WebDelegatingSubject"></a>WebDelegatingSubject</h3><p><img src="/blog/images/201910/image-20191025174353930.png" alt="WebDelegatingSubject方法属性"></p>
-<h2 id="分析-Subject"><a href="#分析-Subject" class="headerlink" title="分析 Subject"></a>分析 Subject</h2><p>在登录流程中，我们经常用到的方法有 <code>getPrincipal()</code> 、<code>getSession()</code>、<code>login()</code>、<code>logout</code></p>
-<h3 id="getPrincipal-Object"><a href="#getPrincipal-Object" class="headerlink" title="getPrincipal(): Object"></a>getPrincipal(): Object</h3><p>该方法在 DelegatingSubject 实现</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> Object <span class="title">getPrimaryPrincipal</span><span class="params">(PrincipalCollection principals)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">if</span> (!isEmpty(principals)) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">return</span> principals.getPrimaryPrincipal();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@see</span> Subject#getPrincipal()</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">getPrincipal</span><span class="params">()</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> getPrimaryPrincipal(getPrincipals());</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> PrincipalCollection <span class="title">getPrincipals</span><span class="params">()</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">    List&lt;PrincipalCollection&gt; runAsPrincipals = getRunAsPrincipalsStack();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> CollectionUtils.isEmpty(runAsPrincipals) ? <span class="keyword">this</span>.principals : runAsPrincipals.get(<span class="number">0</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line">......</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// line 169</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> List&lt;PrincipalCollection&gt; <span class="title">getRunAsPrincipalsStack</span><span class="params">()</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line">    Session session = getSession(<span class="keyword">false</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">if</span> (session != <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">24</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">return</span> (List&lt;PrincipalCollection&gt;) session.getAttribute(RUN_AS_PRINCIPALS_SESSION_KEY);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">25</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">26</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">27</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
-
-<h3 id="getSession-Session"><a href="#getSession-Session" class="headerlink" title="getSession() : Session"></a>getSession() : Session</h3><p>该方法在 DelegatingSubject 中实现的</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// line 314</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Session <span class="title">getSession</span><span class="params">()</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> getSession(<span class="keyword">true</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Session <span class="title">getSession</span><span class="params">(<span class="keyword">boolean</span> create)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">if</span> (log.isTraceEnabled()) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">        log.trace(<span class="string">"attempting to get session; create = "</span> + create +</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">                <span class="string">"; session is null = "</span> + (<span class="keyword">this</span>.session == <span class="keyword">null</span>) +</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">                <span class="string">"; session has id = "</span> + (<span class="keyword">this</span>.session != <span class="keyword">null</span> &amp;&amp; session.getId() != <span class="keyword">null</span>));</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.session == <span class="keyword">null</span> &amp;&amp; create) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">        <span class="comment">//added in 1.2:</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">if</span> (!isSessionCreationEnabled()) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">            String msg = <span class="string">"Session creation has been disabled for the current subject.  This exception indicates "</span> +</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">                    <span class="string">"that there is either a programming error (using a session when it should never be "</span> +</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line">                    <span class="string">"used) or that Shiro's configuration needs to be adjusted to allow Sessions to be created "</span> +</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line">                    "for the current Subject.  See the " + DisabledSessionException.class.getName() + " JavaDoc " +</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line">                    <span class="string">"for more."</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> DisabledSessionException(msg);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">24</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">25</span></pre></td><td class="code"><pre><span class="line">        log.trace(<span class="string">"Starting session for host &#123;&#125;"</span>, getHost());</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">26</span></pre></td><td class="code"><pre><span class="line">        SessionContext sessionContext = createSessionContext();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">27</span></pre></td><td class="code"><pre><span class="line">        Session session = <span class="keyword">this</span>.securityManager.start(sessionContext);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">28</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">this</span>.session = decorate(session);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">29</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">30</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.session;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">31</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">32</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">33</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> SessionContext <span class="title">createSessionContext</span><span class="params">()</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">34</span></pre></td><td class="code"><pre><span class="line">    SessionContext sessionContext = <span class="keyword">new</span> DefaultSessionContext();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">35</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">if</span> (StringUtils.hasText(host)) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">36</span></pre></td><td class="code"><pre><span class="line">        sessionContext.setHost(host);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">37</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">38</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> sessionContext;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">39</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
-
-<p><code>getSession()</code> 等同于 <code>getSession(true)</code> ，如果 session 不存在，则创建一个  </p>
-<h1 id="解析SubjectContext"><a href="#解析SubjectContext" class="headerlink" title="解析SubjectContext"></a>解析SubjectContext</h1><h2 id="了解SubjectContext"><a href="#了解SubjectContext" class="headerlink" title="了解SubjectContext"></a>了解SubjectContext</h2><h3 id="继承图-1"><a href="#继承图-1" class="headerlink" title="继承图"></a>继承图</h3><p><img src="/blog/images/201910/image-20191025155513614.png" alt="DefaultSubjectContext继承图"></p>
-<h3 id="SubjectContext"><a href="#SubjectContext" class="headerlink" title="SubjectContext"></a>SubjectContext</h3><p><img src="/blog/images/201910/image-20191025160223932.png" alt="SubjectContext属性方法"></p>
-<h3 id="MapContext"><a href="#MapContext" class="headerlink" title="MapContext"></a>MapContext</h3><p><img src="/blog/images/201910/image-20191025164140561.png" alt="MapContext属性方法"></p>
-<h3 id="DefaultSubjectContext"><a href="#DefaultSubjectContext" class="headerlink" title="DefaultSubjectContext"></a>DefaultSubjectContext</h3><p><img src="/blog/images/201910/image-20191025164706628.png" alt="DefaultSubjectContext属性方法"></p>
-<h3 id="DefaultWebSubjectContext"><a href="#DefaultWebSubjectContext" class="headerlink" title="DefaultWebSubjectContext"></a>DefaultWebSubjectContext</h3><p><img src="/blog/images/201910/image-20191025164829210.png" alt="DefaultWebSubjectContext属性方法"></p>
-<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>MapContext 的Map对象 backingMap 专门用来保存各种类型的变量，看它的定义就可明白 </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> Map&lt;String, Object&gt; backingMap;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">MapContext</span><span class="params">()</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">this</span>.backingMap = <span class="keyword">new</span> HashMap&lt;String, Object&gt;();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
-
-<p>而 DefaultSubjectContext 和 DefaultWebSubjectContext 继承了这一点，并在此基础上添加了多个 setter 和 getter ，用来向map添加元素，以及从map中获取元素。</p>
-<p>但是要注意名称如 resolveXxx 这样的方法。</p>
-<h2 id="理解-SubjectContext"><a href="#理解-SubjectContext" class="headerlink" title="理解 SubjectContext"></a>理解 SubjectContext</h2><h3 id="setXxx-方法"><a href="#setXxx-方法" class="headerlink" title="setXxx 方法"></a>setXxx 方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setSecurityManager</span><span class="params">(SecurityManager securityManager)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">    nullSafePut(SECURITY_MANAGER, securityManager);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
-
-<p>nullSafePut(String, Object) 方法继承自 MapContext</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// line 73</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * Places a value in this context map under the given key only if the given &#123;<span class="doctag">@code</span> value&#125; argument is not null.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@param</span> key   the attribute key under which the non-null value will be stored</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@param</span> value the non-null value to store.  If &#123;<span class="doctag">@code</span> null&#125;, this method does nothing and returns immediately.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">nullSafePut</span><span class="params">(String key, Object value)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">if</span> (value != <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">        put(key, value);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">......</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// line 105</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">put</span><span class="params">(String s, Object o)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> backingMap.put(s, o);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
-
-<p>setXxx 方法就是将 Xxx 添加到 backingMap 中</p>
-<h3 id="getXxx-方法"><a href="#getXxx-方法" class="headerlink" title="getXxx 方法"></a>getXxx 方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> SecurityManager <span class="title">getSecurityManager</span><span class="params">()</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> getTypedValue(SECURITY_MANAGER, SecurityManager<span class="class">.<span class="keyword">class</span>)</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
-
-<p>getTypedValue 同样继承自 MapContext</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// line 48</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * Performs a &#123;<span class="doctag">@link</span> #get get&#125; operation but additionally ensures that the value returned is of the specified</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * &#123;<span class="doctag">@code</span> type&#125;.  If there is no value, &#123;<span class="doctag">@code</span> null&#125; is returned.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@param</span> key  the attribute key to look up a value</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@param</span> type the expected type of the value</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@param</span> &lt;E&gt;  the expected type of the value</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@return</span> the typed value or &#123;<span class="doctag">@code</span> null&#125; if the attribute does not exist.</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line"><span class="meta">@SuppressWarnings</span>(&#123;<span class="string">"unchecked"</span>&#125;)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> &lt;E&gt; <span class="function">E <span class="title">getTypedValue</span><span class="params">(String key, Class&lt;E&gt; type)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">    E found = <span class="keyword">null</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">    Object o = backingMap.get(key);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">if</span> (o != <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">if</span> (!type.isAssignableFrom(o.getClass())) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">            String msg = <span class="string">"Invalid object found in SubjectContext Map under key ["</span> + key + <span class="string">"].  Expected type "</span> +</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">                    <span class="string">"was ["</span> + type.getName() + <span class="string">"], but the object under that key is of type "</span> +</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line">                    <span class="string">"["</span> + o.getClass().getName() + <span class="string">"]."</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(msg);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line">        found = (E) o;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">24</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> found;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">25</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
-
-<p> getXxx 方法中调用 getTypedValue(String, Class) 。在该方法中，根据 key 从 backingMap 中获取值，然后判断该值是否是 Class 对象。</p>
-<h3 id="resolveXxx-方法"><a href="#resolveXxx-方法" class="headerlink" title="resolveXxx 方法"></a>resolveXxx 方法</h3><h4 id="resolveSecurityManager"><a href="#resolveSecurityManager" class="headerlink" title="resolveSecurityManager()"></a>resolveSecurityManager()</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// line 96</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> SecurityManager <span class="title">resolveSecurityManager</span><span class="params">()</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">    SecurityManager securityManager = getSecurityManager();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">if</span> (securityManager == <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">if</span> (log.isDebugEnabled()) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">            log.debug(<span class="string">"No SecurityManager available in subject context map.  "</span> +</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">                    <span class="string">"Falling back to SecurityUtils.getSecurityManager() lookup."</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">try</span> &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">            securityManager = SecurityUtils.getSecurityManager();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">        &#125; <span class="keyword">catch</span> (UnavailableSecurityManagerException e) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">            <span class="keyword">if</span> (log.isDebugEnabled()) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">                log.debug(<span class="string">"No SecurityManager available via SecurityUtils.  Heuristics exhausted."</span>, e);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">            &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> securityManager;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
-
-<p>先调用 <code>getSecurityManager()</code> 从 backingMap 中获取对象；</p>
-<p>为空的话，则调用 <code>SecurityUtils.getSecurityManager()</code></p>
-<h4 id="resolveSession"><a href="#resolveSession" class="headerlink" title="resolveSession()"></a>resolveSession()</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Session <span class="title">resolveSession</span><span class="params">()</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">    Session session = getSession();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">if</span> (session == <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">        <span class="comment">//try the Subject if it exists:</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">        Subject existingSubject = getSubject();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">if</span> (existingSubject != <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">            session = existingSubject.getSession(<span class="keyword">false</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> session;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
-
-<ul>
-<li>先调用 <code>getSession()</code> 从 backingMap 中获取对象；</li>
-<li>为空的话，则去 subject 中获取</li>
-</ul>
-<h4 id="resolvePrincipals"><a href="#resolvePrincipals" class="headerlink" title="resolvePrincipals()"></a>resolvePrincipals()</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> PrincipalCollection <span class="title">resolvePrincipals</span><span class="params">()</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">        PrincipalCollection principals = getPrincipals();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">if</span> (isEmpty(principals)) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">            <span class="comment">//check to see if they were just authenticated:</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">            AuthenticationInfo info = getAuthenticationInfo();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">            <span class="keyword">if</span> (info != <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">                principals = info.getPrincipals();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">            &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">if</span> (isEmpty(principals)) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">            Subject subject = getSubject();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">            <span class="keyword">if</span> (subject != <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">                principals = subject.getPrincipals();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">            &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">if</span> (isEmpty(principals)) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line">            <span class="comment">//try the session:</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line">            Session session = resolveSession();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line">            <span class="keyword">if</span> (session != <span class="keyword">null</span>) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line">                principals = (PrincipalCollection) session.getAttribute(PRINCIPALS_SESSION_KEY);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">24</span></pre></td><td class="code"><pre><span class="line">            &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">25</span></pre></td><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">26</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">27</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">return</span> principals;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">28</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr></table></figure>
-
-<ul>
-<li>先调用 <code>getPrincipals()</code> 从 backingMap 中获取对象；</li>
-<li>为空的话，则去<strong><code>AuthenticationInfo</code></strong>对象中获取；</li>
-<li>还为空的话，则去<strong><code>Subject</code></strong>对象中获取；</li>
-<li>还为空的话，则去<strong><code>Session</code></strong>对象中获取。</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1176,6 +1122,8 @@ scrollLeft:内容层左端 到 可视区域左端的距离.</code></pre><figure 
 
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="LiuChuanWei"
+      src="/blog/avatar.jpg">
   <p class="site-author-name" itemprop="name">LiuChuanWei</p>
   <div class="site-description" itemprop="description"></div>
 </div>
@@ -1184,7 +1132,7 @@ scrollLeft:内容层左端 到 可视区域左端的距离.</code></pre><figure 
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-count">43</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

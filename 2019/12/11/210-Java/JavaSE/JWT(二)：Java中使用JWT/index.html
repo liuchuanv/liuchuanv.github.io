@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://liuchuanv.github.io').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.6.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="原理在上篇已经说过了，实现起来并不难，你可以自己写一个 jwt 工具类（如果你有兴趣的话） 当然了，重复造轮子不是程序员的风格，我们主张拿来主义！ JWT 官网提供了多种语言的 JWT 库，详情可以参考 https:&#x2F;&#x2F;jwt.io&#x2F;#debugger 页面下半部分 建议使用 jjwt库 ，它的github地址 https:&#x2F;&#x2F;github.com&#x2F;jwtk&#x2F;jjwt  jjwt 版本 0.10.">
+<meta name="keywords" content="JWT">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JWT(二)：Java中使用JWT">
+<meta property="og:url" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;2019&#x2F;12&#x2F;11&#x2F;210-Java&#x2F;JavaSE&#x2F;JWT(%E4%BA%8C)%EF%BC%9AJava%E4%B8%AD%E4%BD%BF%E7%94%A8JWT&#x2F;index.html">
+<meta property="og:site_name" content="代码无难事">
+<meta property="og:description" content="原理在上篇已经说过了，实现起来并不难，你可以自己写一个 jwt 工具类（如果你有兴趣的话） 当然了，重复造轮子不是程序员的风格，我们主张拿来主义！ JWT 官网提供了多种语言的 JWT 库，详情可以参考 https:&#x2F;&#x2F;jwt.io&#x2F;#debugger 页面下半部分 建议使用 jjwt库 ，它的github地址 https:&#x2F;&#x2F;github.com&#x2F;jwtk&#x2F;jjwt  jjwt 版本 0.10.">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;2019&#x2F;12&#x2F;11&#x2F;210-Java&#x2F;JavaSE&#x2F;JWT(%E4%BA%8C)%EF%BC%9AJava%E4%B8%AD%E4%BD%BF%E7%94%A8JWT&#x2F;images&#x2F;%E9%B2%81%E8%BF%85-%E5%8F%88%E6%8B%BF%E6%88%91%E8%AF%B4%E4%BA%8B%E5%84%BF.jpg">
+<meta property="og:updated_time" content="2019-12-17T12:31:00.422Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;2019&#x2F;12&#x2F;11&#x2F;210-Java&#x2F;JavaSE&#x2F;JWT(%E4%BA%8C)%EF%BC%9AJava%E4%B8%AD%E4%BD%BF%E7%94%A8JWT&#x2F;images&#x2F;%E9%B2%81%E8%BF%85-%E5%8F%88%E6%8B%BF%E6%88%91%E8%AF%B4%E4%BA%8B%E5%84%BF.jpg">
+
+<link rel="canonical" href="https://liuchuanv.github.io/2019/12/11/210-Java/JavaSE/JWT(%E4%BA%8C)%EF%BC%9AJava%E4%B8%AD%E4%BD%BF%E7%94%A8JWT/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>JWT(二)：Java中使用JWT | 代码无难事</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">代码无难事</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">代码无难事，只怕有心猿</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">24</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">21</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">43</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://liuchuanv.github.io/2019/12/11/210-Java/JavaSE/JWT(%E4%BA%8C)%EF%BC%9AJava%E4%B8%AD%E4%BD%BF%E7%94%A8JWT/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/avatar.jpg">
+      <meta itemprop="name" content="LiuChuanWei">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="代码无难事">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          JWT(二)：Java中使用JWT
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-12-11 00:00:00" itemprop="dateCreated datePublished" datetime="2019-12-11T00:00:00Z">2019-12-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-12-17 12:31:00" itemprop="dateModified" datetime="2019-12-17T12:31:00Z">2019-12-17</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/JavaSE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaSE</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>原理在上篇已经说过了，实现起来并不难，你可以自己写一个 jwt 工具类（如果你有兴趣的话）</p>
+<p>当然了，重复造轮子不是程序员的风格，我们主张拿来主义！<br><img src="./images/%E9%B2%81%E8%BF%85-%E5%8F%88%E6%8B%BF%E6%88%91%E8%AF%B4%E4%BA%8B%E5%84%BF.jpg" alt="鲁迅的拿来主义"></p>
+<p>JWT 官网提供了多种语言的 JWT 库，详情可以参考 <a href="https://jwt.io/#debugger" target="_blank" rel="noopener">https://jwt.io/#debugger</a> <em>页面下半部分</em></p>
+<p>建议使用 <strong>jjwt库</strong> ，它的github地址 <a href="https://github.com/jwtk/jjwt" target="_blank" rel="noopener">https://github.com/jwtk/jjwt</a></p>
+<blockquote>
+<p>jjwt 版本 0.10.7，它和 0.9.x 有很大的区别，一定要注意！！！</p>
+</blockquote>
+<p>本文分5部分</p>
+<ul>
+<li><a href="#simpleExample">第1部分</a>：以简单例子演示生成、验证、解析 jwt 过程</li>
+<li><a href="#commonMethods">第2部分</a>：介绍 jjwt 的常用方法</li>
+<li><a href="#jwtUtils">第3部分</a>：封装一个常用的 jwt 工具类</li>
+<li>如果只是拿来主义，看到这里就可以了*</li>
+<li><a href="#signatureAlgorithms">第4部分</a>：介绍 jjwt 的各种签名算法</li>
+<li><a href="#encrypt">第5部分</a>：对 jwt 进行安全加密</li>
+</ul>
+<p><a name="simpleExample"></a></p>
+<h2 id="简单例子"><a href="#简单例子" class="headerlink" title="简单例子"></a>简单例子</h2><h3 id="引入-MAVN-依赖"><a href="#引入-MAVN-依赖" class="headerlink" title="引入 MAVN 依赖"></a>引入 MAVN 依赖</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.jsonwebtoken<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jjwt-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>0.10.7<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.jsonwebtoken<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jjwt-impl<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>0.10.7<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">    <span class="tag">&lt;<span class="name">scope</span>&gt;</span>runtime<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.jsonwebtoken<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jjwt-jackson<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>0.10.7<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">    <span class="tag">&lt;<span class="name">scope</span>&gt;</span>runtime<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span></pre></td></tr></table></figure>
+
+<h3 id="一个例子"><a href="#一个例子" class="headerlink" title="一个例子"></a>一个例子</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 生成密钥</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">String key = <span class="string">"0123456789_0123456789_0123456789"</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">SecretKey secretKey = <span class="keyword">new</span> SecretKeySpec(key.getBytes(), SignatureAlgorithm.HS256.getJcaName());</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1. 生成 token</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">String token = Jwts.builder()     <span class="comment">// 创建 JWT 对象</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">        .setSubject(<span class="string">"JSON Web Token"</span>)   <span class="comment">// 设置主题（声明信息）</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">        .signWith(secretKey)    <span class="comment">// 设置安全密钥（生成签名所需的密钥和算法）</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">        .compact(); <span class="comment">// 生成token（1.编码 Header 和 Payload 2.生成签名 3.拼接字符串）</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">System.out.println(token);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line"><span class="comment">//token = token + "s";</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 2. 验证token，如果验证token失败则会抛出异常</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">    Jwts.parser()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">            .setSigningKey(secretKey)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line">            .parseClaimsJws(token);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">// OK, we can trust this token</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line">    System.out.println(<span class="string">"验证成功"</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line">&#125; <span class="keyword">catch</span> (JwtException e) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">//don't trust the token!</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">24</span></pre></td><td class="code"><pre><span class="line">    System.out.println(<span class="string">"验证失败"</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">25</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">26</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">27</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 3. 解析token</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">28</span></pre></td><td class="code"><pre><span class="line">Claims body = Jwts.parser()     <span class="comment">// 创建解析对象</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">29</span></pre></td><td class="code"><pre><span class="line">        .setSigningKey(secretKey)   <span class="comment">// 设置安全密钥（生成签名所需的密钥和算法）</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">30</span></pre></td><td class="code"><pre><span class="line">        .parseClaimsJws(token)  <span class="comment">// 解析token</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">31</span></pre></td><td class="code"><pre><span class="line">        .getBody(); <span class="comment">// 获取 payload 部分内容</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">32</span></pre></td><td class="code"><pre><span class="line">System.out.println(body);</span></pre></td></tr></table></figure>
+
+<p>输出结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJKU09OIFdlYiBUb2tlbiJ9.QwmY_0qXW4BhAHcDpxz62v3xqkFYbg5lsZQhM2t-kVs</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">验证成功</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">&#123;sub&#x3D;JSON Web Token&#125;</span></pre></td></tr></table></figure>
+
+
+
+<p><a name="commonMethods"></a></p>
+<h2 id="常用方法"><a href="#常用方法" class="headerlink" title="常用方法"></a>常用方法</h2><p>以下内容建议参考源码获知更多详情</p>
+<p>Jwts.builder() 创建了 DefaultJwtBuilder 对象，该对象的常用方法如下：</p>
+<h3 id="Header"><a href="#Header" class="headerlink" title="Header"></a>Header</h3><p>在 <code>compact()</code> 方法中会自动根据签名算法设置头部信息，当然也可以手动设置</p>
+<ul>
+<li>setHeader(Header header): JwtBuilder</li>
+<li>setHeader(Map&lt;String, Object&gt; header): JwtBuilder</li>
+<li>setHeaderParams(Map&lt;String, Object&gt; params): JwtBuilder</li>
+<li>setHeaderParam(String name, Object value): JwtBuilder<blockquote>
+<p>参数 Header 对象 可通过 Jwts.header(); 创建，它简单得就像一个 map （把它当做 map 使用即可）</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="Payload"><a href="#Payload" class="headerlink" title="Payload"></a>Payload</h3><p>至少设置一个 claims，否则在生成签名时会抛出异常</p>
+<ul>
+<li>setClaims(Claims claims): JwtBuilder</li>
+<li>setClaims(Map&lt;String, Object&gt; claims): JwtBuilder</li>
+<li>addClaims(Map&lt;String, Object&gt; claims): JwtBuilder</li>
+<li>setIssuer(String iss): JwtBuilder</li>
+<li>setSubject(String sub): JwtBuilder</li>
+<li>setAudience(String aud): JwtBuilder</li>
+<li>setExpiration(Date exp): JwtBuilder</li>
+<li>setNotBefore(Date nbf): JwtBuilder</li>
+<li>setIssuedAt(Date iat): JwtBuilder</li>
+<li>setId(String jti): JwtBuilder</li>
+<li>claim(String name, Object value: JwtBuilder</li>
+</ul>
+<blockquote>
+<p>参数对象 Claims 同 Header 类似，通过 Jwts.claims() 创建，同样简单得就像一个 map</p>
+</blockquote>
+<p>值得注意的一点是：不要在 setXxx 之后调用 setClaims(Claims claims) 或 setClaims(Map&lt;String, Object&gt; claims)，因为这两个方法会覆盖所有已设置的 claim </p>
+<h3 id="Signature"><a href="#Signature" class="headerlink" title="Signature"></a>Signature</h3><ul>
+<li>signWith(Key key)</li>
+<li>signWith(Key key, SignatureAlgorithm alg)</li>
+<li>signWith(SignatureAlgorithm alg, byte[] secretKeyBytes)</li>
+<li>signWith(SignatureAlgorithm alg, String base64EncodedSecretKey)</li>
+<li>signWith(SignatureAlgorithm alg, Key key)</li>
+</ul>
+<p>以上方法最终就是设置两个对象：key 和 algorithm，分别代表密钥和算法<br>方法内部生成密钥使用的方法的和演示中的一样</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">SecretKey key = <span class="keyword">new</span> SecretKeySpec(secretKeyBytes, alg.getJcaName());</span></pre></td></tr></table></figure>
+<p>注意：key 的长度必须符合签名算法的要求（避免生成弱密钥）<br>HS256：bit 长度要&gt;=256，即字节长度&gt;=32<br>HS384：bit 长度要&gt;=384，即字节长度&gt;=48<br>HS512：bit 长度要&gt;=512，即字节长度&gt;=64<br><em>在 secret key algorithms 名称中的数字代表了最小bit长度</em></p>
+<p>更多签名算法的详情，请参考<a href="#signatureAlgorithms">签名算法小节</a></p>
+<p><a name="jwtUtils"></a></p>
+<h2 id="封装-JWT-工具类"><a href="#封装-JWT-工具类" class="headerlink" title="封装 JWT 工具类"></a>封装 JWT 工具类</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.liuchuanv.jwt;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> io.jsonwebtoken.*;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> io.jsonwebtoken.security.SignatureException;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> javax.crypto.spec.SecretKeySpec;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.security.Key;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Date;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Map;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.UUID;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * JSON Web Token 工具类</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> *</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@author</span> LiuChuanWei</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2019-12-11</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line"><span class="comment"> */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JwtUtils</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line"><span class="comment">     * key（按照签名算法的字节长度设置key）</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line"><span class="comment">     */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">static</span> String SECRET_KEY = <span class="string">"0123456789_0123456789_0123456789"</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">24</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">25</span></pre></td><td class="code"><pre><span class="line"><span class="comment">     * 过期时间（毫秒单位）</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">26</span></pre></td><td class="code"><pre><span class="line"><span class="comment">     */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">27</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="keyword">long</span> TOKEN_EXPIRE_MILLIS = <span class="number">1000</span> * <span class="number">60</span> * <span class="number">60</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">28</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">29</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">30</span></pre></td><td class="code"><pre><span class="line"><span class="comment">     * 创建token</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">31</span></pre></td><td class="code"><pre><span class="line"><span class="comment">     * <span class="doctag">@param</span> claimMap</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">32</span></pre></td><td class="code"><pre><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">33</span></pre></td><td class="code"><pre><span class="line"><span class="comment">     */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">34</span></pre></td><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">createToken</span><span class="params">(Map&lt;String, Object&gt; claimMap)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">35</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">long</span> currentTimeMillis = System.currentTimeMillis();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">36</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">return</span> Jwts.builder()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">37</span></pre></td><td class="code"><pre><span class="line">                .setId(UUID.randomUUID().toString())</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">38</span></pre></td><td class="code"><pre><span class="line">                .setIssuedAt(<span class="keyword">new</span> Date(currentTimeMillis))    <span class="comment">// 设置签发时间</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">39</span></pre></td><td class="code"><pre><span class="line">                .setExpiration(<span class="keyword">new</span> Date(currentTimeMillis + TOKEN_EXPIRE_MILLIS))   <span class="comment">// 设置过期时间</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">40</span></pre></td><td class="code"><pre><span class="line">                .addClaims(claimMap)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">41</span></pre></td><td class="code"><pre><span class="line">                .signWith(generateKey())</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">42</span></pre></td><td class="code"><pre><span class="line">                .compact();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">43</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">44</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">45</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">46</span></pre></td><td class="code"><pre><span class="line"><span class="comment">     * 验证token</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">47</span></pre></td><td class="code"><pre><span class="line"><span class="comment">     * <span class="doctag">@param</span> token</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">48</span></pre></td><td class="code"><pre><span class="line"><span class="comment">     * <span class="doctag">@return</span> 0 验证成功，1、2、3、4、5 验证失败</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">49</span></pre></td><td class="code"><pre><span class="line"><span class="comment">     */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">50</span></pre></td><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">verifyToken</span><span class="params">(String token)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">51</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">try</span> &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">52</span></pre></td><td class="code"><pre><span class="line">            Jwts.parser().setSigningKey(generateKey()).parseClaimsJws(token);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">53</span></pre></td><td class="code"><pre><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">54</span></pre></td><td class="code"><pre><span class="line">        &#125; <span class="keyword">catch</span> (ExpiredJwtException e) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">55</span></pre></td><td class="code"><pre><span class="line">            e.printStackTrace();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">56</span></pre></td><td class="code"><pre><span class="line">            <span class="keyword">return</span> <span class="number">1</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">57</span></pre></td><td class="code"><pre><span class="line">        &#125; <span class="keyword">catch</span> (UnsupportedJwtException e) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">58</span></pre></td><td class="code"><pre><span class="line">            e.printStackTrace();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">59</span></pre></td><td class="code"><pre><span class="line">            <span class="keyword">return</span> <span class="number">2</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">60</span></pre></td><td class="code"><pre><span class="line">        &#125; <span class="keyword">catch</span> (MalformedJwtException e) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">61</span></pre></td><td class="code"><pre><span class="line">            e.printStackTrace();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">62</span></pre></td><td class="code"><pre><span class="line">            <span class="keyword">return</span> <span class="number">3</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">63</span></pre></td><td class="code"><pre><span class="line">        &#125; <span class="keyword">catch</span> (SignatureException e) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">64</span></pre></td><td class="code"><pre><span class="line">            e.printStackTrace();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">65</span></pre></td><td class="code"><pre><span class="line">            <span class="keyword">return</span> <span class="number">4</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">66</span></pre></td><td class="code"><pre><span class="line">        &#125; <span class="keyword">catch</span> (IllegalArgumentException e) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">67</span></pre></td><td class="code"><pre><span class="line">            e.printStackTrace();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">68</span></pre></td><td class="code"><pre><span class="line">            <span class="keyword">return</span> <span class="number">5</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">69</span></pre></td><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">70</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">71</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">72</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">73</span></pre></td><td class="code"><pre><span class="line"><span class="comment">     * 解析token</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">74</span></pre></td><td class="code"><pre><span class="line"><span class="comment">     * <span class="doctag">@param</span> token</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">75</span></pre></td><td class="code"><pre><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">76</span></pre></td><td class="code"><pre><span class="line"><span class="comment">     */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">77</span></pre></td><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Map&lt;String, Object&gt; <span class="title">parseToken</span><span class="params">(String token)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">78</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">return</span> Jwts.parser()  <span class="comment">// 得到DefaultJwtParser</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">79</span></pre></td><td class="code"><pre><span class="line">                .setSigningKey(generateKey()) <span class="comment">// 设置签名密钥</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">80</span></pre></td><td class="code"><pre><span class="line">                .parseClaimsJws(token)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">81</span></pre></td><td class="code"><pre><span class="line">                .getBody();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">82</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">83</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">84</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">/**</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">85</span></pre></td><td class="code"><pre><span class="line"><span class="comment">     * 生成安全密钥</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">86</span></pre></td><td class="code"><pre><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">87</span></pre></td><td class="code"><pre><span class="line"><span class="comment">     */</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">88</span></pre></td><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Key <span class="title">generateKey</span><span class="params">()</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">89</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">return</span> <span class="keyword">new</span> SecretKeySpec(SECRET_KEY.getBytes(), SignatureAlgorithm.HS256.getJcaName());</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">90</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">91</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+<p>测试代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">//Map&lt;String, Object&gt; map = new HashMap&lt;String, Object&gt;();</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">      <span class="comment">//map.put("userId", 1002);</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">      <span class="comment">//map.put("userName", "张晓明");</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">      <span class="comment">//map.put("age", 12);</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">      <span class="comment">//map.put("address", "山东省青岛市李沧区");</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">      <span class="comment">//String token = JwtUtils.createToken(map);</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">      <span class="comment">//System.out.println(token);</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">      String token = <span class="string">"eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI0ZWM2NWNhNC0wZjVmLTRlOTktOTI5NS1mYWUyN2UwODIzYzQiLCJpYXQiOjE1NzY0OTI4NjYsImV4cCI6MTU3NjQ5NjQ2NiwiYWRkcmVzcyI6IuWxseS4nOecgemdkuWym-W4guadjuayp-WMuiIsInVzZXJOYW1lIjoi5byg5pmT5piOIiwidXNlcklkIjoxMDAyLCJhZ2UiOjEyfQ.6Z18aIA6y52ntQkV3BwlYiVK3hL3R2WFujjTmuvimww"</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">      <span class="keyword">int</span> result = JwtUtils.verifyToken(token);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">      System.out.println(result);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">      Map&lt;String, Object&gt; map = JwtUtils.parseToken(token);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">      System.out.println(map);</span></pre></td></tr></table></figure>
+<p>输出结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">0</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">&#123;jti&#x3D;4ec65ca4-0f5f-4e99-9295-fae27e0823c4, iat&#x3D;1576492866, exp&#x3D;1576496466, address&#x3D;山东省青岛市李沧区, userName&#x3D;张晓明, userId&#x3D;1002, age&#x3D;12&#125;</span></pre></td></tr></table></figure>
+
+
+
+<p><a name="signatureAlgorithms"></a></p>
+<h2 id="签名算法"><a href="#签名算法" class="headerlink" title="签名算法"></a>签名算法</h2><h3 id="12-种签名算法"><a href="#12-种签名算法" class="headerlink" title="12 种签名算法"></a>12 种签名算法</h3><p>JWT 规范定义了12种标准签名算法：3种 secret key 算法和9种非对称密钥算法</p>
+<ul>
+<li><code>HS256</code>: HMAC using SHA-256</li>
+<li><code>HS384</code>: HMAC using SHA-384</li>
+<li><code>HS512</code>: HMAC using SHA-512</li>
+<li><code>ES256</code>: ECDSA using P-256 and SHA-256</li>
+<li><code>ES384</code>: ECDSA using P-384 and SHA-384</li>
+<li><code>ES512</code>: ECDSA using P-521 and SHA-512</li>
+<li><code>RS256</code>: RSASSA-PKCS-v1_5 using SHA-256</li>
+<li><code>RS384</code>: RSASSA-PKCS-v1_5 using SHA-384</li>
+<li><code>RS512</code>: RSASSA-PKCS-v1_5 using SHA-512</li>
+<li><code>PS256</code>: RSASSA-PSS using SHA-256 and MGF1 with SHA-256</li>
+<li><code>PS384</code>: RSASSA-PSS using SHA-384 and MGF1 with SHA-384</li>
+<li><code>PS512</code>: RSASSA-PSS using SHA-512 and MGF1 with SHA-512</li>
+</ul>
+<p>根据算法名称可分为四类：HSxxx（secret key 算法）、ESxxx、RSxxx、PSxxx</p>
+<blockquote>
+<p><em>HSxxx、ESxxx 中的 xxx 表示算法 key 最小 <strong>Bit</strong> 长度<br>RSxxx、PSxxx 中的 xxx 表示算法 key 最小 <strong>Byte</strong> 长度</em></p>
+</blockquote>
+<p><strong>规定key的最小长度是为了避免因 key 过短生成弱密钥</strong></p>
+<h3 id="生成密钥"><a href="#生成密钥" class="headerlink" title="生成密钥"></a>生成密钥</h3><p>jjwt 生成 <strong>secret key</strong> 两种方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">String key = <span class="string">"1234567890_1234567890_1234567890"</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1. 根据key生成密钥（会根据字节参数长度自动选择相应的 HMAC 算法）</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">SecretKey secretKey1 = Keys.hmacShaKeyFor(key.getBytes());</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 2. 根据随机数生成密钥</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">SecretKey secretKey2 = Keys.secretKeyFor(SignatureAlgorithm.HS256);</span></pre></td></tr></table></figure>
+
+<blockquote>
+<p><em>方法 Keys.hmacShaKeyFor(byte[]) 内部也是 new SecretKeySpec(bytes, alg.getJcaName()) 来生成密钥的<br>方法 Keys.secretKeyFor(SignatureAlgorithm) 内部使用 KeyGenerator.generateKey() 生成密钥</em></p>
+</blockquote>
+<p>jjwt 也提供了<strong>非对称密钥对</strong>的生成方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1. 使用jjwt提供的方法生成</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">KeyPair keyPair = Keys.keyPairFor(SignatureAlgorithm.RS256);    <span class="comment">//or RS384, RS512, PS256, PS384, PS512, ES256, ES384, ES512</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 2. 手动生成</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> keySize = <span class="number">1024</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// RSA算法要求有一个可信任的随机数源</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">SecureRandom secureRandom = <span class="keyword">new</span> SecureRandom();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 为RSA算法创建一个KeyPairGenerator对象 </span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">KeyPairGenerator keyPairGenerator = <span class="keyword">null</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">    keyPairGenerator = KeyPairGenerator.getInstance(<span class="string">"RSA"</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">&#125; <span class="keyword">catch</span> (NoSuchAlgorithmException e) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">    e.printStackTrace();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 利用上面的随机数据源初始化这个KeyPairGenerator对象</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">keyPairGenerator.initialize(keySize, secureRandom);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 生成密钥对</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">KeyPair keyPair2 = keyPairGenerator.generateKeyPair();</span></pre></td></tr></table></figure>
+<blockquote>
+<ul>
+<li><em>Keys.keyPairFor(SignatureAlgorithm) 会根据算法自动生成相应长度的</em></li>
+<li><em>signWith(secretKey) 会根据密钥长度自动选择相应算法，也可以指定<strong>任意</strong>算法（指定的算法不受密钥长度限制，可任意选择，即用 RS256生成的密钥，可以 signWith(secretKey, SignatureAlgorithm.RS512)，但是 JJWT 并不建议这么做）</em></li>
+<li><em>在加密时使用 keyPair.getPrivate() ，解密时使用 keyPair.getPublic()</em></li>
+</ul>
+</blockquote>
+<h3 id="不同密钥生成token"><a href="#不同密钥生成token" class="headerlink" title="不同密钥生成token"></a>不同密钥生成token</h3><p>以上都是使用同一密钥签名生成所有的token，下面我们使用不同的密钥</p>
+<p><em>这一个特性可以应用于不同用户/角色使用不同的密钥生成的 token，帮助你更好的构建权限系统</em></p>
+<ol>
+<li><p>首先在 Header（或 claims）中设置一个 keyId </p>
+</li>
+<li><p>定义一个类，继承 SigningKeyResolverAdapter，并重写 resolveSigningKey() 或 resolveSigningKeyBytes() 方法</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MySigningKeyResolver</span> <span class="keyword">extends</span> <span class="title">SigningKeyResolverAdapter</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">    <span class="meta">@Override</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> Key <span class="title">resolveSigningKey</span><span class="params">(JwsHeader header, Claims claims)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">        <span class="comment">// 除了从 header 中获取 keyId 外，也可以从 claims 中获取（前提是在 claims 中设置了 keyId 声明）</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">        String keyId = header.getKeyId();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">        <span class="comment">// 根据 keyId 查找相应的 key</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">        Key key = lookupVerificationKey(keyId);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">return</span> key;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> Key <span class="title">lookupVerificationKey</span><span class="params">(String keyId)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">        <span class="comment">// TODO 根据 keyId 获取 key，比如从数据库中获取</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">        <span class="comment">// 下面语句仅做演示用，绝对不可用于实际开发中！！！</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">        String key = <span class="string">"qwertyuiopasdfghjklzxcvbnm2019_"</span> + keyId;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">return</span> Keys.hmacShaKeyFor(key.getBytes());</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+</li>
+<li><p>解析时，不再调用 setSigningKey(SecretKey) ，而是调用 setSigningKeyResolver(SigningKeyResolver)</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 生成密钥</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">        <span class="comment">// TODO 此处 keyId 仅做演示用，实际开发中可以使用 UserId、RoleId 等作为 keyId</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">        String keyId = <span class="keyword">new</span> Long(System.currentTimeMillis()).toString();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">        System.out.println(<span class="string">"keyId="</span> + keyId);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">        String key = <span class="string">"qwertyuiopasdfghjklzxcvbnm2019_"</span> + keyId;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">        SecretKey secretKey = <span class="keyword">new</span> SecretKeySpec(key.getBytes(), SignatureAlgorithm.HS256.getJcaName());</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">        <span class="comment">// 1. 生成 token</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">        String token = Jwts.builder()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">                .setHeaderParam(JwsHeader.KEY_ID, keyId)    <span class="comment">// 设置 keyId（当然也可以在 claims 中设置）</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">                .setSubject(<span class="string">"JSON Web Token"</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">                .signWith(secretKey)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">                .compact();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">        System.out.println(<span class="string">"token="</span> + token);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">        <span class="comment">// 2. 验证token</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">        <span class="comment">// token 使用了不同的密钥生成签名，在解析时就不用调用 setSigningKey(SecretKey) 了</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line">        <span class="comment">// 而是调用 setSigningKeyResolver(SigningKeyResolver)</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">try</span> &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line">            Jwts.parser()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line">                    .setSigningKeyResolver(<span class="keyword">new</span> MySigningKeyResolver())</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line">                    .parseClaimsJws(token);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">24</span></pre></td><td class="code"><pre><span class="line">            <span class="comment">// OK, we can trust this token</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">25</span></pre></td><td class="code"><pre><span class="line">            System.out.println(<span class="string">"token验证成功"</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">26</span></pre></td><td class="code"><pre><span class="line">        &#125; <span class="keyword">catch</span> (JwtException e) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">27</span></pre></td><td class="code"><pre><span class="line">            <span class="comment">//don't trust the token!</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">28</span></pre></td><td class="code"><pre><span class="line">            System.out.println(<span class="string">"token验证失败"</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">29</span></pre></td><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<p><a name="encrypt"></a></p>
+<h2 id="安全加密"><a href="#安全加密" class="headerlink" title="安全加密"></a>安全加密</h2><p>敬请期待 …..</p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/blog/alipay-reward-image.jpg" alt="LiuChuanWei 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/blog/weixinpay-reward-image.jpg" alt="LiuChuanWei 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/JWT/" rel="tag"># JWT</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/12/10/210-Java/JavaSE/JWT(%E4%B8%80)%EF%BC%9A%E8%AE%A4%E8%AF%86%20JSON%20Web%20Token/" rel="prev" title="JWT (一)：认识 JSON Web Token">
+      <i class="fa fa-chevron-left"></i> JWT (一)：认识 JSON Web Token
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简单例子"><span class="nav-number">1.</span> <span class="nav-text">简单例子</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#引入-MAVN-依赖"><span class="nav-number">1.1.</span> <span class="nav-text">引入 MAVN 依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#一个例子"><span class="nav-number">1.2.</span> <span class="nav-text">一个例子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常用方法"><span class="nav-number">2.</span> <span class="nav-text">常用方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Header"><span class="nav-number">2.1.</span> <span class="nav-text">Header</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Payload"><span class="nav-number">2.2.</span> <span class="nav-text">Payload</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Signature"><span class="nav-number">2.3.</span> <span class="nav-text">Signature</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#封装-JWT-工具类"><span class="nav-number">3.</span> <span class="nav-text">封装 JWT 工具类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#签名算法"><span class="nav-number">4.</span> <span class="nav-text">签名算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#12-种签名算法"><span class="nav-number">4.1.</span> <span class="nav-text">12 种签名算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#生成密钥"><span class="nav-number">4.2.</span> <span class="nav-text">生成密钥</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#不同密钥生成token"><span class="nav-number">4.3.</span> <span class="nav-text">不同密钥生成token</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安全加密"><span class="nav-number">5.</span> <span class="nav-text">安全加密</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="LiuChuanWei"
+      src="/blog/avatar.jpg">
+  <p class="site-author-name" itemprop="name">LiuChuanWei</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/liuchuanv" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;liuchuanv" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiuChuanWei</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme: 'forest',
+      logLevel: 3,
+      flowchart: { curve: 'linear' },
+      gantt: { axisFormat: '%m/%d/%Y' },
+      sequence: { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+</body>
+</html>

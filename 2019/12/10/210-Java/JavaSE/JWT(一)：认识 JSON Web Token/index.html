@@ -12,7 +12,7 @@
 
 <link rel="stylesheet" href="/css/main.css">
 
-
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
 <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
 
 
@@ -25,7 +25,7 @@
     version: '7.6.0',
     exturl: false,
     sidebar: {"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},
-    copycode: {"enable":false,"show_result":false,"style":null},
+    copycode: {"enable":true,"show_result":false,"style":null},
     back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
     bookmark: {"enable":false,"color":"#222","save":"auto"},
     fancybox: false,
@@ -45,20 +45,20 @@
   };
 </script>
 
-  <meta name="description" content="什么是 JWT？JSON Web Token（JWT）是一种开放标准（RFC 7519），它定义了一种紧凑且自包含的方式，作为JSON对象在各方之间安全的传递信息。这个信息可以通过数字签名进行验证并信任。JWTs 可以使用密钥（结合HMAC算法）或者 使用RSA、ECDSA加密的公钥私钥对进行签名。 尽管JWTs能够在各方之间也提供安全加密，但是仍专注于签名Token。当其他方隐藏了加密Token">
-<meta name="keywords" content="登录">
+  <meta name="description" content="什么是 JWT？JSON Web Token（JWT）是一种开放标准（RFC 7519），它定义了一种紧凑且自包含的方式，作为 JSON 对象在各方之间安全的传递信息。这个信息可以通过数字签名进行验证并信任。JWTs 可以使用密钥（结合 HMAC 算法）或者 使用 RSA 、 ECDSA 加密的公钥私钥对进行签名。 尽管 JWTs 能够在各方之间也提供安全加密，但是仍*专注于签名 Token *。">
+<meta name="keywords" content="JWT">
 <meta property="og:type" content="article">
-<meta property="og:title" content="JWT (上)：认识 JSON Web Token">
-<meta property="og:url" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;2019&#x2F;12&#x2F;10&#x2F;210-Java&#x2F;JavaSE&#x2F;JWT(%E4%B8%8A)%EF%BC%9A%E8%AE%A4%E8%AF%86%20JSON%20Web%20Token&#x2F;index.html">
+<meta property="og:title" content="JWT (一)：认识 JSON Web Token">
+<meta property="og:url" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;2019&#x2F;12&#x2F;10&#x2F;210-Java&#x2F;JavaSE&#x2F;JWT(%E4%B8%80)%EF%BC%9A%E8%AE%A4%E8%AF%86%20JSON%20Web%20Token&#x2F;index.html">
 <meta property="og:site_name" content="代码无难事">
-<meta property="og:description" content="什么是 JWT？JSON Web Token（JWT）是一种开放标准（RFC 7519），它定义了一种紧凑且自包含的方式，作为JSON对象在各方之间安全的传递信息。这个信息可以通过数字签名进行验证并信任。JWTs 可以使用密钥（结合HMAC算法）或者 使用RSA、ECDSA加密的公钥私钥对进行签名。 尽管JWTs能够在各方之间也提供安全加密，但是仍专注于签名Token。当其他方隐藏了加密Token">
+<meta property="og:description" content="什么是 JWT？JSON Web Token（JWT）是一种开放标准（RFC 7519），它定义了一种紧凑且自包含的方式，作为 JSON 对象在各方之间安全的传递信息。这个信息可以通过数字签名进行验证并信任。JWTs 可以使用密钥（结合 HMAC 算法）或者 使用 RSA 、 ECDSA 加密的公钥私钥对进行签名。 尽管 JWTs 能够在各方之间也提供安全加密，但是仍*专注于签名 Token *。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;2019&#x2F;12&#x2F;10&#x2F;210-Java&#x2F;JavaSE&#x2F;JWT(%E4%B8%8A)%EF%BC%9A%E8%AE%A4%E8%AF%86%20JSON%20Web%20Token&#x2F;images&#x2F;encoded-jwt3.png">
-<meta property="og:updated_time" content="2019-12-10T11:00:40.048Z">
+<meta property="og:image" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;2019&#x2F;12&#x2F;10&#x2F;210-Java&#x2F;JavaSE&#x2F;JWT(%E4%B8%80)%EF%BC%9A%E8%AE%A4%E8%AF%86%20JSON%20Web%20Token&#x2F;images&#x2F;encoded-jwt3.png">
+<meta property="og:updated_time" content="2019-12-17T01:36:01.867Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;2019&#x2F;12&#x2F;10&#x2F;210-Java&#x2F;JavaSE&#x2F;JWT(%E4%B8%8A)%EF%BC%9A%E8%AE%A4%E8%AF%86%20JSON%20Web%20Token&#x2F;images&#x2F;encoded-jwt3.png">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;2019&#x2F;12&#x2F;10&#x2F;210-Java&#x2F;JavaSE&#x2F;JWT(%E4%B8%80)%EF%BC%9A%E8%AE%A4%E8%AF%86%20JSON%20Web%20Token&#x2F;images&#x2F;encoded-jwt3.png">
 
-<link rel="canonical" href="https://liuchuanv.github.io/2019/12/10/210-Java/JavaSE/JWT(%E4%B8%8A)%EF%BC%9A%E8%AE%A4%E8%AF%86%20JSON%20Web%20Token/">
+<link rel="canonical" href="https://liuchuanv.github.io/2019/12/10/210-Java/JavaSE/JWT(%E4%B8%80)%EF%BC%9A%E8%AE%A4%E8%AF%86%20JSON%20Web%20Token/">
 
 
 <script id="page-configurations">
@@ -72,7 +72,7 @@
   };
 </script>
 
-  <title>JWT (上)：认识 JSON Web Token | 代码无难事</title>
+  <title>JWT (一)：认识 JSON Web Token | 代码无难事</title>
   
 
 
@@ -153,7 +153,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">42</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">43</span></a>
 
   </li>
         <li class="menu-item menu-item-about">
@@ -187,10 +187,10 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://liuchuanv.github.io/2019/12/10/210-Java/JavaSE/JWT(%E4%B8%8A)%EF%BC%9A%E8%AE%A4%E8%AF%86%20JSON%20Web%20Token/">
+    <link itemprop="mainEntityOfPage" href="https://liuchuanv.github.io/2019/12/10/210-Java/JavaSE/JWT(%E4%B8%80)%EF%BC%9A%E8%AE%A4%E8%AF%86%20JSON%20Web%20Token/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/blog/avatar.jpg">
       <meta itemprop="name" content="LiuChuanWei">
       <meta itemprop="description" content="">
     </span>
@@ -200,7 +200,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          JWT (上)：认识 JSON Web Token
+          JWT (一)：认识 JSON Web Token
         </h1>
 
         <div class="post-meta">
@@ -209,10 +209,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2019-12-10 00:00:00 / 修改时间：11:00:40" itemprop="dateCreated datePublished" datetime="2019-12-10T00:00:00Z">2019-12-10</time>
+              <time title="创建时间：2019-12-10 00:00:00" itemprop="dateCreated datePublished" datetime="2019-12-10T00:00:00Z">2019-12-10</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-12-17 01:36:01" itemprop="dateModified" datetime="2019-12-17T01:36:01Z">2019-12-17</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -242,63 +248,66 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="什么是-JWT？"><a href="#什么是-JWT？" class="headerlink" title="什么是 JWT？"></a>什么是 JWT？</h2><p>JSON Web Token（JWT）是一种开放标准（RFC 7519），它定义了一种紧凑且自包含的方式，作为JSON对象在各方之间安全的传递信息。这个信息可以通过数字签名进行验证并信任。JWTs 可以使用密钥（结合HMAC算法）或者 使用RSA、ECDSA加密的公钥私钥对进行签名。</p>
-<p>尽管JWTs能够在各方之间也提供安全加密，但是仍专注于签名Token。当其他方隐藏了加密Token的某些声明时，签名Token可以验证声明的完整性。当Token使用公钥私钥对进行签名时，这个签名还能证明只有拥有私钥的一方才是签发它的一方。</p>
+        <h2 id="什么是-JWT？"><a href="#什么是-JWT？" class="headerlink" title="什么是 JWT？"></a>什么是 JWT？</h2><p>JSON Web Token（JWT）是一种开放标准（RFC 7519），它定义了一种紧凑且自包含的方式，作为 JSON 对象在各方之间安全的传递信息。这个信息可以通过数字签名进行验证并信任。JWTs 可以使用密钥（结合 HMAC 算法）或者 使用 RSA 、 ECDSA 加密的公钥私钥对进行签名。</p>
+<p>尽管 JWTs 能够在各方之间也提供安全加密，但是仍*<em>专注于签名 Token *</em>。当其他方隐藏了加密 Token 的某些声明时，签名 Token 可以验证声明的完整性。当Token使用公钥私钥对进行签名时，这个签名还能证明只有拥有私钥的一方才是签发它的一方。</p>
 <h2 id="什么时候使用-JWT-？"><a href="#什么时候使用-JWT-？" class="headerlink" title="什么时候使用 JWT ？"></a>什么时候使用 JWT ？</h2><ul>
-<li><strong>授权</strong>：这是JWT最普遍的使用场景了。当用户登录之后，每次请求都包含JWT，允许用户访问那些只有携带token才能访问的路由、服务、资源。如今在单点登录中广泛使用了JWT，因为JWT体积小，且能够在不同域名之间被使用。</li>
-<li><strong>信息交换</strong>：JWT是一种在各方之间安全传输信息的好方式。因为JWTs能够签名，比如使用公钥私钥对，你能够确定发送者的身份。另外，签名是使用header和payload计算而来，所以你也可以验证内容是否被篡改。</li>
+<li><strong>授权</strong>：这是 JWT 最普遍的使用场景。当用户登录之后，每次请求中都包含 JWT ，服务端允许用户访问那些只有携带 token 才能访问的路由、服务、资源。目前在单点登录中广泛使用到 JWT ，因为它体积小，且能够在不同域名之间使用。</li>
+<li><strong>信息交换</strong>： JWT 是一种能够在各方之间安全传输信息的好方式。因为 JWTs 能够签名，比如使用公钥私钥对，你能够确定发送者的身份。另外，签名是使用 Header 和 Payload 通过特定算法计算而来，所以你也可以验证内容是否被篡改。</li>
 </ul>
-<h2 id="JWT的结构"><a href="#JWT的结构" class="headerlink" title="JWT的结构"></a>JWT的结构</h2><p>jwt 包含三部分，之间以点（.）分隔</p>
+<h2 id="JWT的结构"><a href="#JWT的结构" class="headerlink" title="JWT的结构"></a>JWT的结构</h2><p>JWT 包含三部分，之间以点（.）连接</p>
 <ul>
 <li>Header（头部）</li>
 <li>Payload（负载）</li>
 <li>Signature（签名）</li>
 </ul>
-<p>一个典型的jwt如同下面这样:</p>
+<p>一个典型的 JWT 如同下面这样:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">xxxxx.yyyyy.zzzzz</span></pre></td></tr></table></figure>
 
+<p>一个真实的 JWT 例子：</p>
 <p><img src="./images/encoded-jwt3.png" alt="编码的JWT"></p>
-<p>下面分别介绍他们</p>
 <h3 id="Header"><a href="#Header" class="headerlink" title="Header"></a>Header</h3><p>Header部分 是一个 JSON 对象，典型的header包含两部分：</p>
 <ul>
-<li><p><code>alg</code>：使用的签名算法，比如 HMAC SHA256 或 RSA</p>
-</li>
-<li><p><code>typ</code>：token的类型，比如 JWT</p>
-</li>
+<li><code>alg</code>：使用的签名算法，比如 HMAC SHA256 或 RSA</li>
+<li><code>typ</code>：token的类型，比如 JWT</li>
 </ul>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">  <span class="attr">"alg"</span>: <span class="string">"HS256"</span>,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">  <span class="attr">"typ"</span>: <span class="string">"JWT"</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
 
 <p>最后，用 Base64Url 将这个 JSON 对象编码后，作为 JWT 的第一部分</p>
-<h3 id="Payload"><a href="#Payload" class="headerlink" title="Payload"></a>Payload</h3><p>Payload 部分也是 JSON 对象，用来存放数据。JWT 有7个官方字段</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">* iss (issuer)：签发人</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">* exp (expiration time)：过期时间，以秒为单位</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">* iat (Issued At)：签发时间，能够算出JWT的存在时间</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">* nbf (Not Before)：生效时间</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">* jti (JWT ID)：JWT 的唯一标识。用来防止 JWT 重复。</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">* sub (subject)：主题（很少使用）</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">* aud (audience)：token的受众（很少被使用）</span></pre></td></tr></table></figure>
+<h3 id="Payload"><a href="#Payload" class="headerlink" title="Payload"></a>Payload</h3><p>Payload 部分也是 JSON 对象，用来存放数据。JWT 有7个官方字段：</p>
+<ul>
+<li>iss (issuer)：签发人</li>
+<li>exp (expiration time)：过期时间，以秒为单位</li>
+<li>iat (Issued At)：签发时间，能够算出JWT的存在时间</li>
+<li>nbf (Not Before)：生效时间</li>
+<li>jti (JWT ID)：JWT 的唯一标识。用来防止 JWT 重复。</li>
+<li>sub (subject)：主题（很少使用）</li>
+<li>aud (audience)：token的受众（很少被使用）</li>
+</ul>
 <p>除了上面这些字段，还可以自定义私有字段，比如</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">	<span class="attr">"userId"</span>: <span class="string">"1101"</span>,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">	<span class="attr">"userName"</span>: <span class="string">"张三"</span>,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">	<span class="attr">"age"</span>: <span class="string">"23"</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
 <p>最后，用 Base64Url 将这个 JSON 对象编码后，作为 JWT 的第二部分</p>
+<blockquote>
 <p>Tip： JWT 默认不加密，任何人都可以读取，所以不要把敏感信息存放在这个部分，除非加密过。</p>
-<h3 id="Signature"><a href="#Signature" class="headerlink" title="Signature"></a>Signature</h3><p>使用 Header 指定的算法对 Header、Payload、密钥三部分进行签名生成的字符串，作为签名部分。<br>比如使用 HMAC SHA256 算法</p>
+</blockquote>
+<h3 id="Signature"><a href="#Signature" class="headerlink" title="Signature"></a>Signature</h3><p>使用 Header 指定的算法对 Header、Payload、密钥三部分进行签名，生成的字符串作为 JWT 的第三部分。<br>比如使用 HMAC SHA256 算法进行签名：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">HMACSHA256( </span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">	Base64Url.encode(header) + &quot;.&quot; + Base64Url.encode(payload),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">	secret</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">)</span></pre></td></tr></table></figure>
-<p>签名被用来验证数据是否被篡改，并且如果 token 使用了私钥进行签名，那么签名还可以验证 JWT 的发送者身份。</p>
+<p>签名可以用来验证数据是否被篡改，而且如果 token 使用私钥进行了签名，那么该签名还可以验证 JWT 发送者的身份。</p>
 <h2 id="怎么使用-JWT-？"><a href="#怎么使用-JWT-？" class="headerlink" title="怎么使用 JWT ？"></a>怎么使用 JWT ？</h2><p>客户端收到服务器返回的 JWT，可以储存在 Cookie 里面，也可以储存在 localStorage。</p>
-<p>此后，客户端每次请求服务器，都要带上这个 JWT。可以把它放在 Cookie 里面自动发送，但是这样并不能跨域，所以更好的做法是放在 HTTP 请求的头信息 <code>Authorization</code> 字段里面。</p>
+<p>此后，客户端每次请求服务器，都要带上这个 JWT。所以可以把它放在 Cookie 里面自动发送，但是这样并不能跨域，所以更好的做法是放在 HTTP 请求的头信息 <code>Authorization</code> 字段里面。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">Authorization: Bearer &lt;token&gt;</span></pre></td></tr></table></figure>
 
 <p>另一种做法是，跨域的时候，JWT 就放在 POST 请求的数据体里面。</p>
 <h2 id="JWT-的特点"><a href="#JWT-的特点" class="headerlink" title="JWT 的特点"></a>JWT 的特点</h2><ol>
-<li><p>JWT 默认是不加密，但也是可以加密的。生成原始 Token 以后，可以用密钥再加密一次。</p>
-</li>
-<li><p>JWT 不加密的情况下，不能将秘密数据写入 JWT。</p>
-</li>
-<li><p>JWT 不仅可以用于认证，也可以用于交换信息。有效使用 JWT，可以降低服务器查询数据库的次数。</p>
-</li>
-<li><p>JWT 的最大缺点是，由于服务器不保存 session 状态，因此无法在使用过程中废止某个 token，或者更改 token 的权限。也就是说，一旦 JWT 签发了，在到期之前就会始终有效，除非服务器部署额外的逻辑。</p>
-</li>
-<li><p>JWT 本身包含了认证信息，一旦泄露，任何人都可以获得该令牌的所有权限。为了减少盗用，JWT 的有效期应该设置得比较短。对于一些比较重要的权限，使用时应该再次对用户进行认证。</p>
-</li>
-<li><p>为了减少盗用，JWT 不应该使用 HTTP 协议明码传输，要使用 HTTPS 协议传输。</p>
-</li>
+<li>JWT 默认是不加密，但也是可以加密的。生成原始 Token 以后，可以用密钥再加密一次</li>
+<li>JWT 不加密的情况下，不能将敏感数据写入 JWT</li>
+<li>JWT 不仅可以用于认证，也可以用于交换信息</li>
+<li>JWT 的最大缺点是，由于服务器不保存 session 状态，因此无法在使用过程中废止某个 token，或者更改 token 的权限。也就是说，一旦签发了 JWT ，在到期之前就会始终有效</li>
+<li>JWT 本身包含了认证信息，一旦泄露，任何人都可以获得该令牌的所有权限。为了减少盗用，JWT 的有效期应该设置得比较短。对于一些比较重要的权限，使用时应该再次对用户进行认证。</li>
+<li>为了减少盗用，JWT 不应该使用 HTTP 协议明码传输，要使用 HTTPS 协议传输。</li>
 </ol>
 <h2 id="和-Session-Cookie-相比"><a href="#和-Session-Cookie-相比" class="headerlink" title="和 Session-Cookie 相比"></a>和 Session-Cookie 相比</h2><p>Session-Cookie 方式：客户端每次请求都使用 cookie 携带 session_id ，服务器根据 session_id 区分不同的会话</p>
 <p>JWT 方式：客户端每次请求都使用请求头携带 token，服务器根据 token 区分不同的用户</p>
+<p><a href="https://jwt.io/introduction/" target="_blank" rel="noopener">官网 JWT 介绍</a></p>
 
     </div>
 
@@ -318,7 +327,7 @@
       </div>
       
       <div style="display: inline-block;">
-        <img src="/blog/alipay-reward-image.jpg" alt="LiuChuanWei 支付宝">
+        <img src="/blog/weixinpay-reward-image.jpg" alt="LiuChuanWei 支付宝">
         <p>支付宝</p>
       </div>
 
@@ -328,7 +337,7 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/%E7%99%BB%E5%BD%95/" rel="tag"># 登录</a>
+              <a href="/tags/JWT/" rel="tag"># JWT</a>
           </div>
 
         
@@ -340,7 +349,10 @@
     <a href="/2019/12/06/210-Java/Spring/Spring%E6%B3%A8%E8%A7%A3%EF%BC%9AInitBinder/" rel="prev" title="Spring注解：InitBinder">
       <i class="fa fa-chevron-left"></i> Spring注解：InitBinder
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2019/12/11/210-Java/JavaSE/JWT(%E4%BA%8C)%EF%BC%9AJava%E4%B8%AD%E4%BD%BF%E7%94%A8JWT/" rel="next" title="JWT(二)：Java中使用JWT">
+      JWT(二)：Java中使用JWT <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -384,6 +396,8 @@
 
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="LiuChuanWei"
+      src="/blog/avatar.jpg">
   <p class="site-author-name" itemprop="name">LiuChuanWei</p>
   <div class="site-description" itemprop="description"></div>
 </div>
@@ -392,7 +406,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-count">43</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
