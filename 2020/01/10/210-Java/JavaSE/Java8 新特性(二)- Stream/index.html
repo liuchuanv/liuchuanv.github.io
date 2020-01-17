@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://liuchuanv.github.io').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.6.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="Stream 用来处理集合数据的，通过 stream 操作可以实现 SQL 的拥有的大部分查询功能  Java8 API 官方文档   下面借助例子，演示 stream 操作 Java userList 列表 1private List&amp;lt;User&amp;gt; userList &#x3D; Arrays.asList(2    new User(101, &quot;小明&quot;, 10, &quot;男&quot;, &quot;青海省&quot;, &quot;西宁">
+<meta name="keywords" content="Java8">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java8 新特性(二)- Stream">
+<meta property="og:url" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;2020&#x2F;01&#x2F;10&#x2F;210-Java&#x2F;JavaSE&#x2F;Java8%20%E6%96%B0%E7%89%B9%E6%80%A7(%E4%BA%8C)-%20Stream&#x2F;index.html">
+<meta property="og:site_name" content="代码无难事">
+<meta property="og:description" content="Stream 用来处理集合数据的，通过 stream 操作可以实现 SQL 的拥有的大部分查询功能  Java8 API 官方文档   下面借助例子，演示 stream 操作 Java userList 列表 1private List&amp;lt;User&amp;gt; userList &#x3D; Arrays.asList(2    new User(101, &quot;小明&quot;, 10, &quot;男&quot;, &quot;青海省&quot;, &quot;西宁">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-01-16T03:48:09.476Z">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://liuchuanv.github.io/2020/01/10/210-Java/JavaSE/Java8%20%E6%96%B0%E7%89%B9%E6%80%A7(%E4%BA%8C)-%20Stream/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>Java8 新特性(二)- Stream | 代码无难事</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">代码无难事</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">代码无难事，只怕有心猿</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">30</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">27</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">50</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://liuchuanv.github.io/2020/01/10/210-Java/JavaSE/Java8%20%E6%96%B0%E7%89%B9%E6%80%A7(%E4%BA%8C)-%20Stream/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/avatar.jpg">
+      <meta itemprop="name" content="LiuChuanWei">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="代码无难事">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java8 新特性(二)- Stream
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-01-10 00:00:00" itemprop="dateCreated datePublished" datetime="2020-01-10T00:00:00Z">2020-01-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-01-16 03:48:09" itemprop="dateModified" datetime="2020-01-16T03:48:09Z">2020-01-16</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/JavaSE/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaSE</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Stream 用来处理集合数据的，通过 stream 操作可以实现 SQL 的拥有的大部分查询功能</p>
+<blockquote>
+<p><a href="https://docs.oracle.com/javase/8/docs/api/" target="_blank" rel="noopener">Java8 API 官方文档</a> </p>
+</blockquote>
+<p>下面借助例子，演示 stream 操作</p>
+<p>Java userList 列表</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> List&lt;User&gt; userList = Arrays.asList(</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">new</span> User(<span class="number">101</span>, <span class="string">"小明"</span>, <span class="number">10</span>, <span class="string">"男"</span>, <span class="string">"青海省"</span>, <span class="string">"西宁市"</span>),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">new</span> User(<span class="number">102</span>, <span class="string">"小青"</span>, <span class="number">12</span>, <span class="string">"女"</span>, <span class="string">"宁夏回族自治区"</span>, <span class="string">"银川市"</span>),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">new</span> User(<span class="number">103</span>, <span class="string">"小海"</span>, <span class="number">8</span>, <span class="string">"男"</span>, <span class="string">"西藏自治区"</span>, <span class="string">"拉萨市"</span>),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">new</span> User(<span class="number">108</span>, <span class="string">"阿刁"</span>, <span class="number">18</span>, <span class="string">"女"</span>, <span class="string">"西藏自治区"</span>, <span class="string">"拉萨市"</span>),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">new</span> User(<span class="number">104</span>, <span class="string">"小阳"</span>, <span class="number">9</span>, <span class="string">"女"</span>, <span class="string">"新疆维吾尔自治区"</span>, <span class="string">"乌鲁木齐市"</span>),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">new</span> User(<span class="number">105</span>, <span class="string">"小强"</span>, <span class="number">14</span>, <span class="string">"男"</span>, <span class="string">"陕西省"</span>, <span class="string">"西安市"</span>),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">new</span> User(<span class="number">106</span>, <span class="string">"小帅"</span>, <span class="number">15</span>, <span class="string">"男"</span>, <span class="string">"河北省"</span>, <span class="string">"石家庄市"</span>),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">new</span> User(<span class="number">107</span>, <span class="string">"小云"</span>, <span class="number">15</span>, <span class="string">"女"</span>, <span class="string">"河北省"</span>, <span class="string">"石家庄市"</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">);</span></pre></td></tr></table></figure>
+
+<p>MySQL user 表数据</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> <span class="string">`user`</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`user`</span>  (</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">  <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">11</span>) PRIMARY <span class="keyword">KEY</span>,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">  <span class="string">`name`</span> <span class="built_in">varchar</span>(<span class="number">20</span>),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">  <span class="string">`age`</span> <span class="built_in">int</span>(<span class="number">2</span>),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">  <span class="string">`gender`</span> <span class="built_in">varchar</span>(<span class="number">10</span>),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">  <span class="string">`province`</span> <span class="built_in">varchar</span>(<span class="number">100</span>),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">  <span class="string">`city`</span> <span class="built_in">varchar</span>(<span class="number">100</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">) ;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`user`</span> <span class="keyword">VALUES</span> (<span class="number">101</span>, <span class="string">'小明'</span>, <span class="number">10</span>, <span class="string">'男'</span>, <span class="string">'青海省'</span>, <span class="string">'西宁市'</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`user`</span> <span class="keyword">VALUES</span> (<span class="number">102</span>, <span class="string">'小青'</span>, <span class="number">12</span>, <span class="string">'女'</span>, <span class="string">'宁夏回族自治区'</span>, <span class="string">'银川市'</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`user`</span> <span class="keyword">VALUES</span> (<span class="number">103</span>, <span class="string">'小海'</span>, <span class="number">8</span>, <span class="string">'男'</span>, <span class="string">'西藏自治区'</span>, <span class="string">'拉萨市'</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`user`</span> <span class="keyword">VALUES</span> (<span class="number">104</span>, <span class="string">'小阳'</span>, <span class="number">9</span>, <span class="string">'女'</span>, <span class="string">'新疆维吾尔自治区'</span>, <span class="string">'乌鲁木齐市'</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`user`</span> <span class="keyword">VALUES</span> (<span class="number">105</span>, <span class="string">'小强'</span>, <span class="number">14</span>, <span class="string">'男'</span>, <span class="string">'陕西省'</span>, <span class="string">'西安市'</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`user`</span> <span class="keyword">VALUES</span> (<span class="number">106</span>, <span class="string">'小帅'</span>, <span class="number">15</span>, <span class="string">'男'</span>, <span class="string">'河北省'</span>, <span class="string">'石家庄市'</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`user`</span> <span class="keyword">VALUES</span> (<span class="number">107</span>, <span class="string">'小云'</span>, <span class="number">15</span>, <span class="string">'女'</span>, <span class="string">'河北省'</span>, <span class="string">'石家庄市'</span>);</span></pre></td></tr></table></figure>
+
+
+
+<h3 id="查询字段-select-map"><a href="#查询字段-select-map" class="headerlink" title="查询字段 select - map"></a>查询字段 select - map</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// select id from user</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">	.map(e -&gt; e.getId())</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">	.forEach(System.out::println);</span></pre></td></tr></table></figure>
+
+<p><em>至于如何实现 <code>select id, name from user</code> 查询多字段在下面 collector 收集器会详细讲解</em></p>
+<h3 id="条件-where-filter"><a href="#条件-where-filter" class="headerlink" title="条件 where - filter"></a>条件 where - filter</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// select * from user where age&lt;10</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">        .filter(e-&gt; e.getAge() &lt; <span class="number">10</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">        .forEach(System.out::println);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// select * from user where age&lt;10 and gender='男'</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">        .filter(e-&gt;e.getAge() &lt; <span class="number">10</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">        .filter(e-&gt;e.getGender()==<span class="string">"男"</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">        .forEach(System.out::println);</span></pre></td></tr></table></figure>
+
+<h3 id="最值、总和、数量、均值-max-min-sum-count-average"><a href="#最值、总和、数量、均值-max-min-sum-count-average" class="headerlink" title="最值、总和、数量、均值(max, min, sum, count, average)"></a>最值、总和、数量、均值(max, min, sum, count, average)</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// select max(age), min(age), sum(age), count(age), avg(age) from user</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// max</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">Optional&lt;Integer&gt; maxAge = userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">                                .map(e -&gt; e.getAge())</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">                                .max(Comparator.comparingInt(x -&gt; x));</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 等同于</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// Optional&lt;Integer&gt; maxAge =  userList.stream()</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"><span class="comment">//	.map(e -&gt; e.getAge())</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line"><span class="comment">//	.max((x, y) -&gt; x-y);</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// min</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">Optional&lt;Integer&gt; minAge = userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">                                .map(e -&gt; e.getAge())</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">                                .min(Comparator.comparingInt(x -&gt; x));</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// sum</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">Optional&lt;Integer&gt; sumAge = userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">                                .map(e -&gt; e.getAge())</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">                                .reduce((e, u) -&gt; e + u);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// count</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">long</span> count = userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line">                .map(e -&gt; e.getAge())</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line">                .count();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 平均值=总和/数量</span></span></pre></td></tr></table></figure>
+
+<h3 id="排序-order-by-sorted"><a href="#排序-order-by-sorted" class="headerlink" title="排序 order by - sorted"></a>排序 order by - sorted</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// select * from user order by age</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">        .sorted(Comparator.comparingInt(User::getAge))</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">        .forEach(System.out::println);</span></pre></td></tr></table></figure>
+
+<h3 id="分页-limit-skip、limit"><a href="#分页-limit-skip、limit" class="headerlink" title="分页 limit - skip、limit"></a>分页 limit - skip、limit</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// select * from user limit 5</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">        .limit(<span class="number">5</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">        .forEach(System.out::println);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// select * from user limit 5, 5</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">        .skip(<span class="number">5</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">        .limit(<span class="number">5</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">        .forEach(System.out::println);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// select * from user order by age limit 1</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">        .sorted(Comparator.comparingInt(User::getAge))</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">        .limit(<span class="number">1</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">        .forEach(System.out::println);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 或者</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">Optional&lt;User&gt; minAgeUser = userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line">                                .sorted(Comparator.comparingInt(User::getAge))</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line">                                .findFirst();</span></pre></td></tr></table></figure>
+
+<h3 id="是否存在-exists-anymatch"><a href="#是否存在-exists-anymatch" class="headerlink" title="是否存在 exists - anymatch"></a>是否存在 exists - anymatch</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// select exists(select * from user where name='小海')</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 有没有名字叫“小海”的用户</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">boolean</span> exists0 = userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">						.anyMatch(e -&gt; e.getName().equals(<span class="string">"小海"</span>));</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// select not exists(select * from user where name='小海')</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 是不是没有名字叫“小海”的用户</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">boolean</span> exists1 = userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">						.noneMatch(e -&gt; e.getName().equals(<span class="string">"小海"</span>));</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 是不是所有用户年龄都小于10岁</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">boolean</span> exists2 = userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">						.allMatch(e -&gt; e.getAge() &lt; <span class="number">10</span>);</span></pre></td></tr></table></figure>
+
+
+
+<h3 id="收集操作-collect"><a href="#收集操作-collect" class="headerlink" title="收集操作 collect"></a>收集操作 collect</h3><p>收集操作就是遍历 stream 中的元素，并进行累加处理，即归约 reduction</p>
+<p><strong><a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html#Reduction" target="_blank" rel="noopener">归约的定义</a>：</strong></p>
+<blockquote>
+<p>A <em>reduction</em> operation (also called a <em>fold</em>) takes a sequence of input elements and combines them into a single summary result by repeated application of a combining operation, such as finding the sum or maximum of a set of numbers, or accumulating elements into a list. </p>
+</blockquote>
+<p>前面提到的 <code>max()</code> <code>min()</code> <code>count()</code> <code>reduce()</code> 都属于 <em>reduction</em> operation</p>
+<p>但 <code>collect()</code> 又和前面这几种归约操作有所区别，它是 <strong>Mutable reduction 动态归约</strong> </p>
+<p><strong><a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html#MutableReduction" target="_blank" rel="noopener">动态归约的定义</a>：</strong></p>
+<blockquote>
+<p>A <em>mutable reduction operation</em> accumulates input elements into a mutable result container, such as a <code>Collection</code> or <code>StringBuilder</code>, as it processes the elements in the stream</p>
+</blockquote>
+<p>区别：动态归约将结果放进 <code>Collection</code> <code>StringBuilder</code> 这样的动态容器中，所以称为动态归约。</p>
+<p>Stream 接口提供了两个 collect() 方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">&lt;R&gt; <span class="function">R <span class="title">collect</span><span class="params">(Supplier&lt;R&gt; supplier,</span></span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="params">				BiConsumer&lt;R, ? <span class="keyword">super</span> T&gt; accumulator,</span></span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="params">				BiConsumer&lt;R, R&gt; combiner)</span></span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">&lt;R, A&gt; <span class="function">R <span class="title">collect</span><span class="params">(Collector&lt;? <span class="keyword">super</span> T, A, R&gt; collector)</span></span>;</span></pre></td></tr></table></figure>
+
+<p>我们只需理解了第一个方法，第二个方法就手到擒来了</p>
+<p>理解第一个 collect 方法，强烈建议阅读文档 <strong><a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html#MutableReduction" target="_blank" rel="noopener">动态归约的定义</a></strong>，下面只简单的介绍一下它</p>
+<p>三个参数：</p>
+<ul>
+<li>供给者 supplier：负责提供动态容器，例如 Collectors、StringBuilder</li>
+<li>累加器 accumulator：负责将流中的元素做累加处理</li>
+<li>合并者 combiner ：负责将两个容器的元素合并在一起</li>
+</ul>
+<blockquote>
+<p>在串行流中，combiner 根本没有执行，所以随便写点啥满足参数对象就行。<br><em>如果说串行流是单线程，那么并行流就是多线程了</em></p>
+</blockquote>
+<p>举个例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">    ArrayList&lt;String&gt; strings = <span class="keyword">new</span> ArrayList&lt;&gt;();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">for</span> (T element : stream) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">        strings.add(element.toString());</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 等同于</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">ArrayList&lt;String&gt; strings = stream.collect(() -&gt; <span class="keyword">new</span> ArrayList&lt;&gt;(),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">                                               (c, e) -&gt; c.add(e.toString()),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">                                               (c1, c2) -&gt; c1.addAll(c2));</span></pre></td></tr></table></figure>
+<p>与其传递三个参数这么麻烦，还不如直接传递一个对象呢！<br>这就是第二个 <code>collect()</code> 方法的由来，使用收集器 Collector 来替代三个参数</p>
+<p>实际上，我们一般不需要自己创建 Collector 对象，Java8 提供了一个 Collectors 类，专门提供收集器 Collector 对象。毕竟我们平时能够使用到的收集操作也就那几种：转为集合对象、分组、统计。</p>
+<p>下面以例子演示</p>
+<hr>
+<p><em>在初看 stream 操作的时候，我被什么创建、中间操作、终止操作、不会改变原对象给弄晕了，我根本不关心这些，我的第一想法是怎么将操作后的数据导出来，重新变成集合对象。</em></p>
+<h4 id="toCollection"><a href="#toCollection" class="headerlink" title="toCollection"></a>toCollection</h4><p>不使用收集器的情况下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">List&lt;User&gt; subUserList1 = userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">				.filter(e -&gt; e.getAge() &lt; <span class="number">10</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">				.filter(e -&gt; e.getGender() == <span class="string">"男"</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">				.collect(() -&gt; <span class="keyword">new</span> ArrayList&lt;&gt;(),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">						(c, e) -&gt; c.add(e),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">						(c1, c2) -&gt; c1.addAll(c2));</span></pre></td></tr></table></figure>
+
+<p><em>在 collect() 方法第二个参数累加器 accumulator <code>(c, e) -&gt; c.add(e)</code> 这里，对流中元素进行了遍历，所以可以把流中元素添加到任意的集合容器中，List、Set、Map 等等</em></p>
+<p>使用 Collectors 工具类提供的收集器：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// toList()</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">List&lt;User&gt; list = userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">				.filter(e -&gt; e.getAge() &lt; <span class="number">10</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">				.filter(e -&gt; e.getGender() == <span class="string">"男"</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">				.collect(Collectors.toList());</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// toSet()</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">Set&lt;User&gt; set = userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">				.filter(e -&gt; e.getAge() &lt; <span class="number">10</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">				.filter(e -&gt; e.getGender() == <span class="string">"男"</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">				.collect(Collectors.toSet());</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// toCollection()，想要返回什么容器，就 new 一个</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">ArrayList&lt;User&gt; collection = userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">				.filter(e -&gt; e.getAge() &lt; <span class="number">10</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">				.filter(e -&gt; e.getGender() == <span class="string">"男"</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">				.collect(Collectors.toCollection(</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">                    () -&gt; <span class="keyword">new</span> ArrayList&lt;&gt;()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line">                ));</span></pre></td></tr></table></figure>
+
+
+
+<p>这里插播一条新闻：<strong>如何将流转为数组？</strong></p>
+<p><strong><code>Stream</code></strong> 提供了方法 toArray()</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">Object[] toArray();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">&lt;A&gt; A[] toArray(IntFunction&lt;A[]&gt; generator);</span></pre></td></tr></table></figure>
+
+<p>小试牛刀：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">Object[] nameArray = userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">        .map(e -&gt; e.getName())</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">        .toArray();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">Arrays.stream(nameArray)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">    	.forEach(System.out::println);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 转为 User 对象数组</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">User[] users = userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">        .filter(e -&gt; e.getGender() == <span class="string">"女"</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">        .toArray(User[]::<span class="keyword">new</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">Arrays.stream(users)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">    	.forEach(System.out::println);</span></pre></td></tr></table></figure>
+
+
+
+<h4 id="toStringBuilder"><a href="#toStringBuilder" class="headerlink" title="toStringBuilder"></a>toStringBuilder</h4><p>不使用收集器的情况下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">StringBuilder joinName = userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">				.map(e -&gt; e.getName())</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">				.collect(StringBuilder::<span class="keyword">new</span>,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">						(s, e) -&gt;  s = s.length() &gt; <span class="number">0</span> ? s.append(<span class="string">"-"</span> + e) : s.append(e),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">						(s1, s2) -&gt; s1.append(s2)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">				);</span></pre></td></tr></table></figure>
+
+<p><em>谁能告诉我在Java中怎么单独使用三元运算符？<code>s = s.length() &gt; 0 ? s.append(&quot;-&quot; + e) : s.append(e)</code> 我想把 <code>s =</code> 省略掉，但 Java 中不行</em></p>
+<p>使用 <code>Collectors</code> 类提供的收集器：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">String joinName1 = userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">				.map(e -&gt; e.getName())</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">				.collect(Collectors.joining());</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">String joinName2 = userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">                .map(e -&gt; e.getName())</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">                .collect(Collectors.joining(<span class="string">"-"</span>));</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">String joinName3 = userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">                .map(e -&gt; e.getName())</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">                .collect(Collectors.joining(<span class="string">"-"</span>, <span class="string">"["</span>, <span class="string">"]"</span>));</span></pre></td></tr></table></figure>
+
+<p>至于 Collectors.joining() 参数分别代表什么含义，看一下它们的参数名称，就明白了</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> Collector&lt;CharSequence, ?, String&gt; joining(CharSequence delimiter,	<span class="comment">// 分隔符</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">                                                             CharSequence prefix,	<span class="comment">// 前缀</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">                                                             CharSequence suffix) 	<span class="comment">// 后缀</span></span></pre></td></tr></table></figure>
+
+
+
+<h4 id="toMap"><a href="#toMap" class="headerlink" title="toMap"></a>toMap</h4><p>在 Collectors 中一共有3个 <code>toMap()</code>,它们用来处理不同的问题</p>
+<p><strong>两个参数的 toMap</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">Collector&lt;T, ?, Map&lt;K,U&gt;&gt; toMap(Function&lt;? <span class="keyword">super</span> T, ? extends K&gt; keyMapper,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">                                   Function&lt;? <span class="keyword">super</span> T, ? extends U&gt; valueMapper) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">return</span> toMap(keyMapper, valueMapper, throwingMerger(), HashMap::<span class="keyword">new</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">   &#125;</span></pre></td></tr></table></figure>
+
+<blockquote>
+<p>参数 <code>keyMapper</code> 用来获取key；<code>valueMapper</code> 用来获取 value </p>
+<p>它的内部调用了四个参数的 toMap() 方法</p>
+</blockquote>
+<p>例子</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">Map&lt;Integer, User&gt; map1 = userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">    .collect(Collectors.toMap(e -&gt; e.getId(), Function.identity()));</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">System.out.println(map1);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// Function.identity() 等价于 e -&gt; e</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// select id, name, gender from user</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">Map&lt;Integer, Map&lt;String, Object&gt;&gt; map2 = userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">    .collect(Collectors.toMap(e -&gt; e.getId(), e -&gt; &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">        Map&lt;String, Object&gt; map = <span class="keyword">new</span> HashMap&lt;&gt;();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">        map.put(<span class="string">"gender"</span>, e.getGender());</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">        map.put(<span class="string">"name"</span>, e.getName());</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">        map.put(<span class="string">"id"</span>, e.getId());</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">return</span> map;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">    &#125;));</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">System.out.println(map2);</span></pre></td></tr></table></figure>
+
+
+
+<p>你：如果 key 冲突了咋办？<br>Java8：你想咋办就咋办</p>
+<p><strong>三个参数的 toMap</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">Collector&lt;T, ?, Map&lt;K,U&gt;&gt; toMap(Function&lt;? <span class="keyword">super</span> T, ? extends K&gt; keyMapper,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">                                    Function&lt;? <span class="keyword">super</span> T, ? extends U&gt; valueMapper,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">                                    BinaryOperator&lt;U&gt; mergeFunction) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">return</span> toMap(keyMapper, valueMapper, mergeFunction, HashMap::<span class="keyword">new</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr></table></figure>
+
+<blockquote>
+<p>第三个参数 <code>mergeFunction</code> 就是用来处理 key 键冲突的</p>
+<p>内部也是调用了四个参数的 toMap() 方法</p>
+</blockquote>
+<p>例子</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 如果 key 冲突，那么将冲突的 value 值拼接在一起</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">Map&lt;String, String&gt; map3 = userList.parallelStream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">                                    .collect(Collectors.toMap(</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">                                        e -&gt; e.getGender(), </span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">                                        e -&gt; e.getName(), </span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">                                        (o1, o2) -&gt; o1 + <span class="string">", "</span> + o2</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">                                        )</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">                                    );</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">System.out.println(map3);</span></pre></td></tr></table></figure>
+
+
+
+<p>你：我想自己 new  一个 Map 对象</p>
+<p><strong>四个参数的 toMap</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">Collector&lt;T, ?, M&gt; toMap(Function&lt;? <span class="keyword">super</span> T, ? extends K&gt; keyMapper,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">                            Function&lt;? <span class="keyword">super</span> T, ? extends U&gt; valueMapper,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">                            BinaryOperator&lt;U&gt; mergeFunction,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">                            Supplier&lt;M&gt; mapSupplier)</span></pre></td></tr></table></figure>
+
+<blockquote>
+<p>参数 <code>mapSupplier</code> 用来提供返回容器</p>
+</blockquote>
+<p>例子</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">LinkedHashMap&lt;String, String&gt; map4 = userList.parallelStream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">				.collect(Collectors.toMap(</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">                    				e -&gt; e.getGender(), </span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">                    				e -&gt; e.getName(), </span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">                    				(o1, o2) -&gt; o1 + <span class="string">", "</span> + o2, </span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">                    				LinkedHashMap::<span class="keyword">new</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">                				)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">                		);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">System.out.println(map4);</span></pre></td></tr></table></figure>
+
+
+
+<h4 id="reducing"><a href="#reducing" class="headerlink" title="reducing"></a>reducing</h4><p><strong>单参数和两参数的 reducing()</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">Collector&lt;T, ?, Optional&lt;T&gt;&gt; reducing(BinaryOperator&lt;T&gt; op)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">Collector&lt;T, ?, U&gt; reducing(U identity, Function&lt;? <span class="keyword">super</span> T,? extends U&gt; mapper, BinaryOperator&lt;U&gt; op)</span></pre></td></tr></table></figure>
+<p>以例子具体解释这两个方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">Optional&lt;String&gt; names1 = userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">				.map(User::getName)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">				.collect(Collectors.reducing((e1, e2) -&gt; e1 + <span class="string">","</span> + e2));</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">System.out.println(names1.get());</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 等同于</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">String names2 = userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">    					.collect(Collectors.reducing(</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">                                <span class="string">""</span>, </span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">                                (e) -&gt; e.getName(), </span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">                                (e1, e2) -&gt; e1 + <span class="string">","</span> + e2)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">                   	 	);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">System.out.println(names2);</span></pre></td></tr></table></figure>
+<p>输出结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">小明,小青,小海,阿刁,小阳,小强,小帅,小云</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">,小明,小青,小海,阿刁,小阳,小强,小帅,小云</span></pre></td></tr></table></figure>
+<blockquote>
+<p>参数 <code>identity</code> 表示返回结果的初始值</p>
+</blockquote>
+<p><strong>三参数的 reducing()</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">reducing(U identity, Function&lt;? <span class="keyword">super</span> T,? extends U&gt; mapper, BinaryOperator&lt;U&gt; op)</span></pre></td></tr></table></figure>
+<p><code>identity</code> 是初始值，<code>mapper</code> 会对元素先进行一次处理，然后 <code>op</code>  对元素进行归约操作</p>
+<blockquote>
+<p>注意： 返回类型要和参数 <code>identity</code> 的一致。<br>你也许会纳闷，为什么有的返回一个 <code>Optional&lt;String&gt;</code> 类型数据，而有的就返回了 <code>String</code><br>因为含有参数 <code>identity</code> 的  reduing 方法中返回值有初始值，也就是 identity，所以不会出现空的情况</p>
+</blockquote>
+<p><strong>下面Collectors 提供的一些常用归约收集器</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// minBy、maxBy</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">Optional&lt;User&gt; minAgeUser = userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">				.collect(Collectors.minBy((o1, o2) -&gt; o1.getAge() - o2.getAge()));</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// counting</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">Long count = userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">    .collect(Collectors.counting());</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// summingInt、summingLong、summingDouble、</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">Integer sumAge = userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">    .collect(Collectors.summingInt(User::getAge));</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// averagingInt、averagingLong、averagingDouble</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 平均值内部是总值/数量，所以返回值是浮点数 dobule</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">Double avgAge = userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">    .collect(Collectors.averagingInt(User::getAge));</span></pre></td></tr></table></figure>
+
+<p>你也许觉得每次都要执行一遍 minBy、maxBy、counting、summingXxx、averagingXxx 这些太麻烦了，有没有一次执行就获取所有这些方法结果？<br>有的。这就是 <code>summarizingXxx</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">Collector&lt;T, ?, IntSummaryStatistics&gt; summarizingInt(ToIntFunction&lt;? <span class="keyword">super</span> T&gt; mapper)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">Collector&lt;T, ?, LongSummaryStatistics&gt; summarizingLong(ToLongFunction&lt;? <span class="keyword">super</span> T&gt; mapper)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">Collector&lt;T, ?, DoubleSummaryStatistics&gt; summarizingDouble(ToDoubleFunction&lt;? <span class="keyword">super</span> T&gt; mapper)</span></pre></td></tr></table></figure>
+
+<p>这里不演示了，实际上你看一下 <code>XxxSummaryStatistics</code> 这些类就明白了，比如</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">IntSummaryStatistics</span> <span class="keyword">implements</span> <span class="title">IntConsumer</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> count;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> sum;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> min = Integer.MAX_VALUE;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> max = Integer.MIN_VALUE;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">  	...</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+
+
+<h4 id="group-by"><a href="#group-by" class="headerlink" title="group by"></a>group by</h4><p>最最激动人心的时候到了，我们要使用分组了！！！</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">Map&lt;String, List&lt;User&gt;&gt; map = userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">				.collect(Collectors.groupingBy(User::getGender));</span></pre></td></tr></table></figure>
+
+<p>SQL 中的 <code>group by</code> 结果集中只能包含分组字段和聚合函数计算结果，这段代码比它更加全面</p>
+<p>我们使用如下语句输出结果</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">map.keySet().stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">        .forEach((e) -&gt; &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">        	System.out.println(e + <span class="string">"="</span> + map.get(e));</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">        &#125;);</span></pre></td></tr></table></figure>
+
+<p>显示结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">女&#x3D;[User&#123;id&#x3D;102, name&#x3D;&#39;小青&#39;, age&#x3D;12, gender&#x3D;&#39;女&#39;, province&#x3D;&#39;宁夏回族自治区&#39;, city&#x3D;&#39;银川市&#39;&#125;, User&#123;id&#x3D;108, name&#x3D;&#39;阿刁&#39;, age&#x3D;18, gender&#x3D;&#39;女&#39;, province&#x3D;&#39;西藏自治区&#39;, city&#x3D;&#39;拉萨市&#39;&#125;, User&#123;id&#x3D;104, name&#x3D;&#39;小阳&#39;, age&#x3D;9, gender&#x3D;&#39;女&#39;, province&#x3D;&#39;新疆维吾尔自治区&#39;, city&#x3D;&#39;乌鲁木齐市&#39;&#125;, User&#123;id&#x3D;107, name&#x3D;&#39;小云&#39;, age&#x3D;15, gender&#x3D;&#39;女&#39;, province&#x3D;&#39;河北省&#39;, city&#x3D;&#39;石家庄市&#39;&#125;]</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">男&#x3D;[User&#123;id&#x3D;101, name&#x3D;&#39;小明&#39;, age&#x3D;10, gender&#x3D;&#39;男&#39;, province&#x3D;&#39;青海省&#39;, city&#x3D;&#39;西宁市&#39;&#125;, User&#123;id&#x3D;103, name&#x3D;&#39;小海&#39;, age&#x3D;8, gender&#x3D;&#39;男&#39;, province&#x3D;&#39;西藏自治区&#39;, city&#x3D;&#39;拉萨市&#39;&#125;, User&#123;id&#x3D;105, name&#x3D;&#39;小强&#39;, age&#x3D;14, gender&#x3D;&#39;男&#39;, province&#x3D;&#39;陕西省&#39;, city&#x3D;&#39;西安市&#39;&#125;, User&#123;id&#x3D;106, name&#x3D;&#39;小帅&#39;, age&#x3D;15, gender&#x3D;&#39;男&#39;, province&#x3D;&#39;河北省&#39;, city&#x3D;&#39;石家庄市&#39;&#125;]</span></pre></td></tr></table></figure>
+
+<p>它真的分组了！！这是真正的分组</p>
+<p>那怎么对分组中的元素进行操作呢，像 SQL 那样？？</p>
+<p>完全不用担心，Collectors 提供了三个 groupBy 方法返回分组收集器</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">Collector&lt;T, ?, Map&lt;K, List&lt;T&gt;&gt;&gt; groupingBy(Function&lt;? <span class="keyword">super</span> T,? extends K&gt; classifier)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">    </span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">Collector&lt;T, ?, Map&lt;K, D&gt;&gt; groupingBy(Function&lt;? <span class="keyword">super</span> T,? extends K&gt; classifier, </span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">                                      Collector&lt;? <span class="keyword">super</span> T,A,D&gt; downstream)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">    </span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">Collector&lt;T, ?, M&gt; groupingBy(Function&lt;? <span class="keyword">super</span> T,? extends K&gt; classifier, </span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">                              Supplier&lt;M&gt; mapFactory, </span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">                              Collector&lt;? <span class="keyword">super</span> T,A,D&gt; downstream)</span></pre></td></tr></table></figure>
+
+<p>让我们放飞想象的翅膀，思考一下这几个参数分别有什么用。</p>
+<p>downstream ？有 down 就表示有 up。那么谁是 upstream，很明显是 <code>userList.stream</code>，那么 downstream 就是分组集合的流喽。猜测 downstream 收集器是对分组中的元素进行归约操作的，就像是分组 SQL 语句字段中的聚合操作一样。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// select gender, count(*) from user group by gender</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">Map&lt;String, Long&gt; map2 = userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">				.collect(Collectors.groupingBy(User::getGender, Collectors.counting()));</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">System.out.println(map2);</span></pre></td></tr></table></figure>
+
+<p>输出结果确实不出所料！这就是证明参数 <code>downstream</code>  确实是分组集合元素的收集器。</p>
+<p><code>Supplier&lt;M&gt; mapFactory</code> 这函数式接口方法不会有参数传入，所以不会操作集合元素；它只是返回一个变量。同志们，注意观察三个方法返回值，前二者都指定了 Map 作为归约操作的返回类型，而第三个要我们自己定义，使用 <code>mapFactory</code> 提供返回的数据容器</p>
+<p>两参数的 <code>groupingBy</code> 方法其实是调用了三参数的 <code>groupingBy</code> 方法（而单参数 <code>groupingBy</code> 调用了两参数的 <code>groupingBy</code>)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">Collector&lt;T, ?, Map&lt;K, D&gt;&gt; groupingBy(Function&lt;? <span class="keyword">super</span> T, ? extends K&gt; classifier,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">                                      Collector&lt;? <span class="keyword">super</span> T, A, D&gt; downstream) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> groupingBy(classifier, HashMap::<span class="keyword">new</span>, downstream);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+<p><code>groupingBy</code> 经常使用 <code>Collectors.mapping()</code> 处理分组集合</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">Map&lt;String, List&lt;Map&lt;String, Object&gt;&gt;&gt; map4 = userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">    .collect(Collectors.groupingBy(</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">        User::getGender,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">        Collectors.mapping(e -&gt; &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">            Map&lt;String, Object&gt; m = <span class="keyword">new</span> HashMap&lt;&gt;();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">            m.put(<span class="string">"name"</span>, e.getName());</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">            m.put(<span class="string">"id"</span>, e.getId());</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">            <span class="keyword">return</span> m;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">        &#125;, Collectors.toList())</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">    ));</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">System.out.println(map4);</span></pre></td></tr></table></figure>
+
+<p>输出结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">&#123;女&#x3D;[&#123;name&#x3D;小青, id&#x3D;102&#125;, &#123;name&#x3D;阿刁, id&#x3D;108&#125;, &#123;name&#x3D;小阳, id&#x3D;104&#125;, &#123;name&#x3D;小云, id&#x3D;107&#125;], 男&#x3D;[&#123;name&#x3D;小明, id&#x3D;101&#125;, &#123;name&#x3D;小海, id&#x3D;103&#125;, &#123;name&#x3D;小强, id&#x3D;105&#125;, &#123;name&#x3D;小帅, id&#x3D;106&#125;]&#125;</span></pre></td></tr></table></figure>
+
+
+
+<h4 id="partitionBy"><a href="#partitionBy" class="headerlink" title="partitionBy"></a>partitionBy</h4><p>实际上也是分组，只不过 partitionBy 是按照布尔值（真假）来分组</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">Collector&lt;T, ?, Map&lt;Boolean, List&lt;T&gt;&gt;&gt; partitioningBy(Predicate&lt;? <span class="keyword">super</span> T&gt; predicate) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> partitioningBy(predicate, toList());</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">Collector&lt;T, ?, Map&lt;Boolean, D&gt;&gt; partitioningBy(Predicate&lt;? <span class="keyword">super</span> T&gt; predicate,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">                                                    Collector&lt;? <span class="keyword">super</span> T, A, D&gt; downstream)</span></pre></td></tr></table></figure>
+
+<p>例子：大于10岁为一组，小于等于10的为一组</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">Map&lt;Boolean, List&lt;User&gt;&gt; map1 = userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">				.collect(Collectors.partitioningBy(e -&gt; e.getAge() &gt; <span class="number">10</span>));</span></pre></td></tr></table></figure>
+
+
+
+<p>例子：统计大于10岁的有多少人，小于等于10岁的有多少人</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">Map&lt;Boolean, Long&gt; map2 = userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">    		.collect(Collectors.partitioningBy(e -&gt; e.getAge() &gt; <span class="number">10</span>, Collectors.counting()));</span></pre></td></tr></table></figure>
+
+<p>第二个参数 <code>downstream</code> 用来处理分组集合</p>
+<h3 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h3><p>Java8 提供的 stream 几乎是穷尽了所有集合元素能有的操作，起码是穷尽了我脑海里对集合元素操作的所有想象</p>
+<p>这篇文章也列举了 stream 绝大部分的功能，尽量写得通俗易懂，但读者理解起来可能还是有模糊的地方，这时建议大家参考 <a href="https://docs.oracle.com/javase/8/docs/api/" target="_blank" rel="noopener">Java8 API 官方文档</a> ，多做几个 Demo 加深理解</p>
+<p><strong>不要过度使用</strong></p>
+<p>stream 是为了方便集合操作，简化代码而推出的，提升代码执行效率并不是它的目的。</p>
+<p>虽然，并行流会对代码的执行效率有较大的提升（尤其是数据量非常大的时候），但也依赖于计算机的CPU配置。</p>
+<p><strong>Stream 能实现的功能，for 循环都能实现，只是 Stream 代码一般比较简洁，可读性强。但在某些情况下，使用 for 循环要比 Stream 要简洁代码逻辑清晰</strong></p>
+<p>举个例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> List&lt;Order&gt; orderList = Arrays.asList(</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">		<span class="keyword">new</span> Order(<span class="number">103</span>),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">		<span class="keyword">new</span> Order(<span class="number">106</span>),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">		<span class="keyword">new</span> Order(<span class="number">107</span>),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">		<span class="keyword">new</span> Order(<span class="number">104</span>),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">		<span class="keyword">new</span> Order(<span class="number">102</span>),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">		<span class="keyword">new</span> Order(<span class="number">103</span>),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">		<span class="keyword">new</span> Order(<span class="number">102</span>),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">		<span class="keyword">new</span> Order(<span class="number">101</span>),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">		<span class="keyword">new</span> Order(<span class="number">104</span>),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">		<span class="keyword">new</span> Order(<span class="number">102</span>),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">		<span class="keyword">new</span> Order(<span class="number">105</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 现根据 userId 设置 Order 对象的 name 属性</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用 stream</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">List&lt;Order&gt; newOrderList = orderList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">			.map(o -&gt; userList.stream()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line">					.filter(u -&gt; u.getId() == o.getUserId())</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line">					.findFirst()</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line">					.map(u -&gt; &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line">						o.setUserName(u.getName());</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line">						<span class="keyword">return</span> o;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">24</span></pre></td><td class="code"><pre><span class="line">					&#125;)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">25</span></pre></td><td class="code"><pre><span class="line">					.orElse(o))</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">26</span></pre></td><td class="code"><pre><span class="line">			.collect(Collectors.toList());</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">27</span></pre></td><td class="code"><pre><span class="line">newOrderList.stream().forEach(System.out::println);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">28</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">29</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用 for 循环</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">30</span></pre></td><td class="code"><pre><span class="line">   <span class="keyword">for</span> (Order o : orderList) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">31</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">for</span> (User u : userList) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">32</span></pre></td><td class="code"><pre><span class="line">           <span class="keyword">if</span> (o.getUserId() == u.getId()) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">33</span></pre></td><td class="code"><pre><span class="line">               o.setUserName(u.getName());</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">34</span></pre></td><td class="code"><pre><span class="line">               <span class="keyword">break</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">35</span></pre></td><td class="code"><pre><span class="line">           &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">36</span></pre></td><td class="code"><pre><span class="line">       &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">37</span></pre></td><td class="code"><pre><span class="line">   &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">38</span></pre></td><td class="code"><pre><span class="line">   orderList.stream().forEach(System.out::println);</span></pre></td></tr></table></figure>
+
+<p>在这个例子中，使用 for 循环要比 使用 stream 干净利落的多，代码逻辑清晰简明，可读性也比 stream 好。</p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/blog/alipay-reward-image.jpg" alt="LiuChuanWei 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/blog/weixinpay-reward-image.jpg" alt="LiuChuanWei 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java8/" rel="tag"># Java8</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/01/06/210-Java/JavaSE/Java8%20%E6%96%B0%E7%89%B9%E6%80%A7(%E4%B8%80)-%20Lambda%20%E8%A1%A8%E8%BE%BE%E5%BC%8F/" rel="prev" title="Java8 新特性(一)- Lambda 表达式">
+      <i class="fa fa-chevron-left"></i> Java8 新特性(一)- Lambda 表达式
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/01/13/210-Java/JavaSE/Java8%20%E6%96%B0%E7%89%B9%E6%80%A7(%E4%B8%89)-%20%E6%97%A5%E6%9C%9F%E6%97%B6%E9%97%B4%E5%AF%B9%E8%B1%A1%E4%BB%A5%E5%8F%8A%E4%B8%80%E4%BA%9B%E5%85%B6%E4%BB%96%E7%89%B9%E6%80%A7/" rel="next" title="Java8 新特性(三) - 日期时间对象以及一些其他特性">
+      Java8 新特性(三) - 日期时间对象以及一些其他特性 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#查询字段-select-map"><span class="nav-number">1.</span> <span class="nav-text">查询字段 select - map</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#条件-where-filter"><span class="nav-number">2.</span> <span class="nav-text">条件 where - filter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#最值、总和、数量、均值-max-min-sum-count-average"><span class="nav-number">3.</span> <span class="nav-text">最值、总和、数量、均值(max, min, sum, count, average)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#排序-order-by-sorted"><span class="nav-number">4.</span> <span class="nav-text">排序 order by - sorted</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分页-limit-skip、limit"><span class="nav-number">5.</span> <span class="nav-text">分页 limit - skip、limit</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#是否存在-exists-anymatch"><span class="nav-number">6.</span> <span class="nav-text">是否存在 exists - anymatch</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#收集操作-collect"><span class="nav-number">7.</span> <span class="nav-text">收集操作 collect</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#toCollection"><span class="nav-number">7.1.</span> <span class="nav-text">toCollection</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#toStringBuilder"><span class="nav-number">7.2.</span> <span class="nav-text">toStringBuilder</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#toMap"><span class="nav-number">7.3.</span> <span class="nav-text">toMap</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#reducing"><span class="nav-number">7.4.</span> <span class="nav-text">reducing</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#group-by"><span class="nav-number">7.5.</span> <span class="nav-text">group by</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#partitionBy"><span class="nav-number">7.6.</span> <span class="nav-text">partitionBy</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#结语"><span class="nav-number">8.</span> <span class="nav-text">结语</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="LiuChuanWei"
+      src="/blog/avatar.jpg">
+  <p class="site-author-name" itemprop="name">LiuChuanWei</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">50</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">30</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/liuchuanv" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;liuchuanv" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiuChuanWei</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme: 'forest',
+      logLevel: 3,
+      flowchart: { curve: 'linear' },
+      gantt: { axisFormat: '%m/%d/%Y' },
+      sequence: { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+</body>
+</html>

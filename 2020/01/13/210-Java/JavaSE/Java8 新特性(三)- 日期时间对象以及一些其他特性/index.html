@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://liuchuanv.github.io').hostname,
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.6.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"hide","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="日期时间对象关于日期时间的操作可以分为两种：  转换：与字符串的互相转换，与时间戳的互相转换 计算：计算两个时间点之间的间隔、时间点与时间段的计算（计算下周N、下个月D日、去年M月D日等等）  Java8 提供了三个类：LocalDate、LocalTime、LocalDateTime，它们的形式如 2020-01-01、12:30:00、2020-01-01 12:30:00 创建对象获取类对象">
+<meta name="keywords" content="Java8 新特性">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java8 新特性(三) - 日期时间对象以及一些其他特性">
+<meta property="og:url" content="https:&#x2F;&#x2F;liuchuanv.github.io&#x2F;2020&#x2F;01&#x2F;13&#x2F;210-Java&#x2F;JavaSE&#x2F;Java8%20%E6%96%B0%E7%89%B9%E6%80%A7(%E4%B8%89)-%20%E6%97%A5%E6%9C%9F%E6%97%B6%E9%97%B4%E5%AF%B9%E8%B1%A1%E4%BB%A5%E5%8F%8A%E4%B8%80%E4%BA%9B%E5%85%B6%E4%BB%96%E7%89%B9%E6%80%A7&#x2F;index.html">
+<meta property="og:site_name" content="代码无难事">
+<meta property="og:description" content="日期时间对象关于日期时间的操作可以分为两种：  转换：与字符串的互相转换，与时间戳的互相转换 计算：计算两个时间点之间的间隔、时间点与时间段的计算（计算下周N、下个月D日、去年M月D日等等）  Java8 提供了三个类：LocalDate、LocalTime、LocalDateTime，它们的形式如 2020-01-01、12:30:00、2020-01-01 12:30:00 创建对象获取类对象">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-01-17T02:50:56.756Z">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://liuchuanv.github.io/2020/01/13/210-Java/JavaSE/Java8%20%E6%96%B0%E7%89%B9%E6%80%A7(%E4%B8%89)-%20%E6%97%A5%E6%9C%9F%E6%97%B6%E9%97%B4%E5%AF%B9%E8%B1%A1%E4%BB%A5%E5%8F%8A%E4%B8%80%E4%BA%9B%E5%85%B6%E4%BB%96%E7%89%B9%E6%80%A7/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>Java8 新特性(三) - 日期时间对象以及一些其他特性 | 代码无难事</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">代码无难事</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">代码无难事，只怕有心猿</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">30</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">27</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">50</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://liuchuanv.github.io/2020/01/13/210-Java/JavaSE/Java8%20%E6%96%B0%E7%89%B9%E6%80%A7(%E4%B8%89)-%20%E6%97%A5%E6%9C%9F%E6%97%B6%E9%97%B4%E5%AF%B9%E8%B1%A1%E4%BB%A5%E5%8F%8A%E4%B8%80%E4%BA%9B%E5%85%B6%E4%BB%96%E7%89%B9%E6%80%A7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/avatar.jpg">
+      <meta itemprop="name" content="LiuChuanWei">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="代码无难事">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java8 新特性(三) - 日期时间对象以及一些其他特性
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-01-13 00:00:00" itemprop="dateCreated datePublished" datetime="2020-01-13T00:00:00Z">2020-01-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-01-17 02:50:56" itemprop="dateModified" datetime="2020-01-17T02:50:56Z">2020-01-17</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/JavaSe/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaSe</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="日期时间对象"><a href="#日期时间对象" class="headerlink" title="日期时间对象"></a>日期时间对象</h2><p>关于日期时间的操作可以分为两种：</p>
+<ul>
+<li>转换：与字符串的互相转换，与时间戳的互相转换</li>
+<li>计算：计算两个时间点之间的间隔、时间点与时间段的计算（计算下周N、下个月D日、去年M月D日等等）</li>
+</ul>
+<p>Java8 提供了三个类：<code>LocalDate</code>、<code>LocalTime</code>、<code>LocalDateTime</code>，它们的形式如 <code>2020-01-01</code>、<code>12:30:00</code>、<code>2020-01-01 12:30:00</code></p>
+<h3 id="创建对象"><a href="#创建对象" class="headerlink" title="创建对象"></a>创建对象</h3><p>获取类对象的方法非常非常简单</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">LocalDate now = LocalDate.now();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">LocalDate ld = LocalDate.of(<span class="number">2019</span>, <span class="number">1</span>, <span class="number">1</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取年月日</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">now.getYear();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">now.getMonthValue();	<span class="comment">// 如果你调用了 now.getMonth() ，那么它将返回给你一个大写的英文月份单词</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">now.getDayOfMonth();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 顾名应该思义</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">getDayOfWeek();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">getDayOfYear();	</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 设置年月日</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">LocalDate ld1 = ld.withYear(<span class="number">2021</span>);		<span class="comment">// 2021-01-01</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">LocalDate ld2 = ld.withMonth(<span class="number">12</span>);		<span class="comment">// 2019-12-01</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">LocalDate ld3 = ld.withDayOfMonth(<span class="number">12</span>);	<span class="comment">// 2019-12-12</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 你可能会纳闷，既然是设置，为什么不用单词 set 呢，而用 with</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 因为，set 操作一般是改变调用对象本身，没有返回值；</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 而 with 是在调用对象基础上另外创建一个新对象，设置好值后返回，没有改变调用对象</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 如果你是那个打破砂锅的孩子，你可能会问：为什么不能改变调用对象？</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 因为 LocalDate 是 final 修饰的（final 人称 Java 界的自宫之刀）</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 从物理的角度来讲，目前人类无法改变时间（穿越）</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 如果你有 ld.withMonth(13) 这种反人类历法的操作，当然是会抛出异常的</span></span></pre></td></tr></table></figure>
+
+
+
+<blockquote>
+<p><code>LocalTime</code> 和 <code>LocalDateTime</code> 都有类似于 <code>LocalDate</code> 的方法，这里就不一一列举了（因为我感觉自己越来越像 api 文档了）</p>
+<p><a href="https://docs.oracle.com/javase/8/docs/api/" target="_blank" rel="noopener">Java8 API 官方文档直通车</a></p>
+</blockquote>
+<h3 id="转换"><a href="#转换" class="headerlink" title="转换"></a>转换</h3><p><strong>日期时间对象 和 字符串 之间的互相转换：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// LocalDateTime 对象 -&gt; 字符串</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">DateTimeFormatter dtf = DateTimeFormatter.ofPattern(<span class="string">"yyyy-MM-dd HH:mm:ss"</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">LocalDateTime now = LocalDateTime.now();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">String dateTimeStr = now.format(dtf);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">System.out.println(dateTimeStr);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 字符串 -&gt; LocalDateTime 对象</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">String str = <span class="string">"2022-01-30 12:15:20"</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">LocalDateTime dateTime = LocalDateTime.parse(str, dtf);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">System.out.println(dateTime);</span></pre></td></tr></table></figure>
+
+
+
+<p>DateTimeFormatter 类还提供一些现成的 formatter ，比如</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">DateTimeFormatter.BASIC_ISO_DATE &#x3D;&#x3D;&gt; DateTimeFormatter.ofPattern(&quot;yyyyMMdd&quot;)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">DateTimeFormatter.ISO_LOCAL_DATE &#x3D;&#x3D;&gt; DateTimeFormatter.ofPattern(&quot;yyyy-MM-dd&quot;)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 更多 formatter 可以 api 文档中查询</span></pre></td></tr></table></figure>
+
+
+
+<blockquote>
+<p>学习的本质，不在于记住哪些知识，而在于它触发了你的思考。—— 迈克尔·桑德尔</p>
+</blockquote>
+<p><strong>日期时间 和 时间戳 之间的互相转换：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// LocalDateTime 对象 -&gt; 时间戳</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">LocalDateTime now = LocalDateTime.now();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取系统默认时区</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">ZoneId systemDefaultZoneId = ZoneId.systemDefault();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">Instant instant = now.atZone(systemDefaultZoneId).toInstant();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">long</span> timestamp = instant.toEpochMilli();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">System.out.println(timestamp);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 时间戳 -&gt; LocalDateTime 对象</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">long</span> timestamp2 = <span class="number">1578919583784L</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">Instant instant2 = Instant.ofEpochMilli(timestamp2);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">LocalDateTime dateTime2 = LocalDateTime.ofInstant(instant2, systemDefaultZoneId);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">System.out.println(dateTime2);</span></pre></td></tr></table></figure>
+
+<p>“我不明白为什么要把时间戳搞得这么麻烦！”</p>
+<p>另外：<code>java.util.Date</code> 与 <code>java.time.LocalDateTime</code> 之间的转换需要通过 <code>Instant</code> 实现，它俩都没有提供直接的转换方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取系统默认时区</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">ZoneId systemDefaultZoneId = ZoneId.systemDefault();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// Date 转为 LocalDateTime</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">Date date3 = <span class="keyword">new</span> Date();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">Instant instant3 = date3.toInstant();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">LocalDateTime localDateTime3 = LocalDateTime.ofInstant(instant3, systemDefaultZoneId);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// LocalDateTime 转为 Date</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">Instant instant4 = now.atZone(systemDefaultZoneId).toInstant();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">Date date4 = Date.from(instant4);</span></pre></td></tr></table></figure>
+
+
+
+<p>还有：<code>LocalDateTime</code> 可以由 <code>LocalDate</code> 和 <code>LocalTime</code> 组成，也可以拆分成它俩</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">LocalDate nowLocalDate = LocalDate.now();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">LocalTime nowLocalTime = LocalTime.now();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">LocalDateTime nowLocalDateTime = LocalDateTime.of(nowLocalDate, nowLocalTime);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">nowLocalDateTime.toLocalDate();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">nowLocalDateTime.toLocalTime();</span></pre></td></tr></table></figure>
+
+
+
+<h3 id="计算"><a href="#计算" class="headerlink" title="计算"></a>计算</h3><p><strong>计算时间点与时间点之间的间隔：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 计算日期时间之间的间隔</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">LocalTime startTime = LocalTime.now();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">LocalTime endTime = startTime.plusHours(<span class="number">1</span>).plusMinutes(<span class="number">50</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">Duration duration = Duration.between(startTime, endTime);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 间隔秒数</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">duration.getSeconds();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 间隔天数</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">duration.toDays();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 间隔小时数</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">duration.toHours();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 间隔分钟数</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">duration.toMinutes();</span></pre></td></tr></table></figure>
+
+<p><code>Duration.between(start, end)</code> 的参数可以是 <code>LocalDateTime</code> 、<code>LocalTime</code></p>
+<p>它只会返回一个整数（舍掉小数后的整数，等同于 floor()），不会返回 <code>1小时50分钟</code> 这样的形式<br>如果你想要 <code>y年M个月d天 H小时m分钟s秒</code> 这种形式，或许你自己动手组装一下了</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 计算日期之间的间隔</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">LocalDate startDate = LocalDate.now();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">LocalDate endDate = LocalDate.of(<span class="number">2031</span>, <span class="number">1</span>, <span class="number">1</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">Period pe = Period.between(startDate, endDate);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">pe.getYears();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">pe.getMonths();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">pe.getDays();</span></pre></td></tr></table></figure>
+
+
+
+<p><strong>时间点与时间段的计算：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> LocalDateTime <span class="title">plusYears</span><span class="params">(<span class="keyword">long</span> years)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">       LocalDate newDate = date.plusYears(years);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">return</span> with(newDate, time);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">   &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="keyword">public</span> LocalDateTime <span class="title">plusMonths</span><span class="params">(<span class="keyword">long</span> months)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">       LocalDate newDate = date.plusMonths(months);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">return</span> with(newDate, time);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">   &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="keyword">public</span> LocalDateTime <span class="title">plusWeeks</span><span class="params">(<span class="keyword">long</span> weeks)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">       LocalDate newDate = date.plusWeeks(weeks);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">return</span> with(newDate, time);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">   &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="keyword">public</span> LocalDateTime <span class="title">plusDays</span><span class="params">(<span class="keyword">long</span> days)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">       LocalDate newDate = date.plusDays(days);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">return</span> with(newDate, time);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line">   &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="keyword">public</span> LocalDateTime <span class="title">plusHours</span><span class="params">(<span class="keyword">long</span> hours)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">return</span> plusWithOverflow(date, hours, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line">   &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">24</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">25</span></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="keyword">public</span> LocalDateTime <span class="title">plusMinutes</span><span class="params">(<span class="keyword">long</span> minutes)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">26</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">return</span> plusWithOverflow(date, <span class="number">0</span>, minutes, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">27</span></pre></td><td class="code"><pre><span class="line">   &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">28</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">29</span></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="keyword">public</span> LocalDateTime <span class="title">plusSeconds</span><span class="params">(<span class="keyword">long</span> seconds)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">30</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">return</span> plusWithOverflow(date, <span class="number">0</span>, <span class="number">0</span>, seconds, <span class="number">0</span>, <span class="number">1</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">31</span></pre></td><td class="code"><pre><span class="line">   &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">32</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">33</span></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="keyword">public</span> LocalDateTime <span class="title">plusNanos</span><span class="params">(<span class="keyword">long</span> nanos)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">34</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">return</span> plusWithOverflow(date, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, nanos, <span class="number">1</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">35</span></pre></td><td class="code"><pre><span class="line">   &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">36</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">37</span></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="keyword">public</span> LocalDateTime <span class="title">minusYears</span><span class="params">(<span class="keyword">long</span> years)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">38</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">return</span> (years == Long.MIN_VALUE ? plusYears(Long.MAX_VALUE).plusYears(<span class="number">1</span>) : plusYears(-years));</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">39</span></pre></td><td class="code"><pre><span class="line">   &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">40</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">41</span></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="keyword">public</span> LocalDateTime <span class="title">minusMonths</span><span class="params">(<span class="keyword">long</span> months)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">42</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">return</span> (months == Long.MIN_VALUE ? plusMonths(Long.MAX_VALUE).plusMonths(<span class="number">1</span>) : plusMonths(-months));</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">43</span></pre></td><td class="code"><pre><span class="line">   &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">44</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">45</span></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="keyword">public</span> LocalDateTime <span class="title">minusWeeks</span><span class="params">(<span class="keyword">long</span> weeks)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">46</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">return</span> (weeks == Long.MIN_VALUE ? plusWeeks(Long.MAX_VALUE).plusWeeks(<span class="number">1</span>) : plusWeeks(-weeks));</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">47</span></pre></td><td class="code"><pre><span class="line">   &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">48</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">49</span></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="keyword">public</span> LocalDateTime <span class="title">minusDays</span><span class="params">(<span class="keyword">long</span> days)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">50</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">return</span> (days == Long.MIN_VALUE ? plusDays(Long.MAX_VALUE).plusDays(<span class="number">1</span>) : plusDays(-days));</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">51</span></pre></td><td class="code"><pre><span class="line">   &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">52</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">53</span></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="keyword">public</span> LocalDateTime <span class="title">minusHours</span><span class="params">(<span class="keyword">long</span> hours)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">54</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">return</span> plusWithOverflow(date, hours, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, -<span class="number">1</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">55</span></pre></td><td class="code"><pre><span class="line">  &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">56</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">57</span></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="keyword">public</span> LocalDateTime <span class="title">minusMinutes</span><span class="params">(<span class="keyword">long</span> minutes)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">58</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">return</span> plusWithOverflow(date, <span class="number">0</span>, minutes, <span class="number">0</span>, <span class="number">0</span>, -<span class="number">1</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">59</span></pre></td><td class="code"><pre><span class="line">   &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">60</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">61</span></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="keyword">public</span> LocalDateTime <span class="title">minusSeconds</span><span class="params">(<span class="keyword">long</span> seconds)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">62</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">return</span> plusWithOverflow(date, <span class="number">0</span>, <span class="number">0</span>, seconds, <span class="number">0</span>, -<span class="number">1</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">63</span></pre></td><td class="code"><pre><span class="line">   &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">64</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">65</span></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="keyword">public</span> LocalDateTime <span class="title">minusNanos</span><span class="params">(<span class="keyword">long</span> nanos)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">66</span></pre></td><td class="code"><pre><span class="line">       <span class="keyword">return</span> plusWithOverflow(date, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, nanos, -<span class="number">1</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">67</span></pre></td><td class="code"><pre><span class="line">   &#125;</span></pre></td></tr></table></figure>
+
+<p>看吧，加减年数、月数、天数、小时数、分钟数、秒数、毫秒数都有</p>
+<p>想怎么用就怎么用，举个小例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">LocalDateTime now = LocalDateTime.now();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 30年后的今天（我还要上班，还没退休）</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">LocalDateTime after30Years = now.plusYears(<span class="number">30L</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">System.out.println(after30Years);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 347个月后（我就能还清贷款了 ╥﹏╥）</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">LocalDateTime after348Months = now.plusMonths(<span class="number">347L</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">System.out.println(after348Months);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 11天后（就是除夕了）</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">LocalDateTime after10Days = now.plusDays(<span class="number">10L</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">System.out.println(after10Days);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 8小时前（我在上班）</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">LocalDateTime before8Hours = now.minusHours(<span class="number">8L</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">System.out.println(before8Hours);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 3分钟前（我开始听 Let it go 这首歌）</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line">LocalDateTime before3Before = now.minusMinutes(<span class="number">3L</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line">System.out.println(before3Before);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 10秒前（写下下面这条代码）</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">24</span></pre></td><td class="code"><pre><span class="line">LocalDateTime before10Second = now.minusSeconds(<span class="number">10L</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">25</span></pre></td><td class="code"><pre><span class="line">System.out.println(before10Second);</span></pre></td></tr></table></figure>
+
+
+
+<p>其实不用区分什么加减的，也可以用 plusXxx 做减法，只要传入负数参数就行了</p>
+<p>另外这里还有一类需求，比如：</p>
+<p>明年的感恩节是哪天？（每年11月的第四个星期四为感恩节）<br>下周五是哪天？</p>
+<p>这就要用到时间校正器 <code>TemporalAdjuster</code><br>这里容我先介绍一下 <code>TemporalAdjuster</code>，它是一个函数式接口，只有一个方法 <code>adjustInto</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="meta">@FunctionalInterface</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">TemporalAdjuster</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">    <span class="function">Temporal <span class="title">adjustInto</span><span class="params">(Temporal temporal)</span></span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+<blockquote>
+<p><code>Temporal</code> 是一个接口，<code>LocalDateTime</code> 、<code>LocalDate</code> 、 <code>LocalTime</code> 都是它的实现类</p>
+</blockquote>
+<p>在 <code>LocalDateTime</code> 、<code>LocalDate</code> 、 <code>LocalTime</code> 中都有 <code>with(TemporalAdjuster adjuster)</code> 这个方法用来实现上面提到的另类需求。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 下周五</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">LocalDateTime now = LocalDateTime.now();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">LocalDateTime nextFriday = now.with(dt -&gt; &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">// dt 是 `Temporal` 对象，但实质上是调用对象的类型</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">    LocalDateTime dateTime = (LocalDateTime) dt;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">// 非常可惜，没有 withDayOfWeek() 这个方法，要不然就会非常方便了</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">int</span> dayOfWeekValue = dateTime.getDayOfWeek().getValue();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">int</span> fridayValue = DayOfWeek.FRIDAY.getValue();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> dateTime.plusWeeks(<span class="number">1L</span>)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">        		.plusDays(fridayValue - dayOfWeekValue);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">&#125;);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">System.out.println(nextFriday);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 明年的感恩节（明年11月第四个星期四）</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">LocalDate thanksGivingDay = LocalDate.now().with( t -&gt; &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">    LocalDate d = (LocalDate) t;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">// 明年11月1日</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">    LocalDate newDate = d.plusYears(<span class="number">1L</span>).withMonth(<span class="number">11</span>).withDayOfMonth(<span class="number">1</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">int</span> dayOfWeekValue = newDate.getDayOfWeek().getValue();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">int</span> thursdayValue = DayOfWeek.THURSDAY.getValue();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">long</span> plusWeeks = dayOfWeekValue &gt; thursdayValue ? <span class="number">4L</span> : <span class="number">3L</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> newDate.plusWeeks(plusWeeks)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">24</span></pre></td><td class="code"><pre><span class="line">        			.plusDays(thursdayValue - dayOfWeekValue);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">25</span></pre></td><td class="code"><pre><span class="line">&#125;);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">26</span></pre></td><td class="code"><pre><span class="line">System.out.println(thanksGivingDay);</span></pre></td></tr></table></figure>
+
+
+
+<p>其实 <code>TemporalAdjusters</code> 提供了许多 <code>TemporalAdjuster</code> 对象，就像上一节 Stream 中 <code>Collectors</code> 之于 <code>Collector</code> 一样 。</p>
+<p>使用 <code>TemporalAdjusters</code> 能够十分方便的实现上面的需求</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 下个周五</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">LocalDateTime nextFriday = LocalDateTime.now().with(TemporalAdjusters.next(DayOfWeek.FRIDAY));</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">System.out.println(nextFriday);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 明年的感恩节（明年11月第四个星期四）</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">LocalDate date = LocalDate.now().plusYears(<span class="number">1L</span>).withMonth(<span class="number">11</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">LocalDate thanksGivingDay = date.with(TemporalAdjusters.dayOfWeekInMonth(<span class="number">4</span>, DayOfWeek.THURSDAY));</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">System.out.println(thanksGivingDay);</span></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意： <code>TemporalAdjusters.next(DayOfWeek day)</code> 方法返回的是 <strong>接下来第一个周五</strong>，并不是我们一般理解的 <strong>下周五</strong>，比如说：今天 2020-01-13（周一），那么返回的就是 2020-01-17 四天后的周五。</p>
+</blockquote>
+<p>另外 <code>TemporalAdjusters</code> 并不止提供了上面这2个方法，还有很多其他方法， <a href="https://docs.oracle.com/javase/8/docs/api/" target="_blank" rel="noopener">API 文档</a> 中给出了足够多的例子，一看就明白了。</p>
+<p><em>建议有兴趣的同学，去阅读一些源码，参考 Java8 代码逻辑，然后用其他编程语言实现相同的日期时间操作，因为在其他编程中（比如 javaScript）也会经常用到日期时间的操作</em></p>
+<h2 id="其他特性"><a href="#其他特性" class="headerlink" title="其他特性"></a>其他特性</h2><blockquote>
+<p>罗列出来表示我知道他们，但不表示我理解他们，所以 Let It Go！</p>
+</blockquote>
+<h3 id="接口中的默认方法"><a href="#接口中的默认方法" class="headerlink" title="接口中的默认方法"></a>接口中的默认方法</h3><h3 id="接口中的静态方法"><a href="#接口中的静态方法" class="headerlink" title="接口中的静态方法"></a>接口中的静态方法</h3><h3 id="Optional-类"><a href="#Optional-类" class="headerlink" title="Optional 类"></a>Optional 类</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">Optional&lt;String&gt; op = Optional.of(str);</span></pre></td></tr></table></figure>
+
+<p>它是用来标识这个变量有可能为空。</p>
+<p>如果一个变量有可能为空，Java8 之前我们每次使用这个变量时，都必须判断它是否为空。<strong>现在也是！！</strong></p>
+<p><code>Optional</code> 并不能避免空指针异常，仅仅是表示标识变量可能为空。打个比方：</p>
+<p><em>前面一条路上埋了地雷，但从表面上完全看不出来，除非我们走一步都扔石头试一下，否则说不准哪一步就炸了。而 <code>Optional</code>就是用来标识地雷位置的，我们知道了哪个位置有雷，就会绕着走，从而能够安全通过</em></p>
+<p>另外 Optional 还提供了一个设置默认值的功能，挺好玩的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">Integer pageSize = <span class="keyword">null</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 以前我们设置默认值</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="comment">//pageSize = pageSize == null ? 10 : pageSize;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"><span class="comment">//System.out.println(pageSize);</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用 Optional 设置默认值</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">pageSize = Optional.ofNullable(pageSize)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">    .orElse(<span class="number">20</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">System.out.println(pageSize);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line"><span class="comment">// 自定义默认值</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">Integer defaultPageSize = Optional.ofNullable(pageSize)</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">        .orElseGet(() -&gt; &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> Integer(<span class="number">50</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">        &#125;);</span></pre></td></tr></table></figure>
+
+
+
+
+
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>Java8 新特性系列随便到此就结束了。</p>
+<p>最最关键的，还是多看 <a href="https://docs.oracle.com/javase/8/docs/api/" target="_blank" rel="noopener">Java 官方 API 文档</a>！！</p>
+<p>我在想可能我们被矫枉过正了。各种各样技术群最多的回答都是：去问百度！！ 百度全知道吗？！</p>
+<p>说实在的，在今天这个时代，是个人都能在网络上发表文章言论，然后大家再互相转载，假的都能成为真的！<br>没有经过验证就转载的；在当时有效，现在过时了的；随便在文章中一个转载链接的 … 比比皆是</p>
+<p><em>这里有一个开眼的短视频，介绍 [虚假新闻是如何在传播](<a href="https://www.eyepetizer.net/detail.html?vid=13797&amp;utm_campaign=routine&amp;utm_medium=share&amp;utm_source=wechat-friends&amp;uid=301920274&amp;resourceType=video&amp;udid=411015c26f8b4772b0e1b1efd137950132b4a424&amp;vc=461&amp;vn=5.1&amp;size=1080X2150&amp;deviceModel=MI" target="_blank" rel="noopener">https://www.eyepetizer.net/detail.html?vid=13797&amp;utm_campaign=routine&amp;utm_medium=share&amp;utm_source=wechat-friends&amp;uid=301920274&amp;resourceType=video&amp;udid=411015c26f8b4772b0e1b1efd137950132b4a424&amp;vc=461&amp;vn=5.1&amp;size=1080X2150&amp;deviceModel=MI</a> PLAY&amp;first_channel=eyepetizer_xiaomi_market&amp;last_channel=eyepetizer_xiaomi_market&amp;system_version_code=27)</em></p>
+<p>最恼人的是，百度搜索一个关键词 XXX，点进去一篇博客文章，结果文章内容根本就没有这个关键词，那么关键词到底在哪呢？<br>关键词在网站的推荐文章列表标题里，所以百度爬取到了，显示在搜索结果里了。真是日了狗了！！</p>
+<p><em>百度搜到的博客能别看就别看，看也要看那些经常更新，比较靠谱的。</em></p>
+<blockquote>
+<p><strong>靠谱的学习途径：</strong></p>
+<ol>
+<li>官方最新 API 文档</li>
+<li>书籍/视频（要注意权威性和时效性）</li>
+<li>经常更新靠谱的博客</li>
+</ol>
+</blockquote>
+<p><strong>轻易不要百度！！</strong></p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/blog/alipay-reward-image.jpg" alt="LiuChuanWei 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/blog/weixinpay-reward-image.jpg" alt="LiuChuanWei 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java8-%E6%96%B0%E7%89%B9%E6%80%A7/" rel="tag"># Java8 新特性</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/01/10/210-Java/JavaSE/Java8%20%E6%96%B0%E7%89%B9%E6%80%A7(%E4%BA%8C)-%20Stream/" rel="prev" title="Java8 新特性(二)- Stream">
+      <i class="fa fa-chevron-left"></i> Java8 新特性(二)- Stream
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#日期时间对象"><span class="nav-number">1.</span> <span class="nav-text">日期时间对象</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#创建对象"><span class="nav-number">1.1.</span> <span class="nav-text">创建对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#转换"><span class="nav-number">1.2.</span> <span class="nav-text">转换</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#计算"><span class="nav-number">1.3.</span> <span class="nav-text">计算</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他特性"><span class="nav-number">2.</span> <span class="nav-text">其他特性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#接口中的默认方法"><span class="nav-number">2.1.</span> <span class="nav-text">接口中的默认方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#接口中的静态方法"><span class="nav-number">2.2.</span> <span class="nav-text">接口中的静态方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Optional-类"><span class="nav-number">2.3.</span> <span class="nav-text">Optional 类</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结语"><span class="nav-number">3.</span> <span class="nav-text">结语</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="LiuChuanWei"
+      src="/blog/avatar.jpg">
+  <p class="site-author-name" itemprop="name">LiuChuanWei</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">50</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">30</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/liuchuanv" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;liuchuanv" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 2019 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiuChuanWei</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme: 'forest',
+      logLevel: 3,
+      flowchart: { curve: 'linear' },
+      gantt: { axisFormat: '%m/%d/%Y' },
+      sequence: { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+</body>
+</html>
